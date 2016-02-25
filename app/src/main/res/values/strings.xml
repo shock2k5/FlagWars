@@ -13,5 +13,14 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+<<<<<<< HEAD
     <string name="title_activity_lobby_splash">Map</string>
+=======
+    <string name="title_activity_sign_up">SignUp</string>
+    <string name="title_activity_game_selection_screen">GameSelectionScreen</string>
+    <string name="title_activity_rules">Rules</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_my_profile">MyProfile</string>
+    <string name="title_activity_game_screen">GameScreen</string>
+>>>>>>> origin/master
 </resources>
