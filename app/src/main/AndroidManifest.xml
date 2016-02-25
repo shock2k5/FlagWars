@@ -31,6 +31,39 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.kevin.flagwars.LoginActivity"/>
         </activity>
+        <activity
+            android:name=".GameSelectionScreen"
+            android:label="@string/title_activity_game_selection_screen"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".Rules"
+            android:label="@string/title_activity_rules"
+            android:parentActivityName=".GameSelectionScreen"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.kevin.flagwars.GameSelectionScreen"/>
+        </activity>
+        <activity
+            android:name=".Settings"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".GameSelectionScreen"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.kevin.flagwars.GameSelectionScreen"/>
+        </activity>
+        <activity
+            android:name=".MyProfile"
+            android:label="@string/title_activity_my_profile"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".GameScreen"
+            android:label="@string/title_activity_game_screen"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>
