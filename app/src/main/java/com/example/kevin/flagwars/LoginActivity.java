@@ -43,7 +43,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-    private int Brian = 69;
 
     /**
      * A dummy authentication store containing known user names and passwords.
