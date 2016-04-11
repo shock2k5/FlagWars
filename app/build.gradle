@@ -10,6 +10,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -27,4 +28,6 @@ dependencies {
     compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.parse.bolts:bolts-android:1.+'
     compile 'com.parse:parse-android:1.+'
+    compile 'com.facebook.android:facebook-android-sdk:4.+'
+    compile 'com.parse:parsefacebookutils-v4-android:1.10.3@aar'
 }
