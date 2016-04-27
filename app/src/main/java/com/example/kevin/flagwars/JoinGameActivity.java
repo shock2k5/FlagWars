@@ -18,5 +18,7 @@ public class JoinGameActivity extends AppCompatActivity {
 
         mGameListView = (ListView) findViewById(R.id.gameListView);
         mEnterCodeTextView = (TextView) findViewById(R.id.enterCodeEditText);
+
+
     }
 }
