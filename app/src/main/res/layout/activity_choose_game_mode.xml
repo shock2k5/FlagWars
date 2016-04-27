@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="FLAG WARS"
-        android:id="@+id/gameTitle"
+        android:id="@+id/joinGameTextView"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
