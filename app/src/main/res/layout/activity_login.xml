@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.kevin.flagwars.LoginActivity">
+    tools:context="com.example.kevin.flagwars.LoginActivity"
+    android:background="@mipmap/login_bg">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -13,12 +14,6 @@
         android:theme="@style/AppTheme.AppBarOverlay"
         android:id="@+id/include">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -26,21 +21,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="FLAG WARS"
+        android:text="LOGIN"
         android:id="@+id/joinGameTextView"
+        android:layout_marginTop="86dp"
+        android:textSize="50dp"
+        android:textColor="#fff"
+        android:textIsSelectable="false"
+        android:textAlignment="gravity"
         android:layout_below="@+id/include"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="32dp"
-        android:textSize="50dp" />
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="Facebook"
+        android:text="f                  Facebook"
         android:id="@+id/facebookLoginBT"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="203dp" />
+        android:background="#3B5998"
+        android:textColor="#fff"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -48,13 +47,14 @@
         android:inputType="textEmailAddress"
         android:ems="10"
         android:id="@+id/emailEditText"
-        android:layout_marginTop="96dp"
-        android:layout_alignTop="@+id/facebookLoginBT"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
+        android:layout_marginTop="55dp"
         android:hint="Email"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp" />
+        android:layout_marginRight="16dp"
+        android:textColorHint="#fff"
+        android:layout_below="@+id/facebookLoginBT"
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/loginBT" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -67,7 +67,19 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp" />
+        android:layout_marginRight="16dp"
+        android:textColorHint="#fff" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="DONE"
+        android:id="@+id/loginBT"
+        android:background="@color/colorPrimaryDark"
+        android:layout_below="@+id/emailEditText"
+        android:layout_toEndOf="@+id/registerText"
+        android:textColor="#fff" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -76,18 +88,9 @@
         android:text="Don&apos;t have an account? Sign Up"
         android:id="@+id/registerText"
         android:textAlignment="center"
-        android:layout_below="@+id/passwordEditText"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="32dp" />
+        android:textColor="#fff"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:text="=>"
-        android:id="@+id/loginBT"
-        android:layout_below="@+id/emailEditText"
-        android:layout_alignEnd="@+id/emailEditText"
-        android:layout_marginTop="-8dp" />
+
 </RelativeLayout>
