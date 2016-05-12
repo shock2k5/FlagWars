@@ -52,7 +52,8 @@
             android:name=".CreateGameActivity"
             android:label="@string/title_activity_create_game"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".JoinGameActivity"></activity>
+        <activity android:name=".JoinGameActivity" />
+        <activity android:name=".Lobby"></activity>
     </application>
 
 </manifest>

@@ -41,20 +41,6 @@
             android:layout_height="match_parent"></GridLayout>
 
         <TextView
-            android:id="@+id/create_game_type_your_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Type Your Name" />
-
-        <EditText
-            android:id="@+id/create_game_player_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:ems="10" />
-
-        <TextView
             android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -92,18 +78,12 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"/>
 
-        <ProgressBar
-            android:id="@+id/create_game_indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:visibility="gone"/>
-
         <Button
             android:id="@+id/create_game_start_game"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="START GAME" />
+            android:text="START GAME"
+            android:onClick="onClickCreateGame" />
 
     </LinearLayout>
 
