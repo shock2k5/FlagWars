@@ -12,30 +12,12 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-<<<<<<< HEAD
         android:text="Start"
         android:id="@+id/button"
         android:layout_marginBottom="72dp"
         android:layout_marginStart="53dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Leave"
-        android:id="@+id/button2"
-        android:nestedScrollingEnabled="false"
-        android:layout_marginEnd="42dp"
-        android:layout_alignTop="@+id/button"
-        android:layout_alignParentEnd="true" />
-=======
-        android:text="Start Game"
-        android:id="@+id/button"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
 
     <ListView
         android:layout_width="wrap_content"
@@ -56,23 +38,18 @@
         android:layout_toStartOf="@+id/LobbyGameName"
         android:layout_below="@+id/LobbyGameName"
         android:choiceMode="none" />
->>>>>>> origin/master
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-<<<<<<< HEAD
         android:text="Game Name"
         android:id="@+id/textView2"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:gravity="center" />
-=======
-        android:id="@+id/LobbyGameName"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+
 
     <Button
         android:layout_width="wrap_content"
@@ -90,5 +67,4 @@
         android:layout_alignTop="@+id/button"
         android:layout_toStartOf="@+id/button" />
 
->>>>>>> origin/master
 </RelativeLayout>
