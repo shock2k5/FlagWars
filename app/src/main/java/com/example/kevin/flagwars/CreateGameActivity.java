@@ -11,17 +11,21 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.parse.ParseObject;
+import com.parse.LocationCallback;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
-public class CreateGameActivity extends AppCompatActivity {
-    EditText gameName;
-    RadioGroup team;
-    RadioButton selectedTeam;
-    Button createGameButton;
-    ParseUser parseUser;
-    ParseObject parseGame;
+import java.util.ArrayList;
 
+public class CreateGameActivity extends AppCompatActivity {
+    protected EditText gameName;
+    protected RadioGroup team;
+    protected RadioButton selectedTeam; // radio0 is Red, radio1 is Blue
+    protected Button createGameButton;
+    protected ParseUser parseUser;
+    protected Game game;
+    private ParseGeoPoint location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +45,36 @@ public class CreateGameActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 selectedTeam = (RadioButton) findViewById(team.getCheckedRadioButtonId());
-                parseGame = new ParseObject("Game");
-                parseGame.put("name", gameName.getText().toString());
+                String name = gameName.getText().toString();
+                int numPlayers = 4;
+                ArrayList<ParseGeoPoint> flagLocations = new ArrayList<>(2);
+                ArrayList<ParseUser> redTeamNames = new ArrayList<ParseUser>(numPlayers/2);
+                ArrayList<ParseUser> blueTeamNames = new ArrayList<ParseUser>(numPlayers/2);
+                game = new Game(name, numPlayers, flagLocations, redTeamNames, blueTeamNames);
+                if (selectedTeam.getText().toString().equals("Red Team"))
+                    game.addToRedTeam(parseUser);
+                else
+                    game.addToBlueTeam(parseUser);
 
-                Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
-                intent.putExtra("gamename", gameName.getText().toString());
-                intent.putExtra("teamName", selectedTeam.getText().toString());
-                startActivity(intent);
+                ParseGeoPoint.getCurrentLocationInBackground(100, new LocationCallback() {
+                    @Override
+                    public void done(ParseGeoPoint geoPoint, ParseException e){
+                        if (e == null)
+                            location = geoPoint;
+                        else if (geoPoint == null)
+                            location = new ParseGeoPoint(37.422, -122.084);
+                        else
+                            e.printStackTrace();
+
+                        game.setRedFlagLocation(location);
+                        game.toParseObject();
+                        game.saveInParse();
+
+                        Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
+                        intent.putExtra("gameObjectId", game.getObjectId());
+                        startActivity(intent);
+                    }
+                });
             }
         });
     }
