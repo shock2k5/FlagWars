@@ -1,8 +1,9 @@
 package com.example.kevin.flagwars;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -100,27 +101,24 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        mDrawerToggle = new ActionBarDrawerToggle(
+        mDrawerToggle = new CustomActionBarDrawerToggle(
                 this,                  /* host Activity */
-                mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
-                R.string.drawer_open,  /* "open drawer" description */
-                R.string.drawer_close  /* "close drawer" description */
-        ) {
+                mDrawerLayout)         /* DrawerLayout object */
+                 {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle(mTitle);
+                getSupportActionBar().setTitle(mTitle);
             }
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(mTitle);
+                getSupportActionBar().setTitle(mTitle);
             }
         };
 
         // Set the drawer toggle as the DrawerListener
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -184,4 +182,12 @@ public class ChooseGameModeActivity extends AppCompatActivity {
             selectItem(position);
         }
     }
+
+    public class CustomActionBarDrawerToggle extends ActionBarDrawerToggle {
+        public  CustomActionBarDrawerToggle(Activity mActivity,DrawerLayout mDrawerLayout)
+        {
+            super(mActivity, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);
+        }
+    }
+
 }
