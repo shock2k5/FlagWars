@@ -152,7 +152,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mTitle = "test";
 
-        mPlanetTitles = new String[]{"one", "two", "three"};
+        mPlanetTitles = getResources().getStringArray(R.array.drawer_list);;
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -169,12 +169,12 @@ public class LoginActivity extends AppCompatActivity {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
-                getSupportActionBar().setTitle(mTitle);
+                getSupportActionBar().setTitle("FlagWars");
             }
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
-                getSupportActionBar().setTitle(mTitle);
+                getSupportActionBar().setTitle("FlagWars");
             }
         };
 
