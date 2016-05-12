@@ -3,10 +3,8 @@ package com.example.kevin.flagwars;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.method.KeyListener;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -16,7 +14,6 @@ import android.widget.ProgressBar;
 
 import com.parse.FindCallback;
 import com.parse.LocationCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -58,10 +55,9 @@ public class JoinGameActivity extends AppCompatActivity {
         if (requestCode == 0) {
             // If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0) {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                     ParseGeoPoint.getCurrentLocationInBackground(100, new ParseLocationCallback());
-                }
             } else {
                 System.out.println("Denied permission");
             }
@@ -70,31 +66,29 @@ public class JoinGameActivity extends AppCompatActivity {
 
     private void attemptToRetrieveObjects() {
         ParseQuery q = ParseQuery.getQuery("Game");
-        q.whereWithinMiles("location", loc, 1.0);
+        q.whereWithinMiles("anchorLocation", loc, 1.0);
         q.setLimit(10);
         q.findInBackground(new FindCallback() {
             @Override
             public void done(List objects, ParseException e) {
-                if (e == null) {
+                if (e == null)
                     objectRetrievalSucceeded((List<ParseObject>) objects);
-                } else { // error
-                    System.out.println(e.getLocalizedMessage());
-                }
+                else // error
+                    e.printStackTrace();
             }
 
             @Override
             public void done(Object o, Throwable t) {
-                if (t == null) {
+                if (t == null)
                     objectRetrievalSucceeded((List<ParseObject>) o);
-                } else {
-                    System.out.println(t.getLocalizedMessage());
-                }
+                else
+                    t.printStackTrace();
             }
         });
     }
 
     private void objectRetrievalSucceeded(List<ParseObject> objects) {
-        gameList = Game.parseObjectsToGames(objects);
+        gameList = Game.getGameListFromParse(objects);
         List<String> gameNames = this.getGameNames();
         ArrayAdapter<String> arrayAdapter;
         if (gameNames.size() == 0)
@@ -106,23 +100,20 @@ public class JoinGameActivity extends AppCompatActivity {
 
     private List<String> getGameNames() {
         ArrayList<String> a = new ArrayList<>();
-
         for (Game g : gameList)
             a.add(g.getName());
-
         return a;
     }
 
     class ParseLocationCallback implements LocationCallback {
         @Override
         public void done(ParseGeoPoint geoPoint, ParseException e){
-            if (e == null) {
+            if (e == null)
                 loc = geoPoint;
-            } else if (geoPoint == null) {
+            else if (geoPoint == null)
                 loc = new ParseGeoPoint(37.422, -122.084);
-            } else {
+            else
                 e.printStackTrace();
-            }
 
             attemptToRetrieveObjects();
         }

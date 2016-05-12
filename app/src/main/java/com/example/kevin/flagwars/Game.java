@@ -1,12 +1,13 @@
 package com.example.kevin.flagwars;
 
-import com.parse.GetCallback;
-import com.parse.Parse;
+import android.util.Log;
+
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ public class Game {
     private ArrayList<ParseGeoPoint> flagLocations;
     private ArrayList<ParseUser> redTeamNames, blueTeamNames;
     private ParseObject object = null;
+    private ParseGeoPoint anchorLocation;
 
     public Game(String name, int numPlayers, ArrayList<ParseGeoPoint> flagLocations,
                 ArrayList<ParseUser> redTeamNames, ArrayList<ParseUser> blueTeamNames) {
@@ -33,6 +35,7 @@ public class Game {
         this.flagLocations = flagLocations;
         this.redTeamNames = redTeamNames;
         this.blueTeamNames = blueTeamNames;
+        this.anchorLocation = this.getLocation();
     }
 
     public String getName() {
@@ -79,10 +82,24 @@ public class Game {
             p.add("flagLocations", this.flagLocations);
             p.add("redTeamNames", this.redTeamNames);
             p.add("blueTeamNames", this.blueTeamNames);
+            p.add("anchorLocation", this.anchorLocation);
             this.objectId = p.getObjectId();
             this.object = p;
             return p;
         }
+    }
+
+    public void sendToParse() {
+        ParseObject o = (this.object == null) ? this.toParseObject() : this.object;
+        o.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null)
+                    Log.d("Parse Game Save", "Parse game saved successfully in background");
+                else
+                    e.printStackTrace();
+            }
+        });
     }
 
     /************************ STATIC HELPER METHODS ************************/
