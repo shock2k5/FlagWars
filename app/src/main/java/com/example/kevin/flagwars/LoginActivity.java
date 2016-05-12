@@ -43,7 +43,6 @@ public class LoginActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,7 +118,6 @@ public class LoginActivity extends AppCompatActivity {
                     public void done(ParseUser user, ParseException e) {
                         if (e == null) {
                             // Success
-                            System.out.println("Logged in");
                             Intent i = new Intent(LoginActivity.this,
                                     (getIntent().getStringExtra("gameMode").equals("createGame")) ?
                                             CreateGameActivity.class : JoinGameActivity.class);
@@ -150,109 +148,109 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
-        mTitle = "test";
-
-        mPlanetTitles = getResources().getStringArray(R.array.drawer_list);;
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-        // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mPlanetTitles));
-        // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-        mDrawerToggle = new CustomActionBarDrawerToggle(
-                this,                  /* host Activity */
-                mDrawerLayout)         /* DrawerLayout object */
-        {
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                getSupportActionBar().setTitle("FlagWars");
-            }
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                getSupportActionBar().setTitle("FlagWars");
-            }
-        };
-
-        // Set the drawer toggle as the DrawerListener
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-
-
-    }
-
-    //@Override
-  /*  public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }*/
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
-    }
-
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Pass the event to ActionBarDrawerToggle, if it returns
-        // true, then it has handled the app icon touch event
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        // Handle your other action bar items...
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Swaps fragments in the main content view
-     */
-    private void selectItem(int position) {
-        Toast.makeText(this, R.string.app_name, Toast.LENGTH_SHORT).show();
-
-        // Highlight the selected item, update the title, and close the drawer
-        mDrawerList.setItemChecked(position, true);
-        setTitle(mPlanetTitles[position]);
-        mDrawerLayout.closeDrawer(mDrawerList);
-    }
-
-    @Override
-    public void setTitle(CharSequence title) {
-        mTitle = title;
-        getSupportActionBar().setTitle(mTitle);
-    }
-
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView parent, View view, int position, long id) {
-            selectItem(position);
-        }
-    }
-
-    public class CustomActionBarDrawerToggle extends ActionBarDrawerToggle {
-        public  CustomActionBarDrawerToggle(Activity mActivity,DrawerLayout mDrawerLayout)
-        {
-            super(mActivity, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);
-        }
+//        mTitle = "test";
+//
+//        mPlanetTitles = getResources().getStringArray(R.array.drawer_list);;
+//        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+//
+//        // Set the adapter for the list view
+//        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+//                R.layout.drawer_list_item, mPlanetTitles));
+//        // Set the list's click listener
+//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+//
+//        mDrawerToggle = new CustomActionBarDrawerToggle(
+//                this,                  /* host Activity */
+//                mDrawerLayout)         /* DrawerLayout object */
+//        {
+//
+//            /** Called when a drawer has settled in a completely closed state. */
+//            public void onDrawerClosed(View view) {
+//                getSupportActionBar().setTitle("FlagWars");
+//            }
+//
+//            /** Called when a drawer has settled in a completely open state. */
+//            public void onDrawerOpened(View drawerView) {
+//                getSupportActionBar().setTitle("FlagWars");
+//            }
+//        };
+//
+//        // Set the drawer toggle as the DrawerListener
+//        mDrawerLayout.addDrawerListener(mDrawerToggle);
+//
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setHomeButtonEnabled(true);
+//
+//
+//    }
+//
+//    //@Override
+//  /*  public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }*/
+//
+//    @Override
+//    protected void onPostCreate(Bundle savedInstanceState) {
+//        super.onPostCreate(savedInstanceState);
+//        // Sync the toggle state after onRestoreInstanceState has occurred.
+//        mDrawerToggle.syncState();
+//    }
+//
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
+//    }
+//
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//        mDrawerToggle.onConfigurationChanged(newConfig);
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Pass the event to ActionBarDrawerToggle, if it returns
+//        // true, then it has handled the app icon touch event
+//        if (mDrawerToggle.onOptionsItemSelected(item)) {
+//            return true;
+//        }
+//        // Handle your other action bar items...
+//
+//        return super.onOptionsItemSelected(item);
+//    }
+//
+//    /**
+//     * Swaps fragments in the main content view
+//     */
+//    private void selectItem(int position) {
+//        Toast.makeText(this, R.string.app_name, Toast.LENGTH_SHORT).show();
+//
+//        // Highlight the selected item, update the title, and close the drawer
+//        mDrawerList.setItemChecked(position, true);
+//        setTitle(mPlanetTitles[position]);
+//        mDrawerLayout.closeDrawer(mDrawerList);
+//    }
+//
+//    @Override
+//    public void setTitle(CharSequence title) {
+//        mTitle = title;
+//        getSupportActionBar().setTitle(mTitle);
+//    }
+//
+//    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+//        @Override
+//        public void onItemClick(AdapterView parent, View view, int position, long id) {
+//            selectItem(position);
+//        }
+//    }
+//
+//    public class CustomActionBarDrawerToggle extends ActionBarDrawerToggle {
+//        public  CustomActionBarDrawerToggle(Activity mActivity,DrawerLayout mDrawerLayout)
+//        {
+//            super(mActivity, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);
+//        }
     }
 }

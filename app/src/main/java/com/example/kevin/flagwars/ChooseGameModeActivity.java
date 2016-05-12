@@ -42,22 +42,6 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         mJoinGameButton = (Button) findViewById(R.id.joinGameBT);
 
         currentUser = ParseUser.getCurrentUser();
-        /*ParseSession.getCurrentSessionInBackground(new GetCallback<ParseSession>() {
-            @Override
-            public void done(ParseSession object, ParseException e) {
-                if (e == null) {
-                    ParseUser.becomeInBackground(String.valueOf(object), new LogInCallback() {
-                        @Override
-                        public void done(ParseUser user, ParseException e) {
-                            if (user != null) {
-
-                            }
-                        }
-                    });
-                }
-            }
-        });*/
-
         mCreateGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,13 +113,6 @@ public class ChooseGameModeActivity extends AppCompatActivity {
 
 
     }
-
-    //@Override
-  /*  public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }*/
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
