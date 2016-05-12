@@ -38,7 +38,8 @@ public class CreateGameActivity extends AppCompatActivity {
             public void onClick(View v) {
                 selectedTeam = (RadioButton) findViewById(team.getCheckedRadioButtonId());
                 Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
-                intent.putExtra("gamename", "red");
+
+                intent.putExtra("gamename", gameName.getText().toString());
                 intent.putExtra("teamName", selectedTeam.getText().toString());
                 startActivity(intent);
             }
