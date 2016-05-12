@@ -1,13 +1,13 @@
 package com.example.kevin.flagwars;
 
 import android.content.Intent;
-import android.support.v4.widget.ListViewAutoScrollHelper;
-import android.support.v4.widget.TextViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 
@@ -16,13 +16,16 @@ public class Lobby extends AppCompatActivity {
     TextView gameName;
     ArrayAdapter<String> redAdapter, blueAdapter;
     ListView redRoster, blueRoster;
+    ParseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
 
+        currentUser = ParseUser.getCurrentUser();
         gameName = (TextView) findViewById(R.id.LobbyGameName);
+        gameName.setText(getIntent().getStringExtra("gamename"));
         redTeam = new ArrayList<String>();
         blueTeam = new ArrayList<String>();
         redRoster = (ListView) findViewById(R.id.redRosterList);

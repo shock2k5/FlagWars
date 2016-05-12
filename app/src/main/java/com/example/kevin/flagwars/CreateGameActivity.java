@@ -14,11 +14,16 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.parse.ParseObject;
+import com.parse.ParseUser;
+
 public class CreateGameActivity extends AppCompatActivity {
     EditText gameName;
     RadioGroup team;
     RadioButton selectedTeam;
     Button createGameButton;
+    ParseUser parseUser;
+    ParseObject parseGame;
 
 
     @Override
@@ -28,7 +33,9 @@ public class CreateGameActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         createGameButton = (Button) findViewById(R.id.create_game_start_game);
+        parseUser = ParseUser.getCurrentUser();
 
+        Toast.makeText(getApplicationContext(), parseUser.getUsername(), Toast.LENGTH_SHORT).show();
         //Set variables to the appropriate editText, ,etc.
         gameName = (EditText) findViewById(R.id.game_name_edit);
         team = (RadioGroup) findViewById(R.id.create_game_team_group);
@@ -36,15 +43,16 @@ public class CreateGameActivity extends AppCompatActivity {
         createGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectedTeam = (RadioButton) findViewById(team.getCheckedRadioButtonId());
-                Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
 
+                selectedTeam = (RadioButton) findViewById(team.getCheckedRadioButtonId());
+                parseGame = new ParseObject("Game");
+                parseGame.put("name", gameName.getText().toString());
+
+                Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
                 intent.putExtra("gamename", gameName.getText().toString());
                 intent.putExtra("teamName", selectedTeam.getText().toString());
                 startActivity(intent);
             }
         });
     }
-
-
 }

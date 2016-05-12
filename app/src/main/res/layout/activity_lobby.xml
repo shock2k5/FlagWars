@@ -14,20 +14,18 @@
         android:layout_height="wrap_content"
         android:text="Start"
         android:id="@+id/button"
-        android:layout_marginBottom="72dp"
-        android:layout_marginStart="53dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true" />
+        android:layout_toStartOf="@+id/btnJoinRed" />
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/redRosterList"
         android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@+id/blueRosterList"
+        android:layout_toEndOf="@+id/button"
         android:layout_above="@+id/button"
-        android:layout_below="@+id/LobbyGameName"
-        android:choiceMode="none" />
+        android:choiceMode="none"
+        android:layout_below="@+id/LobbyGameName" />
 
     <ListView
         android:layout_width="wrap_content"
@@ -35,16 +33,16 @@
         android:id="@+id/blueRosterList"
         android:layout_alignParentStart="true"
         android:layout_alignBottom="@+id/redRosterList"
-        android:layout_toStartOf="@+id/LobbyGameName"
-        android:layout_below="@+id/LobbyGameName"
-        android:choiceMode="none" />
+        android:layout_toStartOf="@+id/button"
+        android:choiceMode="none"
+        android:layout_below="@+id/LobbyGameName" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Game Name"
-        android:id="@+id/textView2"
+        android:id="@+id/LobbyGameName"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
@@ -56,8 +54,8 @@
         android:layout_height="wrap_content"
         android:text="Join Red Team"
         android:id="@+id/btnJoinRed"
-        android:layout_alignTop="@+id/button"
-        android:layout_toEndOf="@+id/button" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="wrap_content"
