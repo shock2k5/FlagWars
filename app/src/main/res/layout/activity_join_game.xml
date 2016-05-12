@@ -19,7 +19,7 @@
         android:layout_above="@+id/enterCodeTextView"
         android:layout_centerHorizontal="true" />
 
-    <TextView
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
@@ -28,9 +28,8 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:editable="true"
         android:textColor="#fff"
-        android:textColorHint="#fff" />
+        android:textColorHint="#aaa" />
 
     <ListView
         android:layout_width="wrap_content"
@@ -38,6 +37,9 @@
         android:id="@+id/gameListView"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/orTextView" />
+        android:layout_above="@+id/orTextView"
+        android:clickable="false"
+        android:contextClickable="true"
+        android:background="#fff" />
 
 </RelativeLayout>
