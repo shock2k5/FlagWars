@@ -6,8 +6,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.parse.ParseUser;
-
 import java.util.ArrayList;
 
 public class Lobby extends AppCompatActivity {
@@ -25,6 +23,8 @@ public class Lobby extends AppCompatActivity {
         gameName = (TextView) findViewById(R.id.LobbyGameName);
         game = Game.getObjectFromParse(getIntent().getStringExtra("gameObjectId"));
         gameName.setText(game.getName());
+        redTeam = game.getRedTeamNames();
+        blueTeam = game.getBlueTeamNames();
 
         redRoster = (ListView) findViewById(R.id.redRosterList);
         blueRoster = (ListView) findViewById(R.id.blueRosterList);
@@ -33,8 +33,5 @@ public class Lobby extends AppCompatActivity {
 
         redRoster.setAdapter(redAdapter);
         blueRoster.setAdapter(blueAdapter);
-
-        redTeam = game.getRedTeamNames();
-        blueTeam = game.getBlueTeamNames();
     }
 }

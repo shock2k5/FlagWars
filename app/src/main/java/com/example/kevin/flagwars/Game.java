@@ -6,6 +6,7 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -85,7 +86,7 @@ public class Game {
         ArrayList<String> names = new ArrayList<>();
 
         for (ParseUser u : this.redTeam)
-            names.add((u.getUsername() != null) ? u.getUsername() : u.getEmail());
+            names.add(u.getEmail());
 
         return names;
     }
@@ -112,30 +113,26 @@ public class Game {
             return this.object;
         } else {
             final ParseObject p = ParseObject.create("Game");
-            p.add("name", this.name);
-            p.add("numPlayers", this.numPlayers);
-            p.add("flagLocations", this.flagLocations);
-            p.add("redTeamNames", this.redTeam);
-            p.add("blueTeamNames", this.blueTeam);
-            p.add("anchorLocation", this.anchorLocation);
-            p.pinInBackground();
-            this.objectId = p.getObjectId();
+            p.put("name", this.name);
+            p.put("numPlayers", this.numPlayers);
+            p.put("flagLocations", this.flagLocations);
+            p.put("redTeamNames", this.redTeam);
+            p.put("blueTeamNames", this.blueTeam);
+            p.put("anchorLocation", this.anchorLocation);
             this.object = p;
+            this.saveInParse();
             return p;
         }
     }
 
     public void saveInParse() {
         ParseObject o = (this.object == null) ? this.toParseObject() : this.object;
-        o.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null)
-                    Log.d("Parse Game Save", "Parse game saved successfully in background");
-                else
-                    e.printStackTrace();
-            }
-        });
+        try {
+            o.save();
+            this.objectId = o.getObjectId();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     /************************ STATIC HELPER METHODS ************************/
