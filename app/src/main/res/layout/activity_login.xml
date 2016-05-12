@@ -31,10 +31,9 @@
         android:layout_below="@+id/include"
         android:layout_centerHorizontal="true" />
 
-    <Button
+    <com.facebook.login.widget.LoginButton
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="f                  Facebook"
         android:id="@+id/facebookLoginBT"
         android:background="#3B5998"
         android:textColor="#fff"

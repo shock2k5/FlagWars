@@ -2,24 +2,22 @@ package com.example.kevin.flagwars;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.facebook.AccessToken;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -32,8 +30,6 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         mFacebookButton = (Button) findViewById(R.id.facebookLoginBT);
         mLoginButton = (Button) findViewById(R.id.loginBT);
@@ -117,12 +113,12 @@ public class RegisterActivity extends AppCompatActivity {
         mFacebookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setProgressBarIndeterminateVisibility(true);
-
-                ParseFacebookUtils.logInInBackground(AccessToken.getCurrentAccessToken(), new LogInCallback() {
+                Collection<String> permissions = new ArrayList<>();
+                permissions.add("public_profile");
+                permissions.add("email");
+                ParseFacebookUtils.logInWithReadPermissionsInBackground(RegisterActivity.this, permissions, new LogInCallback() {
                     @Override
                     public void done(ParseUser user, ParseException e) {
-                        setProgressBarIndeterminateVisibility(false);
                         if (e == null) {
                             // Success
                             Intent i = new Intent(RegisterActivity.this,
@@ -151,6 +147,12 @@ public class RegisterActivity extends AppCompatActivity {
                 System.out.println("Image coming soon");
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
     }
 
     private boolean isEmailValid(String email) {
