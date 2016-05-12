@@ -1,27 +1,34 @@
 package com.example.kevin.flagwars;
 
-import android.database.DataSetObserver;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.view.ViewGroup;
+import android.text.method.KeyListener;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.Manifest;
 
 import com.parse.FindCallback;
+import com.parse.LocationCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class JoinGameActivity extends AppCompatActivity {
 
     ListView mGameListView;
-    TextView mEnterCodeTextView;
+    EditText mEnterCodeTextView;
     List<Game> gameList = null;
+
+    ParseGeoPoint loc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,19 +36,43 @@ public class JoinGameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_join_game);
 
         mGameListView = (ListView) findViewById(R.id.gameListView);
-        mEnterCodeTextView = (TextView) findViewById(R.id.enterCodeTextView);
+        mEnterCodeTextView = (EditText) findViewById(R.id.enterCodeTextView);
 
-        ParseGeoPoint currentLocation = ParseGeoPoint.getCurrentLocationInBackground(100).getResult();
+        mEnterCodeTextView.setCursorVisible(false);
+        mEnterCodeTextView.setKeyListener(null);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            // ask for permission
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+        else
+            // has permission
+            ParseGeoPoint.getCurrentLocationInBackground(1000, new ParseLocationCallback());
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if (requestCode == 0) {
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    ParseGeoPoint.getCurrentLocationInBackground(100, new ParseLocationCallback());
+                }
+            } else {
+                System.out.println("Denied permission");
+            }
+        }
+    }
+
+    private void attemptToRetrieveObjects() {
         ParseQuery q = ParseQuery.getQuery("Game");
-        q.whereWithinMiles("location", currentLocation, 2.0);
+        q.whereWithinMiles("location", loc, 1.0);
         q.setLimit(10);
-        System.out.println(currentLocation.toString() + "\nAbout to be done");
         q.findInBackground(new FindCallback() {
             @Override
             public void done(List objects, ParseException e) {
                 if (e == null) {
-                    System.out.println("Success");
-                    objectRetrievalSucceeded(objects);
+                    objectRetrievalSucceeded((List<ParseObject>) objects);
                 } else { // error
                     System.out.println(e.getLocalizedMessage());
                 }
@@ -50,7 +81,7 @@ public class JoinGameActivity extends AppCompatActivity {
             @Override
             public void done(Object o, Throwable t) {
                 if (t == null) {
-                    System.out.println(o);
+                    objectRetrievalSucceeded((List<ParseObject>) o);
                 } else {
                     System.out.println(t.getLocalizedMessage());
                 }
@@ -58,10 +89,24 @@ public class JoinGameActivity extends AppCompatActivity {
         });
     }
 
-    private void objectRetrievalSucceeded(List objects) {
-        gameList = objects;
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, Game.getGameNames(gameList));
+    private void objectRetrievalSucceeded(List<ParseObject> objects) {
+        gameList = Game.parseObjectsToGames(objects);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Game.getGameNames(gameList));
         this.mGameListView.setAdapter(arrayAdapter);
-        System.out.println("Ended");
+    }
+
+    class ParseLocationCallback implements LocationCallback {
+        @Override
+        public void done(ParseGeoPoint geoPoint, ParseException e){
+            if (e == null) {
+                loc = geoPoint;
+            } else if (geoPoint == null) {
+                loc = new ParseGeoPoint(37.422, -122.084);
+            } else {
+                e.printStackTrace();
+            }
+
+            attemptToRetrieveObjects();
+        }
     }
 }
