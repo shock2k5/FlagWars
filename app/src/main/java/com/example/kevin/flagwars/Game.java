@@ -86,7 +86,11 @@ public class Game {
         ArrayList<String> names = new ArrayList<>();
 
         for (ParseUser u : this.redTeam)
-            names.add(u.getEmail());
+            try {
+                names.add(u.fetchIfNeeded().getUsername());
+            } catch (ParseException e) {
+                Log.e("Parse Failure", "Something has gone terribly wrong with Parse", e);
+            }
 
         return names;
     }
