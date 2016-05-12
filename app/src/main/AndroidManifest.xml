@@ -39,18 +39,15 @@
             android:label="@string/title_activity_create_game"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".JoinGameActivity" />
-
-        <meta-data
+		<meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
-
         <activity
             android:name="com.facebook.FacebookActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name" />
-
-
+        <activity android:name=".Lobby"></activity>
     </application>
 
 </manifest>

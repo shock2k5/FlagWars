@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.LogInCallback;
 import com.parse.ParseException;
@@ -144,7 +145,7 @@ public class RegisterActivity extends AppCompatActivity {
         mProfilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Image coming soon");
+                Toast.makeText(getApplicationContext(), "Image coming soon", Toast.LENGTH_SHORT).show();
             }
         });
     }
