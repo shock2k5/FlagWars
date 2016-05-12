@@ -43,7 +43,6 @@ public class CreateGameActivity extends AppCompatActivity {
         createGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 selectedTeam = (RadioButton) findViewById(team.getCheckedRadioButtonId());
                 parseGame = new ParseObject("Game");
                 parseGame.put("name", gameName.getText().toString());

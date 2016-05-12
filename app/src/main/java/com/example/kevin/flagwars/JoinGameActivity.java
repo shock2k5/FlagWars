@@ -27,12 +27,11 @@ import java.util.List;
 
 public class JoinGameActivity extends AppCompatActivity {
 
-    ListView mGameListView;
-    EditText mEnterCodeTextView;
-    List<Game> gameList = null;
-    ProgressBar mLoadGamesProgressBar;
-
-    ParseGeoPoint loc;
+    protected ListView mGameListView;
+    protected EditText mEnterCodeTextView;
+    protected List<Game> gameList = null;
+    protected ProgressBar mLoadGamesProgressBar;
+    protected ParseGeoPoint loc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,10 +108,7 @@ public class JoinGameActivity extends AppCompatActivity {
         ArrayList<String> a = new ArrayList<>();
 
         for (Game g : gameList)
-            if (g.visibility) {
-                System.out.println(g.name);
-                a.add(g.name);
-            }
+            a.add(g.getName());
 
         return a;
     }
