@@ -3,13 +3,16 @@ package com.example.kevin.flagwars;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.KeyListener;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.Manifest;
+import android.widget.ProgressBar;
 
 import com.parse.FindCallback;
 import com.parse.LocationCallback;
@@ -27,6 +30,7 @@ public class JoinGameActivity extends AppCompatActivity {
     ListView mGameListView;
     EditText mEnterCodeTextView;
     List<Game> gameList = null;
+    ProgressBar mLoadGamesProgressBar;
 
     ParseGeoPoint loc;
 
@@ -37,6 +41,7 @@ public class JoinGameActivity extends AppCompatActivity {
 
         mGameListView = (ListView) findViewById(R.id.gameListView);
         mEnterCodeTextView = (EditText) findViewById(R.id.enterCodeTextView);
+        mLoadGamesProgressBar = (ProgressBar) findViewById(R.id.game_progress_bar);
 
         mEnterCodeTextView.setCursorVisible(false);
         mEnterCodeTextView.setKeyListener(null);
@@ -91,8 +96,25 @@ public class JoinGameActivity extends AppCompatActivity {
 
     private void objectRetrievalSucceeded(List<ParseObject> objects) {
         gameList = Game.parseObjectsToGames(objects);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Game.getGameNames(gameList));
+        List<String> gameNames = this.getGameNames();
+        ArrayAdapter<String> arrayAdapter;
+        if (gameNames.size() == 0)
+            gameNames.add("No games near you.");
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, gameNames);
         this.mGameListView.setAdapter(arrayAdapter);
+        mLoadGamesProgressBar.setVisibility(View.GONE);
+    }
+
+    private List<String> getGameNames() {
+        ArrayList<String> a = new ArrayList<>();
+
+        for (Game g : gameList)
+            if (g.visibility) {
+                System.out.println(g.name);
+                a.add(g.name);
+            }
+
+        return a;
     }
 
     class ParseLocationCallback implements LocationCallback {

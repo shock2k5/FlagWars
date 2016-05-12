@@ -23,6 +23,7 @@ public class Game {
     int timeLimit;
     ArrayList<String> playerNames;
     ArrayList<ParseGeoPoint> flagLocations;
+    String objectId = null;
 
     public Game(String name, String code, boolean visibility, ParseGeoPoint location,
                 int numPlayers, int timeLimit, ArrayList<String> playerNames,
@@ -38,7 +39,7 @@ public class Game {
     }
 
     public Game(String name, String code, boolean visibility, ParseGeoPoint location,
-                int numPlayers, int timeLimit, Object playerNames, Object flagLocations) {
+                int numPlayers, int timeLimit, Object playerNames, Object flagLocations, String objectId) {
         this.name = name;
         this.code = code;
         this.visibility = visibility;
@@ -47,15 +48,7 @@ public class Game {
         this.timeLimit = timeLimit;
         this.playerNames = (ArrayList<String>) playerNames;
         this.flagLocations = (ArrayList<ParseGeoPoint>) flagLocations;
-    }
-
-    public static List<String> getGameNames(List<Game> gameList) {
-        List<String> names = new ArrayList<>();
-
-        for (Game g : gameList)
-            names.add(g.name);
-
-        return names;
+        this.objectId = objectId;
     }
 
     public static ParseObject convertGameToParseObject(Game g) {
@@ -84,7 +77,7 @@ public class Game {
     private static Game objectRetrievalSuccessful(ParseObject o) {
         return new Game(o.getString("name"), o.getString("code"), o.getBoolean("visibility"),
                 o.getParseGeoPoint("location"), o.getInt("numPlayers"), o.getInt("timeLimit"),
-                o.get("playerNames"), o.get("flagLocations"));
+                o.get("playerNames"), o.get("flagLocations"), o.getObjectId());
     }
 
     public static List<Game> parseObjectsToGames(List<ParseObject> objects) {

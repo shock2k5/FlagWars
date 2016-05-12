@@ -25,5 +25,7 @@
     <string name="title_activity_create_game">CreateGameActivity</string>
     <string name="title_activity_join_game">JoinGameActivity</string>
     <string name="google_app_id">com.example.kevin.flagwars</string>
-
+    <string name="facebook_app_id">1048567448555778</string>
+    <string name="parse_app_id">iEVgiEIkebbBlikxwCSSEPZnepg0khNnUXbhoPwy</string>
+    <string name="parse_client_id">JIj1LA0LQQTHzq6vd8nB5FyTdKbCxcvfxfmF1qL1</string>
 </resources>
