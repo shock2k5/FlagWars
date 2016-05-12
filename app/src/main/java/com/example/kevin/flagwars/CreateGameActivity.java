@@ -32,15 +32,19 @@ public class CreateGameActivity extends AppCompatActivity {
         //Set variables to the appropriate editText, ,etc.
         gameName = (EditText) findViewById(R.id.game_name_edit);
         team = (RadioGroup) findViewById(R.id.create_game_team_group);
+
+        createGameButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedTeam = (RadioButton) findViewById(team.getCheckedRadioButtonId());
+                Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
+
+                intent.putExtra("gamename", gameName.getText().toString());
+                intent.putExtra("teamName", selectedTeam.getText().toString());
+                startActivity(intent);
+            }
+        });
     }
 
-    public void onClickCreateGame(View v){
-        Intent intent = new Intent(this, Lobby.class);
-        intent.putExtra("gamename", gameName.getText().toString());
-        intent.putExtra("teamName", selectedTeam.getText().toString());
-        selectedTeam = (RadioButton) findViewById(team.getCheckedRadioButtonId());
-        Toast.makeText(getApplicationContext(), selectedTeam.getText().toString(), Toast.LENGTH_SHORT).show();
-        startActivity(intent);
-    }
 
 }

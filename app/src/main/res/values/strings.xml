@@ -26,4 +26,8 @@
     <string name="title_activity_join_game">JoinGameActivity</string>
     <string name="google_app_id">com.example.kevin.flagwars</string>
 
+
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+
 </resources>

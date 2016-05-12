@@ -82,8 +82,7 @@
             android:id="@+id/create_game_start_game"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="START GAME"
-            android:onClick="onClickCreateGame" />
+            android:text="START GAME" />
 
     </LinearLayout>
 
