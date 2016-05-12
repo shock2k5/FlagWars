@@ -37,11 +37,11 @@ public class Lobby extends AppCompatActivity {
 
         //Put current player on the right team
         if(previousIntent.getStringExtra("teamName").equals("Red Team")){
-            //TODO Add current player to the Red Team
-            redTeam.add("Player");
+            //TODO Get the current players name from the database
+            redTeam.add("Current Player");
         } else if(previousIntent.getStringExtra("teamName").equals("Blue Team")){
-            //TODO Add current player to the Blue Team
-            blueTeam.add("Player");
+            //TODO Get the current players name from the database
+            blueTeam.add("Current Player");
         }
 
     }

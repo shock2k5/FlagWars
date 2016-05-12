@@ -107,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
         mFacebookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.print("Facebook coming soon");
+                Toast.makeText(getApplicationContext(), "Facebook coming soon", Toast.LENGTH_SHORT).show();
             }
         });
 
