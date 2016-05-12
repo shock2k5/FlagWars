@@ -14,8 +14,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
@@ -115,7 +117,31 @@ public class RegisterActivity extends AppCompatActivity {
         mFacebookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.print("Facebook coming soon");
+                setProgressBarIndeterminateVisibility(true);
+
+                ParseFacebookUtils.logInInBackground(AccessToken.getCurrentAccessToken(), new LogInCallback() {
+                    @Override
+                    public void done(ParseUser user, ParseException e) {
+                        setProgressBarIndeterminateVisibility(false);
+                        if (e == null) {
+                            // Success
+                            Intent i = new Intent(RegisterActivity.this,
+                                    (getIntent().getStringExtra("gameMode").equals("createGame")) ?
+                                            CreateGameActivity.class : JoinGameActivity.class);
+                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(i);
+                        } else {
+                            // Failure
+                            AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
+                            builder.setMessage(e.getMessage())
+                                    .setTitle("Login Error").setPositiveButton(android.R.string.ok, null);
+
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }
+                    }
+                });
             }
         });
 
