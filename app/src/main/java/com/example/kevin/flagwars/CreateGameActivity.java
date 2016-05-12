@@ -1,5 +1,6 @@
 package com.example.kevin.flagwars;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,9 +12,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 public class CreateGameActivity extends AppCompatActivity {
-    EditText email;
+    EditText gameName;
     RadioGroup team;
     RadioButton selectedTeam;
     Button createGameButton;
@@ -28,18 +30,17 @@ public class CreateGameActivity extends AppCompatActivity {
         createGameButton = (Button) findViewById(R.id.create_game_start_game);
 
         //Set variables to the appropriate editText, ,etc.
-        email = (EditText) findViewById(R.id.game_name_edit);
+        gameName = (EditText) findViewById(R.id.game_name_edit);
         team = (RadioGroup) findViewById(R.id.create_game_team_group);
     }
 
     public void onClickCreateGame(View v){
-        ShareCompat.IntentBuilder intentBuilder = ShareCompat.IntentBuilder.from(this);
-        intentBuilder.setSubject("gamename");
-        intentBuilder.setText(email.getText().toString());
-        intentBuilder.setSubject("team");
+        Intent intent = new Intent(this, Lobby.class);
+        intent.putExtra("gamename", gameName.getText().toString());
+        intent.putExtra("teamName", selectedTeam.getText().toString());
         selectedTeam = (RadioButton) findViewById(team.getCheckedRadioButtonId());
-        intentBuilder.setText(selectedTeam.getText().toString());
-        startActivity(intentBuilder.getIntent());
+        Toast.makeText(getApplicationContext(), selectedTeam.getText().toString(), Toast.LENGTH_SHORT).show();
+        startActivity(intent);
     }
 
 }
