@@ -64,6 +64,36 @@ public class RegisterActivity extends AppCompatActivity {
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 }
+
+                fireRef.createUser(email, password, new Firebase.ResultHandler() {
+                    @Override
+                    public void onSuccess() {
+                        fireRef.authWithPassword(email, password, new Firebase.AuthResultHandler() {
+                            @Override
+                            public void onAuthenticated(AuthData authData) {
+                                ImportantMethods.addNewUser(new User(email));
+                                String mode = getIntent().getStringExtra("gameMode");
+                                Intent intent;
+                                if(mode.equals("createGame")){
+                                    intent = new Intent(RegisterActivity.this, CreateGameActivity.class);
+                                } else{
+                                    intent = new Intent(RegisterActivity.this, JoinGameActivity.class);
+                                }
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onAuthenticationError(FirebaseError firebaseError) {
+                                Toast.makeText(getApplicationContext(), "Email / Password combination not valid", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(FirebaseError firebaseError) {
+
+                    }
+                });
             }
 
         });

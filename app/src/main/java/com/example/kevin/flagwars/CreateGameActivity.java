@@ -41,8 +41,6 @@ public class CreateGameActivity extends AppCompatActivity {
         });
 
         createGameButton = (Button) findViewById(R.id.create_game_start_game);
-
-        Toast.makeText(getApplicationContext(), ImportantMethods.getUserName(), Toast.LENGTH_SHORT).show();
         gameName = (EditText) findViewById(R.id.game_name_edit);
 
         createGameButton.setOnClickListener(new View.OnClickListener() {

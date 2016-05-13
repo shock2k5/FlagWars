@@ -29,7 +29,7 @@ public class ImportantMethods {
     }
 
     public static void addNewUser(User user){
-
+        
     }
 
     public static User getCurrentUser(){
@@ -69,6 +69,7 @@ public class ImportantMethods {
 
             }
         });
+        if(user == null) return "";
         return user.username;
     }
 
