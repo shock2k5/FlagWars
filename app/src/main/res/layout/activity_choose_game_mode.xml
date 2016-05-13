@@ -5,7 +5,81 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ChooseGameModeActivity">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.example.kevin.flagwars.ChooseGameModeActivity">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="FLAG WARS"
+            android:id="@+id/joinGameTextView"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/imageView"
+            android:background="@mipmap/ctf_main_bg"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:text="Join Game"
+            android:id="@+id/joinGameBT"
+            android:layout_alignTop="@+id/createGameBT"
+            android:layout_alignEnd="@+id/imageView"
+            android:textSize="15dp"
+            android:textColor="#fff"
+            android:background="#2c3e50"
+            android:layout_marginRight="16dp" />
+
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:text="Create Game"
+            android:id="@+id/createGameBT"
+            android:layout_marginBottom="30dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:textColor="#fff"
+            android:background="#2c3e50"
+            android:textSize="15dp"
+            android:layout_marginLeft="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="FLAG WARS"
+            android:id="@+id/textView"
+            android:textSize="50dp"
+            android:textStyle="bold"
+            android:textColor="#ffffff"
+            android:textAlignment="gravity"
+            android:layout_below="@+id/joinGameTextView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="37dp" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></FrameLayout>
+
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></RelativeLayout>
+
+    </RelativeLayout>
     <!-- The main content view -->
     <FrameLayout
         android:id="@+id/content_frame"
@@ -20,80 +94,10 @@
         android:choiceMode="singleChoice"
         android:divider="@android:color/transparent"
         android:dividerHeight="0dp"
-        android:background="#111"/>
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.example.kevin.flagwars.ChooseGameModeActivity">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="FLAG WARS"
-        android:id="@+id/joinGameTextView"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/imageView"
-        android:background="@mipmap/ctf_main_bg"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        android:text="Join Game"
-        android:id="@+id/joinGameBT"
-        android:layout_alignTop="@+id/createGameBT"
-        android:layout_alignEnd="@+id/imageView"
-        android:textSize="15dp"
-        android:textColor="#fff"
-        android:background="#2c3e50"
-        android:layout_marginRight="16dp" />
-
-    <Button
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        android:text="Create Game"
-        android:id="@+id/createGameBT"
-        android:layout_marginBottom="30dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:textColor="#fff"
-        android:background="#2c3e50"
-        android:textSize="15dp"
-        android:layout_marginLeft="16dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="FLAG WARS"
-        android:id="@+id/textView"
-        android:textSize="50dp"
-        android:textStyle="bold"
-        android:textColor="#ffffff"
-        android:textAlignment="gravity"
-        android:layout_below="@+id/joinGameTextView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="37dp" />
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"></FrameLayout>
+        android:background="#111"
+        android:descendantFocusability="blocksDescendants"
+        />
 
 
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"></RelativeLayout>
-
-</RelativeLayout>
 
 </android.support.v4.widget.DrawerLayout>

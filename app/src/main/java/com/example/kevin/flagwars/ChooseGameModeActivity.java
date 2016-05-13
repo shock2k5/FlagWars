@@ -1,6 +1,8 @@
 package com.example.kevin.flagwars;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -85,6 +87,8 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
+
+
         mDrawerToggle = new CustomActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout)         /* DrawerLayout object */
@@ -143,6 +147,22 @@ public class ChooseGameModeActivity extends AppCompatActivity {
      * Swaps fragments in the main content view
      */
     private void selectItem(int position) {
+
+        if (position == 2) {
+            
+        }
+
+        // Create a new fragment and specify the planet to show based on position
+        /*Fragment fragment = new PlanetFragment();
+        Bundle args = new Bundle();
+        args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
+        fragment.setArguments(args);
+
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .commit();*/
         Toast.makeText(this, R.string.app_name, Toast.LENGTH_SHORT).show();
 
         // Highlight the selected item, update the title, and close the drawer
@@ -161,6 +181,12 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) {
             selectItem(position);
+            //Toast.makeText(this, R.string.app_name, Toast.LENGTH_SHORT).show();
+
+            // Highlight the selected item, update the title, and close the drawer
+            //mDrawerList.setItemChecked(position, true);
+            //setTitle(mPlanetTitles[position]);
+            //mDrawerLayout.closeDrawer(mDrawerList);
         }
     }
 
