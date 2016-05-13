@@ -70,6 +70,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                 } else {
                     // Current user is logged in
                     Intent i = new Intent(ChooseGameModeActivity.this, JoinGameActivity.class);
+
                     startActivity(i);
                 }
             }

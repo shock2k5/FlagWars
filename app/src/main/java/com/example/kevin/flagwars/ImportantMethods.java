@@ -28,7 +28,7 @@ public class ImportantMethods {
     }
 
     public static void addNewUser(User user){
-
+        
     }
 
     public static String getUserName(){
@@ -45,6 +45,7 @@ public class ImportantMethods {
 
             }
         });
+        if(user == null) return "";
         return user.username;
     }
 

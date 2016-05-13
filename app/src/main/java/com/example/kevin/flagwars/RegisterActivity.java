@@ -71,6 +71,7 @@ public class RegisterActivity extends AppCompatActivity {
                         fireRef.authWithPassword(email, password, new Firebase.AuthResultHandler() {
                             @Override
                             public void onAuthenticated(AuthData authData) {
+                                ImportantMethods.addNewUser(new User(email));
                                 String mode = getIntent().getStringExtra("gameMode");
                                 Intent intent;
                                 if(mode.equals("createGame")){
