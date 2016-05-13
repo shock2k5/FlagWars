@@ -12,11 +12,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
-import com.parse.LogInCallback;
-import com.parse.ParseException;
-import com.parse.ParseFacebookUtils;
-import com.parse.ParseUser;
-import com.parse.SignUpCallback;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,40 +77,6 @@ public class RegisterActivity extends AppCompatActivity {
                 } else {
                     setProgressBarIndeterminateVisibility(true);
 
-                    ParseUser u = new ParseUser();
-                    u.setEmail(email);
-                    u.setPassword(password);
-                    u.setUsername(email);
-
-                    u.signUpInBackground(new SignUpCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            setProgressBarIndeterminateVisibility(false);
-                            if (e == null) {
-                                // Success
-                                Intent i;
-                                Intent previousIntent = getIntent();
-                                if (previousIntent.getStringExtra("gameMode").equals("createGame")){
-                                    i = new Intent(RegisterActivity.this, CreateGameActivity.class);
-                                } else if (previousIntent.getStringExtra("gameMode").equals("joinGame")) {
-                                    i = new Intent(RegisterActivity.this, JoinGameActivity.class);
-                                } else {
-                                    i = new Intent(RegisterActivity.this, ChooseGameModeActivity.class);
-                                }
-                                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(i);
-                            } else {
-                                // Failure
-                                AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
-                                builder.setMessage(e.getMessage())
-                                        .setTitle("Login Error").setPositiveButton(android.R.string.ok, null);
-
-                                AlertDialog dialog = builder.create();
-                                dialog.show();
-                            }
-                        }
-                    });
                 }
             }
         });
@@ -126,34 +87,6 @@ public class RegisterActivity extends AppCompatActivity {
                 Collection<String> permissions = new ArrayList<>();
                 permissions.add("public_profile");
                 permissions.add("email");
-                ParseFacebookUtils.logInWithReadPermissionsInBackground(RegisterActivity.this, permissions, new LogInCallback() {
-                    @Override
-                    public void done(ParseUser user, ParseException e) {
-                        if (e == null) {
-                            // Success
-                            Intent i;
-                            Intent previousIntent = getIntent();
-                            if (previousIntent.getStringExtra("gameMode").equals("createGame")){
-                                i = new Intent(RegisterActivity.this, CreateGameActivity.class);
-                            } else if (previousIntent.getStringExtra("gameMode").equals("joinGame")) {
-                                i = new Intent(RegisterActivity.this, JoinGameActivity.class);
-                            } else {
-                                i = new Intent(RegisterActivity.this, ChooseGameModeActivity.class);
-                            }
-                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(i);
-                        } else {
-                            // Failure
-                            AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
-                            builder.setMessage(e.getMessage())
-                                    .setTitle("Login Error").setPositiveButton(android.R.string.ok, null);
-
-                            AlertDialog dialog = builder.create();
-                            dialog.show();
-                        }
-                    }
-                });
             }
         });
 
@@ -168,7 +101,6 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
     }
 
     private boolean isEmailValid(String email) {

@@ -32,6 +32,7 @@ public class Lobby extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
 
+        Firebase.setAndroidContext(this.getApplicationContext());
         Firebase ref = new Firebase("https://flagwar.firebaseio.com/");
         final Intent previous = getIntent();
 
@@ -45,7 +46,6 @@ public class Lobby extends AppCompatActivity {
         redAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
         blueAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());
 
-        gameName.setText(game.getName());
         redRoster.setAdapter(redAdapter);
         blueRoster.setAdapter(blueAdapter);
 
@@ -108,6 +108,7 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
+        gameName.setText(game.getName());
     }
 
     public void updateTeamLists(){

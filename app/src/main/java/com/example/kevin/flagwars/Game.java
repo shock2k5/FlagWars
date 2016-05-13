@@ -11,7 +11,7 @@ public class Game {
     /**
      *  public is true private is false
      */
-    private String name, uid = null; // TODO update uid somehow
+    private String name;
     private int numPlayers;
     private ArrayList<User> redTeam, blueTeam;
     private Location redFlag, blueFlag;
@@ -42,7 +42,7 @@ public class Game {
         return this.blueTeam;
     }
 
-    public String getUid() { return this.uid; }
+    public String getUid() { return this.name; }
 
     public Location getRedFlagLocation() {
         return this.redFlag;
