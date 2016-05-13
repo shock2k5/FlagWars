@@ -68,7 +68,8 @@ public class Lobby extends AppCompatActivity {
 
         btnStartGameTeam.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {startActivity(new Intent(this, Game.class));
+            public void onClick(View v) {
+                //startActivity(new Intent(this, Game.class));
             }
         });
 
