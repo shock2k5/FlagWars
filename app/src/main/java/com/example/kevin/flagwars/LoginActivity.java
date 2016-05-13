@@ -86,9 +86,15 @@ public class LoginActivity extends AppCompatActivity {
                             setProgressBarIndeterminateVisibility(false);
                             if (e == null) {
                                 // Success
-                                Intent i = new Intent(LoginActivity.this,
-                                        (getIntent().getStringExtra("gameMode").equals("createGame")) ?
-                                                CreateGameActivity.class : JoinGameActivity.class);
+                                Intent i;
+                                Intent previousIntent = getIntent();
+                                if (previousIntent.getStringExtra("gameMode").equals("createGame")){
+                                    i = new Intent(LoginActivity.this, CreateGameActivity.class);
+                                } else if (previousIntent.getStringExtra("gameMode").equals("joinGame")) {
+                                    i = new Intent(LoginActivity.this, JoinGameActivity.class);
+                                } else {
+                                    i = new Intent(LoginActivity.this, ChooseGameModeActivity.class);
+                                }
                                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(i);

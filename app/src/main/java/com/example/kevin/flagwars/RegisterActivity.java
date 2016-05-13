@@ -91,9 +91,15 @@ public class RegisterActivity extends AppCompatActivity {
                             setProgressBarIndeterminateVisibility(false);
                             if (e == null) {
                                 // Success
-                                Intent i = new Intent(RegisterActivity.this,
-                                        (getIntent().getStringExtra("gameMode").equals("createGame")) ?
-                                                CreateGameActivity.class : JoinGameActivity.class);
+                                Intent i;
+                                Intent previousIntent = getIntent();
+                                if (previousIntent.getStringExtra("gameMode").equals("createGame")){
+                                    i = new Intent(RegisterActivity.this, CreateGameActivity.class);
+                                } else if (previousIntent.getStringExtra("gameMode").equals("joinGame")) {
+                                    i = new Intent(RegisterActivity.this, JoinGameActivity.class);
+                                } else {
+                                    i = new Intent(RegisterActivity.this, ChooseGameModeActivity.class);
+                                }
                                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(i);
@@ -123,9 +129,15 @@ public class RegisterActivity extends AppCompatActivity {
                     public void done(ParseUser user, ParseException e) {
                         if (e == null) {
                             // Success
-                            Intent i = new Intent(RegisterActivity.this,
-                                    (getIntent().getStringExtra("gameMode").equals("createGame")) ?
-                                            CreateGameActivity.class : JoinGameActivity.class);
+                            Intent i;
+                            Intent previousIntent = getIntent();
+                            if (previousIntent.getStringExtra("gameMode").equals("createGame")){
+                                i = new Intent(RegisterActivity.this, CreateGameActivity.class);
+                            } else if (previousIntent.getStringExtra("gameMode").equals("joinGame")) {
+                                i = new Intent(RegisterActivity.this, JoinGameActivity.class);
+                            } else {
+                                i = new Intent(RegisterActivity.this, ChooseGameModeActivity.class);
+                            }
                             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(i);

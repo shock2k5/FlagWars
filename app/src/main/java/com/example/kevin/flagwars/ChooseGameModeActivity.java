@@ -32,7 +32,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
     protected Button mCreateGameButton, mJoinGameButton;
     protected ParseUser currentUser;
 
-    private String[] mPlanetTitles;
+    private String[] mDrawerItems;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private CharSequence mTitle;
@@ -83,13 +83,20 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         });
         mTitle = "test";
 
-        mPlanetTitles = getResources().getStringArray(R.array.drawer_list);
+
+        if (currentUser == null) {
+            mDrawerItems = new String[]{"Log In", "Settings", "Rules"};
+        } else {
+            mDrawerItems = new String[]{currentUser.getUsername(), "Settings", "Rules", "Log Out"};
+        }
+
+        //mDrawerItems = getResources().getStringArray(R.array.drawer_list);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set the adapter for the list view
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mPlanetTitles));
+                R.layout.drawer_list_item, mDrawerItems));
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
@@ -154,7 +161,22 @@ public class ChooseGameModeActivity extends AppCompatActivity {
      */
     private void selectItem(int position) {
 
-        if (position == 2) {
+        currentUser = ParseUser.getCurrentUser();
+
+        if (position == 0) {
+            if (currentUser == null) {
+                Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
+                i.putExtra("gameMode", "fromNavDrawer");
+                startActivity(i);
+            } else {
+                //profile page
+            }
+
+        } else if (position == 1) {
+            //settings page
+        } else if (position == 2) {
+            //rules page
+        } else if (position == 3) {
            new AlertDialog.Builder(context)
                     .setTitle("Log Out")
                     .setMessage("Are you sure you want to log out?")
