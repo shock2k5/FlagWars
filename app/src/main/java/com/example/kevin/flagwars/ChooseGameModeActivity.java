@@ -2,8 +2,6 @@ package com.example.kevin.flagwars;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,17 +16,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.firebase.client.AuthData;
-import com.firebase.client.ChildEventListener;
-import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
-import java.util.HashMap;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 public class ChooseGameModeActivity extends AppCompatActivity {
 
@@ -57,19 +46,16 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         mCreateGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
-                if (fireRef.getAuth() == null) {
-                    // Don't have current user
-                    Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
-                    i.putExtra("gameMode", "createGame");
-                    startActivity(i);
-                } else {
-                    // Current user is logged in
-                    Intent i = new Intent(ChooseGameModeActivity.this, CreateGameActivity.class);
-                    startActivity(i);
-                }
-
+            if (fireRef.getAuth() == null) {
+                // Don't have current user
+                Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
+                i.putExtra("gameMode", "createGame");
+                startActivity(i);
+            } else {
+                // Current user is logged in
+                Intent i = new Intent(ChooseGameModeActivity.this, CreateGameActivity.class);
+                startActivity(i);
+            }
             }
         });
 

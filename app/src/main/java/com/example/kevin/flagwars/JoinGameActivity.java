@@ -49,6 +49,7 @@ public class JoinGameActivity extends AppCompatActivity {
         mEnterCodeTextView.setCursorVisible(false);
         mEnterCodeTextView.setKeyListener(null);
 
+        Firebase.setAndroidContext(this.getApplicationContext());
         Firebase ref = new Firebase("https://flagwar.firebaseio.com/");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -74,14 +75,7 @@ public class JoinGameActivity extends AppCompatActivity {
         this.mGameListView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, gameNames));
         mLoadGamesProgressBar.setVisibility(View.GONE);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // ask for permission
-            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
-        } else {
-            // has permission
-            // TODO update location
-            loc = null;
-        }
+        loc = ImportantMethods.getCurrentLocation(this);
 
         mGameListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

@@ -13,12 +13,15 @@ import android.widget.Toast;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
+<<<<<<< HEAD
 import com.firebase.client.FirebaseError;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
+=======
+>>>>>>> origin/master
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -84,6 +87,7 @@ public class RegisterActivity extends AppCompatActivity {
                             @Override
                             public void onAuthenticationError(FirebaseError firebaseError) {
 
+<<<<<<< HEAD
                             }
                         });
                     }
@@ -93,6 +97,23 @@ public class RegisterActivity extends AppCompatActivity {
 
                     }
                 });
+=======
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                } else {
+                    setProgressBarIndeterminateVisibility(true);
+
+                }
+            }
+        });
+
+        mFacebookButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Collection<String> permissions = new ArrayList<>();
+                permissions.add("public_profile");
+                permissions.add("email");
+>>>>>>> origin/master
             }
         });
     }
@@ -100,7 +121,6 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
     }
 
     private boolean isEmailValid(String email) {

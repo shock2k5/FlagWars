@@ -1,12 +1,5 @@
 package com.example.kevin.flagwars;
 
-import android.util.Log;
-
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
-
 /**
  * Created by Adi on 5/13/16.
  */
