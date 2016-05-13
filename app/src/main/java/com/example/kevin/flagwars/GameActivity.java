@@ -9,10 +9,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.LocationCallback;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 
 public class GameActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private ParseGeoPoint loc;
+    private Game game;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,25 +27,40 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        game = Game.getObjectFromParse(getIntent().getStringExtra("gameObjectId"));
     }
 
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        ParseGeoPoint.getCurrentLocationInBackground(100, new LocationCallback() {
+            @Override
+            public void done(ParseGeoPoint geoPoint, ParseException e){
+                if (e == null)
+                    loc = geoPoint;
+                else if (geoPoint == null)
+                    loc = new ParseGeoPoint(37.422, -122.084);
+                else
+                    e.printStackTrace();
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                LatLng currentLocation = parseGeoPointToLatLng(loc);
+                mMap.addMarker(new MarkerOptions().position(currentLocation).title("Current Location"));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
+            }
+        });
+        mMap.addMarker(new MarkerOptions()
+                .position(parseGeoPointToLatLng(game.getRedFlagLocation()))
+                .title("Red Flag")
+                .draggable(false)
+                .flat(true));
+        mMap.addMarker(new MarkerOptions()
+                .position(parseGeoPointToLatLng(game.getBlueFlagLocation()))
+                .title("Blue Flag")
+                .draggable(false)
+                .flat(true));
+    }
+
+    private LatLng parseGeoPointToLatLng(ParseGeoPoint parseGeoPoint) {
+        return new LatLng(parseGeoPoint.getLatitude(), parseGeoPoint.getLongitude());
     }
 }

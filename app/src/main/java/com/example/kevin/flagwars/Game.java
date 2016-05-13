@@ -64,7 +64,7 @@ public class Game {
             this.anchorLocation = getLocation();
     }
 
-    public void setBlueFlagLocations(ParseGeoPoint loc) {
+    public void setBlueFlagLocation(ParseGeoPoint loc) {
         this.flagLocations.add(1, loc);
         if (this.anchorLocation == null)
             this.anchorLocation = getLocation();
@@ -75,7 +75,7 @@ public class Game {
     }
 
     public ParseGeoPoint getBlueFlagLocation() {
-        return (this.flagLocations.size() > 0) ? this.flagLocations.get(1) : null;
+        return (this.flagLocations.size() == 2) ? this.flagLocations.get(1) : null;
     }
 
     public ParseGeoPoint getLocation() {
