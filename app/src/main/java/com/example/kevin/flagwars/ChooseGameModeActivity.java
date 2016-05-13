@@ -20,23 +20,26 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.parse.GetCallback;
-import com.parse.LogInCallback;
-import com.parse.Parse;
-import com.parse.ParseException;
-import com.parse.ParseSession;
-import com.parse.ParseUser;
+import com.firebase.client.AuthData;
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+import java.util.HashMap;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class ChooseGameModeActivity extends AppCompatActivity {
 
     protected Button mCreateGameButton, mJoinGameButton;
-    protected ParseUser currentUser;
 
     private String[] mDrawerItems;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private CharSequence mTitle;
     private ActionBarDrawerToggle mDrawerToggle;
+    private Firebase fireRef;
 
     final Context context = this;
 
@@ -44,16 +47,19 @@ public class ChooseGameModeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Firebase.setAndroidContext(this.getApplicationContext());
         setContentView(R.layout.activity_choose_game_mode);
+        fireRef = new Firebase("https://flagwar.firebaseio.com/");
 
         mCreateGameButton = (Button) findViewById(R.id.createGameBT);
         mJoinGameButton = (Button) findViewById(R.id.joinGameBT);
 
-        currentUser = ParseUser.getCurrentUser();
         mCreateGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentUser == null) {
+
+
+                if (fireRef.getAuth() == null) {
                     // Don't have current user
                     Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
                     i.putExtra("gameMode", "createGame");
@@ -63,13 +69,14 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                     Intent i = new Intent(ChooseGameModeActivity.this, CreateGameActivity.class);
                     startActivity(i);
                 }
+
             }
         });
 
         mJoinGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentUser == null) {
+                if (fireRef.getAuth() == null) {
                     // Don't have current user
                     Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
                     i.putExtra("gameMode", "joinGame");
@@ -84,10 +91,10 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         mTitle = "test";
 
 
-        if (currentUser == null) {
+        if (fireRef.getAuth() == null) {
             mDrawerItems = new String[]{"Log In", "Settings", "Rules"};
         } else {
-            mDrawerItems = new String[]{currentUser.getUsername(), "Settings", "Rules", "Log Out"};
+            mDrawerItems = new String[]{ImportantMethods.getUserName(), "Settings", "Rules", "Log Out"};
         }
 
         //mDrawerItems = getResources().getStringArray(R.array.drawer_list);
@@ -161,10 +168,8 @@ public class ChooseGameModeActivity extends AppCompatActivity {
      */
     private void selectItem(int position) {
 
-        currentUser = ParseUser.getCurrentUser();
-
         if (position == 0) {
-            if (currentUser == null) {
+            if (fireRef.getAuth() == null) {
                 Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
                 i.putExtra("gameMode", "fromNavDrawer");
                 startActivity(i);
@@ -182,7 +187,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                     .setMessage("Are you sure you want to log out?")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            ParseUser.logOut();
+                            fireRef.unauth();
                             Intent i = new Intent(ChooseGameModeActivity.this, ChooseGameModeActivity.class);
                             startActivity(i);
                         }
