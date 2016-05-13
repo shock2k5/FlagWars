@@ -49,10 +49,7 @@ public class CreateGameActivity extends AppCompatActivity {
         createGameButton = (Button) findViewById(R.id.create_game_start_game);
         user = ImportantMethods.getCurrentUser();
 
-<<<<<<< HEAD
-=======
         Toast.makeText(getApplicationContext(), user.getUsername(), Toast.LENGTH_SHORT).show();
->>>>>>> origin/master
         //Set variables to the appropriate editText, ,etc.
         gameName = (EditText) findViewById(R.id.game_name_edit);
 
@@ -65,8 +62,6 @@ public class CreateGameActivity extends AppCompatActivity {
                 game = new Game(name, numPlayers);
                 location = ImportantMethods.getCurrentLocation(CreateGameActivity.this);
                 game.setRedFlagLocation(location);
-
-<<<<<<< HEAD
 
 =======
                 ref.child("Game").child(game.getName()).setValue(game);

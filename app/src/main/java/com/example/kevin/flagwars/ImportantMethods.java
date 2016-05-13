@@ -23,9 +23,6 @@ public class ImportantMethods {
     private static Firebase ref;
     private static User user;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     public Firebase getFireBase(){
         return new Firebase("https://flagwar.firebaseio.com/");
     }
