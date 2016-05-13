@@ -19,9 +19,11 @@ import android.widget.ListView;
 
 import com.firebase.client.Firebase;
 
+
 public class ChooseGameModeActivity extends AppCompatActivity {
 
     protected Button mCreateGameButton, mJoinGameButton;
+    protected User currentUser;
 
     private String[] mDrawerItems;
     private DrawerLayout mDrawerLayout;
@@ -36,6 +38,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_choose_game_mode);
         Firebase.setAndroidContext(this.getApplicationContext());
         setContentView(R.layout.activity_choose_game_mode);
         fireRef = new Firebase("https://flagwar.firebaseio.com/");
@@ -43,19 +46,20 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         mCreateGameButton = (Button) findViewById(R.id.createGameBT);
         mJoinGameButton = (Button) findViewById(R.id.joinGameBT);
 
+        currentUser = ImportantMethods.getCurrentUser();
         mCreateGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            if (fireRef.getAuth() == null) {
-                // Don't have current user
-                Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
-                i.putExtra("gameMode", "createGame");
-                startActivity(i);
-            } else {
-                // Current user is logged in
-                Intent i = new Intent(ChooseGameModeActivity.this, CreateGameActivity.class);
-                startActivity(i);
-            }
+                if (fireRef.getAuth() == null) {
+                    // Don't have current user
+                    Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
+                    i.putExtra("gameMode", "joinGame");
+                    startActivity(i);
+                } else {
+                    // Current user is logged in
+                    Intent i = new Intent(ChooseGameModeActivity.this, CreateGameActivity.class);
+                    startActivity(i);
+                }
             }
         });
 
@@ -77,10 +81,10 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         mTitle = "test";
 
 
-        if (fireRef.getAuth() == null) {
+        if (currentUser == null) {
             mDrawerItems = new String[]{"Log In", "Settings", "Rules"};
         } else {
-            mDrawerItems = new String[]{ImportantMethods.getUserName(), "Settings", "Rules", "Log Out"};
+            mDrawerItems = new String[]{currentUser.getUsername(), "Settings", "Rules", "Log Out"};
         }
 
         //mDrawerItems = getResources().getStringArray(R.array.drawer_list);
@@ -98,7 +102,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         mDrawerToggle = new CustomActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout)         /* DrawerLayout object */
-                 {
+        {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
@@ -153,56 +157,42 @@ public class ChooseGameModeActivity extends AppCompatActivity {
      * Swaps fragments in the main content view
      */
     private void selectItem(int position) {
-
         if (position == 0) {
-            if (fireRef.getAuth() == null) {
+            if (currentUser == null) {
                 Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
                 i.putExtra("gameMode", "fromNavDrawer");
                 startActivity(i);
             } else {
                 //profile page
             }
-
         } else if (position == 1) {
             //settings page
         } else if (position == 2) {
             //rules page
         } else if (position == 3) {
-           new AlertDialog.Builder(context)
-                    .setTitle("Log Out")
-                    .setMessage("Are you sure you want to log out?")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            fireRef.unauth();
-                            Intent i = new Intent(ChooseGameModeActivity.this, ChooseGameModeActivity.class);
-                            startActivity(i);
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            mDrawerLayout.closeDrawer(mDrawerList);
-                        }
-                    })
-                    .show();
-
+            if (currentUser == null) {
+                new AlertDialog.Builder(context)
+                        .setTitle("Log Out")
+                        .setMessage("Are you sure you want to log out?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                fireRef.unauth();
+                                Intent i = new Intent(ChooseGameModeActivity.this, ChooseGameModeActivity.class);
+                                startActivity(i);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                mDrawerLayout.closeDrawer(mDrawerList);
+                            }
+                        })
+                        .show();
+            } else {
+                Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
+                startActivity(i);
+            }
         }
 
-        // Create a new fragment and specify the planet to show based on position
-        /*Fragment fragment = new PlanetFragment();
-        Bundle args = new Bundle();
-        args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
-        fragment.setArguments(args);
-
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .commit();*/
-        //Toast.makeText(this, R.string.app_name, Toast.LENGTH_SHORT).show();
-
-        // Highlight the selected item, update the title, and close the drawer
-        //mDrawerList.setItemChecked(position, true);
-        //setTitle(mPlanetTitles[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
     }
 

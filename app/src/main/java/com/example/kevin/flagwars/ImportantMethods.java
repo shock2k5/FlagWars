@@ -6,24 +6,25 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
+import com.firebase.client.AuthData;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
-import com.google.android.gms.location.LocationServices;
 
 /**
  * Created by E&D on 5/13/2016.
  */
 public class ImportantMethods {
-    private static Firebase fireRef;
+    private static Firebase fireRef = ImportantMethods.getFireBase();
     private static User user;
 
-    public Firebase getFireBase(){
+    public static Firebase getFireBase(){
         return new Firebase("https://flagwar.firebaseio.com/");
     }
 
@@ -31,7 +32,30 @@ public class ImportantMethods {
 
     }
 
+    public static User getCurrentUser(){
+        AuthData authUser = fireRef.getAuth();
+        String uid = null;
+        if (authUser == null) {
+            return null;
+        } else {
+            uid = authUser.getUid();
+        }
+        fireRef.child("User/" + uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(User.class);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                user = null;
+            }
+        });
+        return user;
+    }
+
     public static String getUserName(){
+        Firebase fireRef = ImportantMethods.getFireBase();
         fireRef = new Firebase("https://flagwar.firebaseio.com/");
         String uid = fireRef.getAuth().getUid();
         fireRef.child("User/" + uid).addValueEventListener(new ValueEventListener() {

@@ -4,21 +4,15 @@ package com.example.kevin.flagwars;
  * Created by Adi on 5/13/16.
  */
 public class User {
-    protected String email, password, username;
+    protected String username, uid = null;
 
-    public User() {
-        email = null;
-        password = null;
-        username = "null";
-    }
+    public User() { username = "null"; }
 
     public User(String name){
         username = name;
     }
 
-    public String getEmail() { return this.email; }
-
-    public String getPassword() { return this.password; }
-
     public String getUsername() { return this.username; }
+
+    public String getUid() { return this.uid; }
 }

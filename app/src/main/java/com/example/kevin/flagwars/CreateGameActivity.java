@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class CreateGameActivity extends AppCompatActivity {
     protected EditText gameName; // radio0 is Red, radio1 is Blue
     protected Button createGameButton;
-    protected User user;
+    protected Location location;
     protected Game game;
 
     @Override
@@ -43,7 +43,6 @@ public class CreateGameActivity extends AppCompatActivity {
         createGameButton = (Button) findViewById(R.id.create_game_start_game);
 
         Toast.makeText(getApplicationContext(), ImportantMethods.getUserName(), Toast.LENGTH_SHORT).show();
-        //Set variables to the appropriate editText, ,etc.
         gameName = (EditText) findViewById(R.id.game_name_edit);
 
         createGameButton.setOnClickListener(new View.OnClickListener() {
@@ -53,10 +52,14 @@ public class CreateGameActivity extends AppCompatActivity {
                 int numPlayers = 4;
 
                 game = new Game(name, numPlayers);
-                //Set Red Flag Location
+                location = ImportantMethods.getCurrentLocation(CreateGameActivity.this);
+                game.setRedFlagLocation(location);
 
                 ref.child("Game").child(game.getName()).setValue(game);
 
+                Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
+                intent.putExtra("gameUid", game.getUid());
+                startActivity(intent);
             }
         });
     }

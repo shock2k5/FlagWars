@@ -45,9 +45,9 @@ public class LoginActivity extends AppCompatActivity {
         mRegisterTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
-                i.putExtra("gameMode", gameMode);
-                startActivity(i);
+            Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
+            i.putExtra("gameMode", gameMode);
+            startActivity(i);
             }
         });
 
