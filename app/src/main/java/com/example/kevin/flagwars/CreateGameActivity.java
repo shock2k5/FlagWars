@@ -42,7 +42,6 @@ public class CreateGameActivity extends AppCompatActivity {
 
         createGameButton = (Button) findViewById(R.id.create_game_start_game);
 
-        Toast.makeText(getApplicationContext(), ImportantMethods.getUserName(), Toast.LENGTH_SHORT).show();
         //Set variables to the appropriate editText, ,etc.
         gameName = (EditText) findViewById(R.id.game_name_edit);
 
