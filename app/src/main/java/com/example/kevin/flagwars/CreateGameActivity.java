@@ -50,6 +50,7 @@ public class CreateGameActivity extends AppCompatActivity {
                 ArrayList<ParseGeoPoint> flagLocations = new ArrayList<>(2);
                 ArrayList<ParseUser> redTeamNames = new ArrayList<ParseUser>(numPlayers/2);
                 ArrayList<ParseUser> blueTeamNames = new ArrayList<ParseUser>(numPlayers/2);
+
                 game = new Game(name, numPlayers, flagLocations, redTeamNames, blueTeamNames);
                 if (selectedTeam.getText().toString().equals("Red Team"))
                     game.addToRedTeam(parseUser);

@@ -112,6 +112,14 @@ public class Game {
         return this.blueTeam.add(user);
     }
 
+    public boolean removeFromRedTeam(ParseUser user) {
+        return this.redTeam.remove(user);
+    }
+
+    public boolean removeFromBlueTeam(ParseUser user) {
+        return this.blueTeam.remove(user);
+    }
+
     public ParseObject toParseObject() {
         if (this.object != null) {
             return this.object;
@@ -122,7 +130,9 @@ public class Game {
             p.put("flagLocations", this.flagLocations);
             p.put("redTeamNames", this.redTeam);
             p.put("blueTeamNames", this.blueTeam);
-            p.put("anchorLocation", this.anchorLocation);
+            if (anchorLocation != null){
+                p.put("anchorLocation", this.anchorLocation);
+            }
             this.object = p;
             this.saveInParse();
             return p;
@@ -130,7 +140,12 @@ public class Game {
     }
 
     public void saveInParse() {
-        ParseObject o = (this.object == null) ? this.toParseObject() : this.object;
+        ParseObject o;
+        if (this.object == null){
+            o = this.toParseObject();
+        } else{
+            o = this.object;
+        }
         try {
             o.save();
             this.objectId = o.getObjectId();
