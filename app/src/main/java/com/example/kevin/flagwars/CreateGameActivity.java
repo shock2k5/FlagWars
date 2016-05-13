@@ -23,9 +23,8 @@ import java.util.ArrayList;
 public class CreateGameActivity extends AppCompatActivity {
     protected EditText gameName; // radio0 is Red, radio1 is Blue
     protected Button createGameButton;
-    protected ParseUser parseUser;
     protected Game game;
-    private ParseGeoPoint location;
+    ParseGeoPoint location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +46,8 @@ public class CreateGameActivity extends AppCompatActivity {
         });
 
         createGameButton = (Button) findViewById(R.id.create_game_start_game);
-        parseUser = ParseUser.getCurrentUser();
 
-        Toast.makeText(getApplicationContext(), parseUser.getUsername(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), ImportantMethods.getUserName(), Toast.LENGTH_SHORT).show();
         //Set variables to the appropriate editText, ,etc.
         gameName = (EditText) findViewById(R.id.game_name_edit);
 
@@ -74,11 +72,10 @@ public class CreateGameActivity extends AppCompatActivity {
                         else
                             e.printStackTrace();
 
-                        game.setRedFlagLocation(location);
-                        game.saveInParse();
+                        //game.setRedFlagLocation(location);
 
                         Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
-                        intent.putExtra("gameObjectId", game.getObjectId());
+                        intent.putExtra("gameID", gameName.getText().toString());
                         startActivity(intent);
                     }
                 });
