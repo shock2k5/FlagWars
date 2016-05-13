@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
@@ -26,6 +27,7 @@ public class RegisterActivity extends AppCompatActivity {
     protected EditText mEmailEditText, mPasswordEditText, mConfirmEditText;
     protected TextView mLoginTextView;
     protected ImageView mProfilePicture;
+    Firebase ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
