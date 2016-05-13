@@ -29,7 +29,7 @@ public class ImportantMethods {
     }
 
     public static void addNewUser(User user){
-        
+
     }
 
     public static User getCurrentUser(){
