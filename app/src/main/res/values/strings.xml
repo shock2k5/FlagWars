@@ -30,6 +30,7 @@
     <string name="parse_client_id">JIj1LA0LQQTHzq6vd8nB5FyTdKbCxcvfxfmF1qL1</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
+    <string name="title_activity_game">Map</string>
 
->>>>>>> origin/master
+    >>>>>>> origin/master
 </resources>

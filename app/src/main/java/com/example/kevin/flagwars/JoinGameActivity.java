@@ -1,16 +1,20 @@
 package com.example.kevin.flagwars;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.Manifest;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.LocationCallback;
@@ -18,13 +22,14 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JoinGameActivity extends AppCompatActivity {
 
-    protected ListView mGameListView;
+    protected AdapterView mGameListView;
     protected EditText mEnterCodeTextView;
     protected List<Game> gameList = null;
     protected ProgressBar mLoadGamesProgressBar;
@@ -35,7 +40,7 @@ public class JoinGameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_game);
 
-        mGameListView = (ListView) findViewById(R.id.gameListView);
+        mGameListView = (AdapterView) findViewById(R.id.gameListView);
         mEnterCodeTextView = (EditText) findViewById(R.id.enterCodeTextView);
         mLoadGamesProgressBar = (ProgressBar) findViewById(R.id.game_progress_bar);
 
@@ -47,7 +52,28 @@ public class JoinGameActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         else
             // has permission
-            ParseGeoPoint.getCurrentLocationInBackground(1000, new ParseLocationCallback());
+            ParseGeoPoint.getCurrentLocationInBackground(100, new ParseLocationCallback());
+
+        mGameListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final Game game = gameList.get(position);
+                new AlertDialog.Builder(JoinGameActivity.this)
+                        .setTitle("Join game")
+                        .setMessage("Are you sure you want to join " + game.getName() + "?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                System.out.println("Move to Lobby " + game.getObjectId());
+                                Intent intent = new Intent(JoinGameActivity.this, Lobby.class);
+                                intent.putExtra("gameObjectId", game.getObjectId());
+                                startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
+            }
+        });
     }
 
     @Override
@@ -59,7 +85,7 @@ public class JoinGameActivity extends AppCompatActivity {
                         Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                     ParseGeoPoint.getCurrentLocationInBackground(100, new ParseLocationCallback());
             } else {
-                System.out.println("Denied permission");
+                Toast.makeText(this.getApplicationContext(), "Permission needs to be granted for this application", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -91,8 +117,10 @@ public class JoinGameActivity extends AppCompatActivity {
         gameList = Game.getGameListFromParse(objects);
         List<String> gameNames = this.getGameNames();
         ArrayAdapter<String> arrayAdapter;
-        if (gameNames.size() == 0)
+        if (gameNames.size() == 0) {
             gameNames.add("No games near you.");
+            this.mGameListView.setClickable(false);
+        }
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, gameNames);
         this.mGameListView.setAdapter(arrayAdapter);
         mLoadGamesProgressBar.setVisibility(View.GONE);

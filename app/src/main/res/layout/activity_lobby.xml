@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start"
-        android:id="@+id/button"
+        android:id="@+id/btnStartGameTeam"
         android:layout_alignParentBottom="true"
         android:layout_toStartOf="@+id/btnJoinRed" />
 
@@ -22,8 +22,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/redRosterList"
         android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@+id/button"
-        android:layout_above="@+id/button"
+        android:layout_toEndOf="@+id/btnStartGameTeam"
+        android:layout_above="@+id/btnStartGameTeam"
         android:choiceMode="none"
         android:layout_below="@+id/LobbyGameName" />
 
@@ -33,7 +33,7 @@
         android:id="@+id/blueRosterList"
         android:layout_alignParentStart="true"
         android:layout_alignBottom="@+id/redRosterList"
-        android:layout_toStartOf="@+id/button"
+        android:layout_toStartOf="@+id/btnStartGameTeam"
         android:choiceMode="none"
         android:layout_below="@+id/LobbyGameName" />
 
@@ -62,7 +62,7 @@
         android:layout_height="wrap_content"
         android:text="Join Blue Team"
         android:id="@+id/btnJoinBlue"
-        android:layout_alignTop="@+id/button"
-        android:layout_toStartOf="@+id/button" />
+        android:layout_alignTop="@+id/btnStartGameTeam"
+        android:layout_toStartOf="@+id/btnStartGameTeam" />
 
 </RelativeLayout>

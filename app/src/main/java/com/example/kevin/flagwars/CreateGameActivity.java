@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,6 +34,16 @@ public class CreateGameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_game);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        toolbar.setNavigationIcon(getDrawable(R.drawable.ic_action_back));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(CreateGameActivity.this, ChooseGameModeActivity.class);
+                startActivity(i);
+            }
+        });
+
         createGameButton = (Button) findViewById(R.id.create_game_start_game);
         parseUser = ParseUser.getCurrentUser();
 
@@ -78,5 +89,6 @@ public class CreateGameActivity extends AppCompatActivity {
                 });
             }
         });
+
     }
 }
