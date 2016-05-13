@@ -13,23 +13,7 @@ import android.widget.Toast;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> parent of 302a925... no changes
 import com.firebase.client.FirebaseError;
-import com.parse.LogInCallback;
-import com.parse.ParseException;
-import com.parse.ParseFacebookUtils;
-import com.parse.ParseUser;
-import com.parse.SignUpCallback;
-=======
->>>>>>> origin/master
-=======
->>>>>>> origin/master
-
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -80,103 +64,12 @@ public class RegisterActivity extends AppCompatActivity {
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 }
-                fireRef.createUser(email, password, new Firebase.ResultHandler() {
-                    @Override
-                    public void onSuccess() {
-                        User user = new User(email);
-                        ImportantMethods.addNewUser(user);
-                        fireRef.authWithPassword(email, password, new Firebase.AuthResultHandler() {
-                            @Override
-                            public void onAuthenticated(AuthData authData) {
-                                startActivity(new Intent(RegisterActivity.this, ChooseGameModeActivity.class));
-                            }
 
-                            @Override
-                            public void onAuthenticationError(FirebaseError firebaseError) {
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                } else {
-                    setProgressBarIndeterminateVisibility(true);
-
-                    ParseUser u = new ParseUser();
-                    u.setEmail(email);
-                    u.setPassword(password);
-                    u.setUsername(email);
-
-                    u.signUpInBackground(new SignUpCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            setProgressBarIndeterminateVisibility(false);
-                            if (e == null) {
-                                // Success
-                                Intent i;
-                                Intent previousIntent = getIntent();
-                                if (previousIntent.getStringExtra("gameMode").equals("createGame")){
-                                    i = new Intent(RegisterActivity.this, CreateGameActivity.class);
-                                } else if (previousIntent.getStringExtra("gameMode").equals("joinGame")) {
-                                    i = new Intent(RegisterActivity.this, JoinGameActivity.class);
-                                } else {
-                                    i = new Intent(RegisterActivity.this, ChooseGameModeActivity.class);
-                                }
-                                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(i);
-                            } else {
-                                // Failure
-                                AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
-                                builder.setMessage(e.getMessage())
-                                        .setTitle("Login Error").setPositiveButton(android.R.string.ok, null);
-
-                                AlertDialog dialog = builder.create();
-                                dialog.show();
->>>>>>> parent of b2390fc... Firebase stuff added
-=======
->>>>>>> parent of 302a925... no changes
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onError(FirebaseError firebaseError) {
-
-                    }
-                });
-=======
-=======
->>>>>>> origin/master
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                } else {
-                    setProgressBarIndeterminateVisibility(true);
-
-                }
             }
-        });
 
-        mFacebookButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Collection<String> permissions = new ArrayList<>();
-                permissions.add("public_profile");
-                permissions.add("email");
-            }
-        });
-
-        mProfilePicture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Image coming soon", Toast.LENGTH_SHORT).show();
-            }
         });
     }
 
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
     }

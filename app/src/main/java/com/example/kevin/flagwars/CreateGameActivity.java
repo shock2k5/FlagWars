@@ -11,32 +11,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-import com.parse.LocationCallback;
-import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
-import com.parse.ParseUser;
->>>>>>> parent of 302a925... no changes
+import com.google.android.gms.location.LocationCallback;
 
 import java.util.ArrayList;
-=======
->>>>>>> origin/master
 
 public class CreateGameActivity extends AppCompatActivity {
     protected EditText gameName; // radio0 is Red, radio1 is Blue
     protected Button createGameButton;
     protected User user;
     protected Game game;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    private Location location;
->>>>>>> origin/master
-=======
-    ParseGeoPoint location;
->>>>>>> parent of 302a925... no changes
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +41,8 @@ public class CreateGameActivity extends AppCompatActivity {
         });
 
         createGameButton = (Button) findViewById(R.id.create_game_start_game);
-        user = ImportantMethods.getCurrentUser();
 
-<<<<<<< HEAD
-        Toast.makeText(getApplicationContext(), user.getUsername(), Toast.LENGTH_SHORT).show();
-=======
         Toast.makeText(getApplicationContext(), ImportantMethods.getUserName(), Toast.LENGTH_SHORT).show();
->>>>>>> parent of 302a925... no changes
         //Set variables to the appropriate editText, ,etc.
         gameName = (EditText) findViewById(R.id.game_name_edit);
 
@@ -73,41 +51,12 @@ public class CreateGameActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String name = gameName.getText().toString();
                 int numPlayers = 4;
-                ArrayList<ParseGeoPoint> flagLocations = new ArrayList<>(2);
-                ArrayList<ParseUser> redTeamNames = new ArrayList<ParseUser>(numPlayers/2);
-                ArrayList<ParseUser> blueTeamNames = new ArrayList<ParseUser>(numPlayers/2);
 
                 game = new Game(name, numPlayers);
-                location = ImportantMethods.getCurrentLocation(CreateGameActivity.this);
-                game.setRedFlagLocation(location);
+                //Set Red Flag Location
 
-<<<<<<< HEAD
-=======
                 ref.child("Game").child(game.getName()).setValue(game);
 
-                Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
-                intent.putExtra("gameUid", game.getUid());
-                startActivity(intent);
->>>>>>> origin/master
-=======
-                ParseGeoPoint.getCurrentLocationInBackground(100, new LocationCallback() {
-                    @Override
-                    public void done(ParseGeoPoint geoPoint, ParseException e){
-                        if (e == null)
-                            location = geoPoint;
-                        else if (geoPoint == null)
-                            location = new ParseGeoPoint(37.422, -122.084);
-                        else
-                            e.printStackTrace();
-
-                        //game.setRedFlagLocation(location);
-
-                        Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
-                        intent.putExtra("gameID", gameName.getText().toString());
-                        startActivity(intent);
-                    }
-                });
->>>>>>> parent of 302a925... no changes
             }
         });
     }

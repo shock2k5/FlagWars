@@ -23,10 +23,6 @@ public class ImportantMethods {
     private static Firebase fireRef;
     private static User user;
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> parent of 302a925... no changes
     public Firebase getFireBase(){
         return new Firebase("https://flagwar.firebaseio.com/");
     }
@@ -34,34 +30,11 @@ public class ImportantMethods {
     public static void addNewUser(User user){
 
     }
+
     public static String getUserName(){
         fireRef = new Firebase("https://flagwar.firebaseio.com/");
         String uid = fireRef.getAuth().getUid();
-        fireRef.child("User/uid/").addValueEventListener(new ValueEventListener() {
-=======
-=======
->>>>>>> origin/master
-    public static User getCurrentUser(){
-        ref = new Firebase("https://flagwar.firebaseio.com/");
-        String uid = ref.getAuth().getUid();
-        ref.child("User/uid/").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                user = dataSnapshot.getValue(User.class);
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-        return user;
-    }
-
-    public static String getUserName(){
-        ref = new Firebase("https://flagwar.firebaseio.com/");
-        String uid = ref.getAuth().getUid();
-        ref.child("User/" + uid).addValueEventListener(new ValueEventListener() {
+        fireRef.child("User/" + uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(User.class);
