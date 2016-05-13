@@ -58,6 +58,8 @@ public class LoginActivity extends AppCompatActivity {
         mRegisterTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println("Go to register");
+
                 Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
                 i.putExtra("gameMode", gameMode);
                 startActivity(i);
@@ -67,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println("Log in");
                 String email = mEmailEditText.getText().toString().trim();
                 String password = mPasswordEditText.getText().toString().trim();
 
@@ -110,6 +113,7 @@ public class LoginActivity extends AppCompatActivity {
         mFacebookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println("Facebook log in");
                 Collection<String> permissions = new ArrayList<String>();
                 permissions.add("public_profile");
                 permissions.add("email");

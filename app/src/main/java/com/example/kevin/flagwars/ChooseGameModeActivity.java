@@ -75,7 +75,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         });
         mTitle = "test";
 
-        mPlanetTitles = getResources().getStringArray(R.array.drawer_list);;
+        mPlanetTitles = getResources().getStringArray(R.array.drawer_list);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 

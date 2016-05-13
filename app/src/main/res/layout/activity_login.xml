@@ -14,10 +14,7 @@
         android:theme="@style/AppTheme.AppBarOverlay"
         android:id="@+id/include">
 
-
     </android.support.design.widget.AppBarLayout>
-
-
 
     <TextView
         android:layout_width="wrap_content"
@@ -93,6 +90,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
+    <!--
     <android.support.v4.widget.DrawerLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -100,12 +98,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
-        <!-- The main content view -->
         <FrameLayout
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-        <!-- The navigation drawer -->
         <ListView
             android:id="@+id/left_drawer"
             android:layout_width="240dp"
@@ -116,5 +112,6 @@
             android:dividerHeight="0dp"
             android:background="#111"/>
     </android.support.v4.widget.DrawerLayout>
+    -->
 
 </RelativeLayout>
