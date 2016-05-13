@@ -51,11 +51,11 @@ public class CreateGameActivity extends AppCompatActivity {
                 ArrayList<ParseUser> redTeamNames = new ArrayList<ParseUser>(numPlayers/2);
                 ArrayList<ParseUser> blueTeamNames = new ArrayList<ParseUser>(numPlayers/2);
 
-                game = new Game(name, numPlayers, flagLocations, redTeamNames, blueTeamNames);
+                game = new Game(name, numPlayers, flagLocations);
                 if (selectedTeam.getText().toString().equals("Red Team"))
-                    game.addToRedTeam(parseUser);
+                    game.addToRedTeam(ParseUser.getCurrentUser());
                 else
-                    game.addToBlueTeam(parseUser);
+                    game.addToBlueTeam(ParseUser.getCurrentUser());
 
                 ParseGeoPoint.getCurrentLocationInBackground(100, new LocationCallback() {
                     @Override

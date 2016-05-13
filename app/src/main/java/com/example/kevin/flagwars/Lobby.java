@@ -36,7 +36,7 @@ public class Lobby extends AppCompatActivity {
                     return;
                 }
                 game.removeFromBlueTeam(user);
-                game.addToBlueTeam(user);
+                game.addToRedTeam(user);
                 updateTeamLists();
                 game.saveInParse();
             }
@@ -65,12 +65,6 @@ public class Lobby extends AppCompatActivity {
         blueAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());
         redRoster.setAdapter(redAdapter);
         blueRoster.setAdapter(blueAdapter);
-
-        btnStartGameTeam.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {startActivity(new Intent(this, Game.class));
-            }
-        });
 
     }
 

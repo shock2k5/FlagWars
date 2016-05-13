@@ -31,13 +31,12 @@ public class Game {
     private ParseObject object = null;
     private ParseGeoPoint anchorLocation = null;
 
-    public Game(String name, int numPlayers, ArrayList<ParseGeoPoint> flagLocations,
-                ArrayList<ParseUser> redTeam, ArrayList<ParseUser> blueTeam) {
+    public Game(String name, int numPlayers, ArrayList<ParseGeoPoint> flagLocations) {
         this.name = name;
         this.numPlayers = numPlayers;
         this.flagLocations = flagLocations;
-        this.redTeam = redTeam;
-        this.blueTeam = blueTeam;
+        this.redTeam = new ArrayList<ParseUser>();
+        this.blueTeam = new ArrayList<ParseUser>();
     }
 
     public String getName() {
@@ -109,15 +108,30 @@ public class Game {
     }
 
     public boolean addToBlueTeam(ParseUser user) {
-        return this.blueTeam.add(user);
+        if(this.blueTeam.add(user)) {
+            getBlueTeamNames().add(user.getUsername());
+            this.saveInParse();
+            return true;
+        }
+        return false;
     }
 
     public boolean removeFromRedTeam(ParseUser user) {
-        return this.redTeam.remove(user);
+        if(this.redTeam.remove(user)){
+            getRedTeamNames().remove(user.getUsername());
+            this.saveInParse();
+            return true;
+        }
+        return false;
     }
 
     public boolean removeFromBlueTeam(ParseUser user) {
-        return this.blueTeam.remove(user);
+        if(this.blueTeam.remove(user)){
+            getBlueTeamNames().remove(user.getUsername());
+            this.saveInParse();
+            return true;
+        }
+        return false;
     }
 
     public ParseObject toParseObject() {
@@ -157,10 +171,12 @@ public class Game {
     /************************ STATIC HELPER METHODS ************************/
 
     public static Game parseObjectToGame(ParseObject o) {
-        return new Game(o.getString("name"), o.getInt("numPlayers"),
-                (ArrayList<ParseGeoPoint>) o.get("flagLocations"),
-                (ArrayList<ParseUser>) o.get("redTeamNames"),
-                (ArrayList<ParseUser>) o.get("blueTeamNames"));
+        Game g = new Game(o.getString("name"), o.getInt("numPlayers"),
+                (ArrayList<ParseGeoPoint>) o.get("flagLocations"));
+        g.objectId = o.getObjectId();
+        g.object = o;
+        g.anchorLocation = o.getParseGeoPoint("anchorLocation");
+        return g;
     }
 
     public static List<Game> getGameListFromParse(List<ParseObject> objects) {
