@@ -99,7 +99,11 @@ public class Game {
         ArrayList<String> names = new ArrayList<>();
 
         for (ParseUser u : this.blueTeam)
-            names.add((u.getUsername() != null) ? u.getUsername() : u.getEmail());
+            try {
+                names.add(u.fetchIfNeeded().getUsername());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
         return names;
     }
@@ -157,10 +161,14 @@ public class Game {
     /************************ STATIC HELPER METHODS ************************/
 
     public static Game parseObjectToGame(ParseObject o) {
-        return new Game(o.getString("name"), o.getInt("numPlayers"),
+        Game g = new Game(o.getString("name"), o.getInt("numPlayers"),
                 (ArrayList<ParseGeoPoint>) o.get("flagLocations"),
                 (ArrayList<ParseUser>) o.get("redTeamNames"),
                 (ArrayList<ParseUser>) o.get("blueTeamNames"));
+        g.objectId = o.getObjectId();
+        g.object = o;
+        g.anchorLocation = o.getParseGeoPoint("anchorLocation");
+        return g;
     }
 
     public static List<Game> getGameListFromParse(List<ParseObject> objects) {
