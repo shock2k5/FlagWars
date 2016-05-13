@@ -12,6 +12,10 @@ public class User {
         username = "null";
     }
 
+    public User(String name){
+        username = name;
+    }
+
     public String getEmail() { return this.email; }
 
     public String getPassword() { return this.password; }

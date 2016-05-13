@@ -1,7 +1,6 @@
 package com.example.kevin.flagwars;
 
 import com.facebook.FacebookSdk;
-import com.firebase.client.Firebase;
 
 import android.app.Application;
 
@@ -10,13 +9,20 @@ import android.app.Application;
  */
 public class FlagWarsApplication extends Application {
 <<<<<<< HEAD
+<<<<<<< HEAD
     Firebase fireRef;
+=======
+>>>>>>> parent of 302a925... no changes
 
     @Override
     public void onCreate() {
         super.onCreate();
+<<<<<<< HEAD
         Firebase.setAndroidContext(this.getApplicationContext());
         fireRef = new Firebase("https://flagwar.firebaseio.com/");
+=======
+
+>>>>>>> parent of 302a925... no changes
 =======
     @Override
     public void onCreate() {

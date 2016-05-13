@@ -37,10 +37,12 @@ public class Lobby extends AppCompatActivity {
         final Intent previous = getIntent();
 
         gameName = (TextView) findViewById(R.id.LobbyGameName);
+
         btnJoinRedTeam = (Button) findViewById(R.id.btnJoinRed);
         btnJoinBlueTeam = (Button) findViewById(R.id.btnJoinBlue);
         redRoster = (ListView) findViewById(R.id.redRosterList);
         blueRoster = (ListView) findViewById(R.id.blueRosterList);
+
         btnStartGameTeam = (Button) findViewById(R.id.btnStartGameTeam);
 
         redAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
@@ -87,7 +89,7 @@ public class Lobby extends AppCompatActivity {
             public void onClick(View v) {
                 if (game.getBlueTeam().size() > 0 && game.getRedTeam().size() > 0) {
                     Intent intent = new Intent(Lobby.this, GameActivity.class);
-                    intent.putExtra("gameUid", game.getUid());
+                    intent.putExtra("gameID", getIntent().getStringExtra("gameID"));
                     startActivity(intent);
                 } else {
                     Toast.makeText(Lobby.this, "There needs to be at least one player on each team", Toast.LENGTH_LONG).show();

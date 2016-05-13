@@ -11,13 +11,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-import com.firebase.client.FirebaseError;
+<<<<<<< HEAD
 =======
->>>>>>> parent of b2390fc... Firebase stuff added
+>>>>>>> parent of 302a925... no changes
+import com.firebase.client.FirebaseError;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
@@ -37,12 +39,14 @@ public class RegisterActivity extends AppCompatActivity {
     protected EditText mEmailEditText, mPasswordEditText, mConfirmEditText;
     protected TextView mLoginTextView;
     protected ImageView mProfilePicture;
-    Firebase ref;
+    Firebase fireRef;
+    String email, password, confirmPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        Firebase.setAndroidContext(this.getApplicationContext());
 
         mFacebookButton = (Button) findViewById(R.id.facebookLoginBT);
         mLoginButton = (Button) findViewById(R.id.loginBT);
@@ -64,9 +68,9 @@ public class RegisterActivity extends AppCompatActivity {
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = mEmailEditText.getText().toString().trim();
-                String password = mPasswordEditText.getText().toString().trim();
-                String confirmPassword = mConfirmEditText.getText().toString().trim();
+                email = mEmailEditText.getText().toString().trim();
+                password = mPasswordEditText.getText().toString().trim();
+                confirmPassword = mConfirmEditText.getText().toString().trim();
 
                 if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
@@ -75,18 +79,22 @@ public class RegisterActivity extends AppCompatActivity {
 
                     AlertDialog dialog = builder.create();
                     dialog.show();
-                } else if (!isEmailValid(email)) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
-                    builder.setMessage("Invalid email address")
-                            .setTitle("Login Error").setPositiveButton(android.R.string.ok, null);
+                }
+                fireRef.createUser(email, password, new Firebase.ResultHandler() {
+                    @Override
+                    public void onSuccess() {
+                        User user = new User(email);
+                        ImportantMethods.addNewUser(user);
+                        fireRef.authWithPassword(email, password, new Firebase.AuthResultHandler() {
+                            @Override
+                            public void onAuthenticated(AuthData authData) {
+                                startActivity(new Intent(RegisterActivity.this, ChooseGameModeActivity.class));
+                            }
 
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                } else if (!password.equals(confirmPassword)) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
-                    builder.setMessage("Password mismatch")
-                            .setTitle("Login Error").setPositiveButton(android.R.string.ok, null);
+                            @Override
+                            public void onAuthenticationError(FirebaseError firebaseError) {
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -128,45 +136,15 @@ public class RegisterActivity extends AppCompatActivity {
                                 AlertDialog dialog = builder.create();
                                 dialog.show();
 >>>>>>> parent of b2390fc... Firebase stuff added
+=======
+>>>>>>> parent of 302a925... no changes
                             }
-                        }
-                    });
-                }
-            }
-        });
+                        });
+                    }
 
-        mFacebookButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Collection<String> permissions = new ArrayList<>();
-                permissions.add("public_profile");
-                permissions.add("email");
-                ParseFacebookUtils.logInWithReadPermissionsInBackground(RegisterActivity.this, permissions, new LogInCallback() {
                     @Override
-                    public void done(ParseUser user, ParseException e) {
-                        if (e == null) {
-                            // Success
-                            Intent i;
-                            Intent previousIntent = getIntent();
-                            if (previousIntent.getStringExtra("gameMode").equals("createGame")){
-                                i = new Intent(RegisterActivity.this, CreateGameActivity.class);
-                            } else if (previousIntent.getStringExtra("gameMode").equals("joinGame")) {
-                                i = new Intent(RegisterActivity.this, JoinGameActivity.class);
-                            } else {
-                                i = new Intent(RegisterActivity.this, ChooseGameModeActivity.class);
-                            }
-                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(i);
-                        } else {
-                            // Failure
-                            AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
-                            builder.setMessage(e.getMessage())
-                                    .setTitle("Login Error").setPositiveButton(android.R.string.ok, null);
+                    public void onError(FirebaseError firebaseError) {
 
-                            AlertDialog dialog = builder.create();
-                            dialog.show();
-                        }
                     }
                 });
 =======
@@ -187,13 +165,6 @@ public class RegisterActivity extends AppCompatActivity {
                 Collection<String> permissions = new ArrayList<>();
                 permissions.add("public_profile");
                 permissions.add("email");
-            }
-        });
-
-        mProfilePicture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Image coming soon", Toast.LENGTH_SHORT).show();
             }
         });
 
