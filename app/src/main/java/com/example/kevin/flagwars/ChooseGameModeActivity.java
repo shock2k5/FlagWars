@@ -1,8 +1,11 @@
 package com.example.kevin.flagwars;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -34,6 +37,9 @@ public class ChooseGameModeActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private CharSequence mTitle;
     private ActionBarDrawerToggle mDrawerToggle;
+
+    final Context context = this;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,7 +155,23 @@ public class ChooseGameModeActivity extends AppCompatActivity {
     private void selectItem(int position) {
 
         if (position == 2) {
-            
+           new AlertDialog.Builder(context)
+                    .setTitle("Log Out")
+                    .setMessage("Are you sure you want to log out?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            ParseUser.logOut();
+                            Intent i = new Intent(ChooseGameModeActivity.this, ChooseGameModeActivity.class);
+                            startActivity(i);
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            mDrawerLayout.closeDrawer(mDrawerList);
+                        }
+                    })
+                    .show();
+
         }
 
         // Create a new fragment and specify the planet to show based on position
@@ -163,11 +185,11 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         fragmentManager.beginTransaction()
                 .replace(R.id.content_frame, fragment)
                 .commit();*/
-        Toast.makeText(this, R.string.app_name, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, R.string.app_name, Toast.LENGTH_SHORT).show();
 
         // Highlight the selected item, update the title, and close the drawer
-        mDrawerList.setItemChecked(position, true);
-        setTitle(mPlanetTitles[position]);
+        //mDrawerList.setItemChecked(position, true);
+        //setTitle(mPlanetTitles[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
     }
 
