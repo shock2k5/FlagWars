@@ -34,10 +34,16 @@ public class CreateGameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_game);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
+
+        toolbar.setNavigationIcon(getDrawable(R.drawable.ic_action_back));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(CreateGameActivity.this, ChooseGameModeActivity.class);
+                startActivity(i);
+            }
+        });
+
         createGameButton = (Button) findViewById(R.id.create_game_start_game);
         parseUser = ParseUser.getCurrentUser();
 
@@ -84,14 +90,5 @@ public class CreateGameActivity extends AppCompatActivity {
             }
         });
 
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
-        if (item.getItemId() == android.R.id.home) {
-            finish(); // close this activity and return to preview activity (if there is any)
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }
