@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -16,24 +18,24 @@ import android.Manifest;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.parse.FindCallback;
-import com.parse.LocationCallback;
-import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class JoinGameActivity extends AppCompatActivity {
 
     protected AdapterView mGameListView;
     protected EditText mEnterCodeTextView;
-    protected List<Game> gameList = null;
+    protected List<Game> gameList = new ArrayList<>();
     protected ProgressBar mLoadGamesProgressBar;
-    protected ParseGeoPoint loc;
+    protected Location loc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +49,39 @@ public class JoinGameActivity extends AppCompatActivity {
         mEnterCodeTextView.setCursorVisible(false);
         mEnterCodeTextView.setKeyListener(null);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        Firebase ref = new Firebase("https://flagwar.firebaseio.com/");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (Game g : ((Map<String, Game>) dataSnapshot.child("Game/").getValue(Map.class)).values())
+                    gameList.add(g);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+        List<String> gameNames = new ArrayList<>();
+        for (Game g : gameList)
+            gameNames.add(g.getName());
+
+        if (gameNames.size() == 0) {
+            gameNames.add("No games near you.");
+            this.mGameListView.setClickable(false);
+        }
+
+        this.mGameListView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, gameNames));
+        mLoadGamesProgressBar.setVisibility(View.GONE);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // ask for permission
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-        else
+            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
+        } else {
             // has permission
-            ParseGeoPoint.getCurrentLocationInBackground(100, new ParseLocationCallback());
+            // TODO update location
+            loc = null;
+        }
 
         mGameListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -64,9 +93,8 @@ public class JoinGameActivity extends AppCompatActivity {
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                System.out.println("Move to Lobby " + game.getObjectId());
                                 Intent intent = new Intent(JoinGameActivity.this, Lobby.class);
-                                intent.putExtra("gameObjectId", game.getObjectId());
+                                intent.putExtra("gameUid", game.getUid());
                                 startActivity(intent);
                             }
                         })
@@ -83,67 +111,12 @@ public class JoinGameActivity extends AppCompatActivity {
             if (grantResults.length > 0) {
                 if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                    ParseGeoPoint.getCurrentLocationInBackground(100, new ParseLocationCallback());
+                    // TODO get current location
+                    loc = null;
             } else {
-                Toast.makeText(this.getApplicationContext(), "Permission needs to be granted for this application", Toast.LENGTH_LONG).show();
+                Toast.makeText(this.getApplicationContext(),
+                        "Permission needs to be granted for this application", Toast.LENGTH_LONG).show();
             }
-        }
-    }
-
-    private void attemptToRetrieveObjects() {
-        ParseQuery q = ParseQuery.getQuery("Game");
-        q.whereWithinMiles("anchorLocation", loc, 1.0);
-        q.setLimit(10);
-        q.findInBackground(new FindCallback() {
-            @Override
-            public void done(List objects, ParseException e) {
-                if (e == null)
-                    objectRetrievalSucceeded((List<ParseObject>) objects);
-                else // error
-                    e.printStackTrace();
-            }
-
-            @Override
-            public void done(Object o, Throwable t) {
-                if (t == null)
-                    objectRetrievalSucceeded((List<ParseObject>) o);
-                else
-                    t.printStackTrace();
-            }
-        });
-    }
-
-    private void objectRetrievalSucceeded(List<ParseObject> objects) {
-        gameList = Game.getGameListFromParse(objects);
-        List<String> gameNames = this.getGameNames();
-        ArrayAdapter<String> arrayAdapter;
-        if (gameNames.size() == 0) {
-            gameNames.add("No games near you.");
-            this.mGameListView.setClickable(false);
-        }
-        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, gameNames);
-        this.mGameListView.setAdapter(arrayAdapter);
-        mLoadGamesProgressBar.setVisibility(View.GONE);
-    }
-
-    private List<String> getGameNames() {
-        ArrayList<String> a = new ArrayList<>();
-        for (Game g : gameList)
-            a.add(g.getName());
-        return a;
-    }
-
-    class ParseLocationCallback implements LocationCallback {
-        @Override
-        public void done(ParseGeoPoint geoPoint, ParseException e){
-            if (e == null)
-                loc = geoPoint;
-            else if (geoPoint == null)
-                loc = new ParseGeoPoint(37.422, -122.084);
-            else
-                e.printStackTrace();
-
-            attemptToRetrieveObjects();
         }
     }
 }
