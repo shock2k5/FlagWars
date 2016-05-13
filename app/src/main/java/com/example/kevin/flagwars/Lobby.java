@@ -42,9 +42,7 @@ public class Lobby extends AppCompatActivity {
                 if (game.getRedTeam().contains(user)) return;
 
                 game.removeFromBlueTeam(user);
-<<<<<<< HEAD
                 game.addToRedTeam(user);
-=======
                 if (game.getBlueTeam().size() == 0)
                     game.setBlueFlagLocation(null);
 
@@ -63,7 +61,6 @@ public class Lobby extends AppCompatActivity {
                     });
                 }
 
->>>>>>> origin/master
                 updateTeamLists();
                 game.saveInParse();
             }
@@ -110,8 +107,6 @@ public class Lobby extends AppCompatActivity {
         redRoster.setAdapter(redAdapter);
         blueRoster.setAdapter(blueAdapter);
 
-<<<<<<< HEAD
-=======
         btnStartGameTeam = (Button) findViewById(R.id.btnStartGameTeam);
         btnStartGameTeam.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,7 +121,6 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
->>>>>>> origin/master
     }
 
     public void updateTeamLists(){
