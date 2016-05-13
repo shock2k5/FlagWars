@@ -11,6 +11,7 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -28,13 +29,13 @@ public class Game {
     private int numPlayers;
     private ArrayList<ParseGeoPoint> flagLocations;
     private ArrayList<ParseUser> redTeam, blueTeam;
-    private ParseObject object = null;
     private ParseGeoPoint anchorLocation = null;
 
     public Game(String name, int numPlayers, ArrayList<ParseGeoPoint> flagLocations) {
         this.name = name;
         this.numPlayers = numPlayers;
         this.flagLocations = flagLocations;
+        this.flagLocations.ensureCapacity(2);
         this.redTeam = new ArrayList<ParseUser>();
         this.blueTeam = new ArrayList<ParseUser>();
     }
@@ -58,15 +59,23 @@ public class Game {
     }
 
     public void setRedFlagLocation(ParseGeoPoint loc) {
-        this.flagLocations.add(0, loc);
-        if (this.anchorLocation == null)
-            this.anchorLocation = getLocation();
+        if (!loc.equals(this.flagLocations.get(0))) {
+            if (this.flagLocations.size() == 2)
+                this.flagLocations.remove(0);
+            this.flagLocations.add(0, loc);
+            if (this.anchorLocation == null)
+                this.anchorLocation = getLocation();
+        }
     }
 
     public void setBlueFlagLocation(ParseGeoPoint loc) {
-        this.flagLocations.add(1, loc);
-        if (this.anchorLocation == null)
-            this.anchorLocation = getLocation();
+        if (!loc.equals(this.flagLocations.get(1))) {
+            if (this.flagLocations.size() == 2)
+                this.flagLocations.remove(1);
+            this.flagLocations.add(1, loc);
+            if (this.anchorLocation == null)
+                this.anchorLocation = getLocation();
+        }
     }
 
     public ParseGeoPoint getRedFlagLocation() {
@@ -139,34 +148,27 @@ public class Game {
     }
 
     public ParseObject toParseObject() {
-        if (this.object != null) {
-            return this.object;
-        } else {
-            final ParseObject p = ParseObject.create("Game");
-            p.put("name", this.name);
-            p.put("numPlayers", this.numPlayers);
-            p.put("flagLocations", this.flagLocations);
-            p.put("redTeamNames", this.redTeam);
-            p.put("blueTeamNames", this.blueTeam);
-            if (anchorLocation != null){
-                p.put("anchorLocation", this.anchorLocation);
-            }
-            this.object = p;
-            this.saveInParse();
-            return p;
+        final ParseObject p = ParseObject.create("Game");
+        p.put("name", this.name);
+        p.put("numPlayers", this.numPlayers);
+        p.put("flagLocations", this.flagLocations);
+        p.put("redTeamNames", this.redTeam);
+        p.put("blueTeamNames", this.blueTeam);
+        if (anchorLocation != null){
+            p.put("anchorLocation", this.anchorLocation);
         }
+        if (this.objectId != null)
+            p.setObjectId(this.objectId);
+        this.saveInParse();
+        return p;
     }
 
     public void saveInParse() {
-        ParseObject o;
-        if (this.object == null){
-            o = this.toParseObject();
-        } else{
-            o = this.object;
-        }
+        ParseObject o = this.toParseObject();
         try {
             o.save();
-            this.objectId = o.getObjectId();
+            if (this.objectId == null)
+                this.objectId = o.getObjectId();
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -178,7 +180,6 @@ public class Game {
         Game g = new Game(o.getString("name"), o.getInt("numPlayers"),
                 (ArrayList<ParseGeoPoint>) o.get("flagLocations"));
         g.objectId = o.getObjectId();
-        g.object = o;
         g.anchorLocation = o.getParseGeoPoint("anchorLocation");
         g.redTeam = (ArrayList<ParseUser>) o.get("redTeamNames");
         g.blueTeam = (ArrayList<ParseUser>) o.get("blueTeamNames");
