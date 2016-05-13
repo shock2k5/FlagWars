@@ -20,27 +20,13 @@ import com.google.android.gms.location.LocationServices;
  * Created by E&D on 5/13/2016.
  */
 public class ImportantMethods {
-    private static Firebase fireRef;
+    private static Firebase ref;
     private static User user;
 
-<<<<<<< HEAD
-    public Firebase getFireBase(){
-        return new Firebase("https://flagwar.firebaseio.com/");
-    }
-
-    public static void addNewUser(User user){
-
-    }
-    public static String getUserName(){
-        fireRef = new Firebase("https://flagwar.firebaseio.com/");
-        String uid = fireRef.getAuth().getUid();
-        fireRef.child("User/uid/").addValueEventListener(new ValueEventListener() {
-=======
     public static User getCurrentUser(){
         ref = new Firebase("https://flagwar.firebaseio.com/");
         String uid = ref.getAuth().getUid();
         ref.child("User/uid/").addValueEventListener(new ValueEventListener() {
->>>>>>> origin/master
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(User.class);

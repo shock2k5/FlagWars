@@ -11,17 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
-<<<<<<< HEAD
-import com.firebase.client.FirebaseError;
-import com.parse.LogInCallback;
-import com.parse.ParseException;
-import com.parse.ParseFacebookUtils;
-import com.parse.ParseUser;
-import com.parse.SignUpCallback;
-=======
->>>>>>> origin/master
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,14 +22,12 @@ public class RegisterActivity extends AppCompatActivity {
     protected EditText mEmailEditText, mPasswordEditText, mConfirmEditText;
     protected TextView mLoginTextView;
     protected ImageView mProfilePicture;
-    Firebase fireRef;
-    String email, password, confirmPassword;
+    Firebase ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        Firebase.setAndroidContext(this.getApplicationContext());
 
         mFacebookButton = (Button) findViewById(R.id.facebookLoginBT);
         mLoginButton = (Button) findViewById(R.id.loginBT);
@@ -61,9 +49,9 @@ public class RegisterActivity extends AppCompatActivity {
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                email = mEmailEditText.getText().toString().trim();
-                password = mPasswordEditText.getText().toString().trim();
-                confirmPassword = mConfirmEditText.getText().toString().trim();
+                String email = mEmailEditText.getText().toString().trim();
+                String password = mPasswordEditText.getText().toString().trim();
+                String confirmPassword = mConfirmEditText.getText().toString().trim();
 
                 if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
@@ -72,32 +60,18 @@ public class RegisterActivity extends AppCompatActivity {
 
                     AlertDialog dialog = builder.create();
                     dialog.show();
-                }
-                fireRef.createUser(email, password, new Firebase.ResultHandler() {
-                    @Override
-                    public void onSuccess() {
-                        User user = new User(email);
-                        ImportantMethods.addNewUser(user);
-                        fireRef.authWithPassword(email, password, new Firebase.AuthResultHandler() {
-                            @Override
-                            public void onAuthenticated(AuthData authData) {
-                                startActivity(new Intent(RegisterActivity.this, ChooseGameModeActivity.class));
-                            }
+                } else if (!isEmailValid(email)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
+                    builder.setMessage("Invalid email address")
+                            .setTitle("Login Error").setPositiveButton(android.R.string.ok, null);
 
-                            @Override
-                            public void onAuthenticationError(FirebaseError firebaseError) {
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                } else if (!password.equals(confirmPassword)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
+                    builder.setMessage("Password mismatch")
+                            .setTitle("Login Error").setPositiveButton(android.R.string.ok, null);
 
-<<<<<<< HEAD
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onError(FirebaseError firebaseError) {
-
-                    }
-                });
-=======
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 } else {
@@ -113,7 +87,13 @@ public class RegisterActivity extends AppCompatActivity {
                 Collection<String> permissions = new ArrayList<>();
                 permissions.add("public_profile");
                 permissions.add("email");
->>>>>>> origin/master
+            }
+        });
+
+        mProfilePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "Image coming soon", Toast.LENGTH_SHORT).show();
             }
         });
     }
