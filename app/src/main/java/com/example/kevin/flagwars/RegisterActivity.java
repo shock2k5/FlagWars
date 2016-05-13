@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.firebase.client.Firebase;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.firebase.client.FirebaseError;
 =======
 >>>>>>> parent of b2390fc... Firebase stuff added
@@ -22,6 +23,8 @@ import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
+=======
+>>>>>>> origin/master
 =======
 >>>>>>> origin/master
 
@@ -84,6 +87,7 @@ public class RegisterActivity extends AppCompatActivity {
                     builder.setMessage("Password mismatch")
                             .setTitle("Login Error").setPositiveButton(android.R.string.ok, null);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -166,6 +170,8 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
 =======
+=======
+>>>>>>> origin/master
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 } else {
@@ -181,7 +187,13 @@ public class RegisterActivity extends AppCompatActivity {
                 Collection<String> permissions = new ArrayList<>();
                 permissions.add("public_profile");
                 permissions.add("email");
->>>>>>> origin/master
+            }
+        });
+
+        mProfilePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "Image coming soon", Toast.LENGTH_SHORT).show();
             }
         });
 

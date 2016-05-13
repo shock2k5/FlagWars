@@ -25,6 +25,7 @@ public class ImportantMethods {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     public Firebase getFireBase(){
         return new Firebase("https://flagwar.firebaseio.com/");
     }
@@ -37,11 +38,12 @@ public class ImportantMethods {
         String uid = fireRef.getAuth().getUid();
         fireRef.child("User/uid/").addValueEventListener(new ValueEventListener() {
 =======
+=======
+>>>>>>> origin/master
     public static User getCurrentUser(){
         ref = new Firebase("https://flagwar.firebaseio.com/");
         String uid = ref.getAuth().getUid();
         ref.child("User/uid/").addValueEventListener(new ValueEventListener() {
->>>>>>> origin/master
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(User.class);
