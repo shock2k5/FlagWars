@@ -14,8 +14,6 @@ public class FlagWarsApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Parse.initialize(this, "iEVgiEIkebbBlikxwCSSEPZnepg0khNnUXbhoPwy", "JIj1LA0LQQTHzq6vd8nB5FyTdKbCxcvfxfmF1qL1");
         FacebookSdk.sdkInitialize(this.getApplicationContext());
-        ParseFacebookUtils.initialize(this.getApplicationContext());
     }
 }

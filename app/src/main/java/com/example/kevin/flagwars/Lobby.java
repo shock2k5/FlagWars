@@ -3,6 +3,7 @@ package com.example.kevin.flagwars;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -10,13 +11,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.parse.LocationCallback;
-import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
-import com.parse.ParseUser;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -26,6 +24,7 @@ public class Lobby extends AppCompatActivity {
     ArrayAdapter<String> redAdapter, blueAdapter;
     ListView redRoster, blueRoster;
     Game game;
+    User user;
     Button btnJoinRedTeam, btnJoinBlueTeam, btnStartGameTeam;
 
     @Override
@@ -33,91 +32,79 @@ public class Lobby extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
 
-        game = Game.getObjectFromParse(getIntent().getStringExtra("gameObjectId"));
+        Firebase ref = new Firebase("https://flagwar.firebaseio.com/");
+        final Intent previous = getIntent();
+
         gameName = (TextView) findViewById(R.id.LobbyGameName);
-
         btnJoinRedTeam = (Button) findViewById(R.id.btnJoinRed);
-        btnJoinRedTeam.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ParseUser user = ParseUser.getCurrentUser();
-                if (game.getRedTeam().contains(user)) return;
-
-                game.removeFromBlueTeam(user);
-                if (game.getBlueTeam().size() == 0)
-                    game.setBlueFlagLocation(null);
-
-                game.addToRedTeam(user);
-                if (game.getRedTeam().size() == 1) {
-                    ParseGeoPoint.getCurrentLocationInBackground(100, new LocationCallback() {
-                        @Override
-                        public void done(ParseGeoPoint geoPoint, ParseException e){
-                            if (e == null)
-                                game.setRedFlagLocation(geoPoint);
-                            else if (geoPoint == null)
-                                game.setRedFlagLocation(new ParseGeoPoint(37.422, -122.084));
-                            else
-                                e.printStackTrace();
-                        }
-                    });
-                }
-
-                updateTeamLists();
-                game.saveInParse();
-            }
-        });
         btnJoinBlueTeam = (Button) findViewById(R.id.btnJoinBlue);
+        redRoster = (ListView) findViewById(R.id.redRosterList);
+        blueRoster = (ListView) findViewById(R.id.blueRosterList);
+        btnStartGameTeam = (Button) findViewById(R.id.btnStartGameTeam);
+
+        redAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
+        blueAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());
+
+        gameName.setText(game.getName());
+        redRoster.setAdapter(redAdapter);
+        blueRoster.setAdapter(blueAdapter);
+
         btnJoinBlueTeam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ParseUser user = ParseUser.getCurrentUser();
                 if (game.getBlueTeam().contains(user))
                     return;
 
                 game.removeFromRedTeam(user);
-                if (game.getRedTeam().size() == 0)
-                    game.setRedFlagLocation(null);
-
                 game.addToBlueTeam(user);
-                if (game.getBlueTeam().size() == 1) {
-                    ParseGeoPoint.getCurrentLocationInBackground(100, new LocationCallback() {
-                        @Override
-                        public void done(ParseGeoPoint geoPoint, ParseException e) {
-                            if (e == null)
-                                game.setBlueFlagLocation(geoPoint);
-                            else if (geoPoint == null)
-                                game.setBlueFlagLocation(new ParseGeoPoint(37.422, -122.084));
-                            else
-                                e.printStackTrace();
-                        }
-                    });
+                if (game.getBlueTeam().size() == 1 && game.getBlueFlagLocation() == null) {
+                    // TODO update location
+                    game.setBlueFlagLocation(null);
                 }
 
                 updateTeamLists();
-                game.saveInParse();
             }
         });
 
-        gameName.setText(game.getName());
+        btnJoinRedTeam.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (game.getRedTeam().contains(user)) return;
 
-        redRoster = (ListView) findViewById(R.id.redRosterList);
-        blueRoster = (ListView) findViewById(R.id.blueRosterList);
-        redAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
-        blueAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());
-        redRoster.setAdapter(redAdapter);
-        blueRoster.setAdapter(blueAdapter);
+                game.removeFromBlueTeam(user);
+                game.addToRedTeam(user);
+                if (game.getRedTeam().size() == 1 && game.getRedFlagLocation() == null) {
+                    // TODO update location
+                    game.setRedFlagLocation(null);
+                }
 
-        btnStartGameTeam = (Button) findViewById(R.id.btnStartGameTeam);
+                updateTeamLists();
+            }
+        });
+
         btnStartGameTeam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (game.getBlueTeam().size() > 0 && game.getRedTeam().size() > 0) {
                     Intent intent = new Intent(Lobby.this, GameActivity.class);
-                    intent.putExtra("gameObjectId", game.getObjectId());
+                    intent.putExtra("gameUid", game.getUid());
                     startActivity(intent);
                 } else {
                     Toast.makeText(Lobby.this, "There needs to be at least one player on each team", Toast.LENGTH_LONG).show();
                 }
+            }
+        });
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String uid = previous.getStringExtra("gameUid");
+                game = dataSnapshot.child("Game/" + uid).getValue(Game.class);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Log.e("Firebase Read Error", "Occurred in Lobby/addListenerForSingleValueEvent", firebaseError.toException());
             }
         });
 

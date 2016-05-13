@@ -58,7 +58,7 @@ public class CreateGameActivity extends AppCompatActivity {
                 ArrayList<ParseUser> redTeamNames = new ArrayList<ParseUser>(numPlayers/2);
                 ArrayList<ParseUser> blueTeamNames = new ArrayList<ParseUser>(numPlayers/2);
 
-                game = new Game(name, numPlayers, flagLocations);
+                game = new Game(name, numPlayers);
 
                 ParseGeoPoint.getCurrentLocationInBackground(100, new LocationCallback() {
                     @Override
@@ -71,7 +71,6 @@ public class CreateGameActivity extends AppCompatActivity {
                             e.printStackTrace();
 
                         game.setRedFlagLocation(location);
-                        game.toParseObject();
                         game.saveInParse();
 
                         Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
