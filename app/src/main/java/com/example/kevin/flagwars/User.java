@@ -24,30 +24,4 @@ public class User {
     public String getPassword() { return this.password; }
 
     public String getUsername() { return this.username; }
-
-    public void copyUser(User copy) {
-        this.email = copy.getEmail();
-        this.password = copy.getPassword();
-        this.username = copy.getUsername();
-    }
-
-    /****************************** STATIC METHOD ******************************/
-
-    public static User authDataToUser() {
-        final Firebase ref = new Firebase("https://flagwar.firebaseio.com/");
-        final User user = new User();
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                User temp = dataSnapshot.child("User/" + ref.getAuth().getUid()).getValue(User.class);
-                user.copyUser(temp);
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                Log.e("Firebase Read Error", "Occurred in User/authDataToUser", firebaseError.toException());
-            }
-        });
-        return user;
-    }
 }
