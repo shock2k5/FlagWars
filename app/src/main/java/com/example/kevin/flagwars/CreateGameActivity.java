@@ -20,9 +20,7 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 
 public class CreateGameActivity extends AppCompatActivity {
-    protected EditText gameName;
-    protected RadioGroup team;
-    protected RadioButton selectedTeam; // radio0 is Red, radio1 is Blue
+    protected EditText gameName; // radio0 is Red, radio1 is Blue
     protected Button createGameButton;
     protected ParseUser parseUser;
     protected Game game;
@@ -50,12 +48,10 @@ public class CreateGameActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), parseUser.getUsername(), Toast.LENGTH_SHORT).show();
         //Set variables to the appropriate editText, ,etc.
         gameName = (EditText) findViewById(R.id.game_name_edit);
-        team = (RadioGroup) findViewById(R.id.create_game_team_group);
 
         createGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectedTeam = (RadioButton) findViewById(team.getCheckedRadioButtonId());
                 String name = gameName.getText().toString();
                 int numPlayers = 4;
                 ArrayList<ParseGeoPoint> flagLocations = new ArrayList<>(2);
@@ -63,10 +59,6 @@ public class CreateGameActivity extends AppCompatActivity {
                 ArrayList<ParseUser> blueTeamNames = new ArrayList<ParseUser>(numPlayers/2);
 
                 game = new Game(name, numPlayers, flagLocations);
-                if (selectedTeam.getText().toString().equals("Red Team"))
-                    game.addToRedTeam(ParseUser.getCurrentUser());
-                else
-                    game.addToBlueTeam(ParseUser.getCurrentUser());
 
                 ParseGeoPoint.getCurrentLocationInBackground(100, new LocationCallback() {
                     @Override

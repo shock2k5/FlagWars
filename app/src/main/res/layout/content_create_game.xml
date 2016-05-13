@@ -41,39 +41,6 @@
             android:layout_height="match_parent"></GridLayout>
 
         <TextView
-            android:id="@+id/textView3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Choose Your Team" />
-
-        <RadioGroup
-            android:id="@+id/create_game_team_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/radio0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="true"
-                android:text="Red Team"
-                android:buttonTint="@color/red"/>
-
-            <RadioButton
-                android:id="@+id/radio1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Blue Team"
-                android:buttonTint="@color/blue"
-                android:checked="false" />
-
-        </RadioGroup>
-
-        <TextView
             android:id="@+id/offline_note"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

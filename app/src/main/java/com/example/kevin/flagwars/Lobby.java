@@ -32,8 +32,10 @@ public class Lobby extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
+
         game = Game.getObjectFromParse(getIntent().getStringExtra("gameObjectId"));
         gameName = (TextView) findViewById(R.id.LobbyGameName);
+
         btnJoinRedTeam = (Button) findViewById(R.id.btnJoinRed);
         btnJoinRedTeam.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -42,7 +44,6 @@ public class Lobby extends AppCompatActivity {
                 if (game.getRedTeam().contains(user)) return;
 
                 game.removeFromBlueTeam(user);
-                game.addToRedTeam(user);
                 if (game.getBlueTeam().size() == 0)
                     game.setBlueFlagLocation(null);
 
@@ -97,7 +98,6 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
-        game = Game.getObjectFromParse(getIntent().getStringExtra("gameObjectId"));
         gameName.setText(game.getName());
 
         redRoster = (ListView) findViewById(R.id.redRosterList);
