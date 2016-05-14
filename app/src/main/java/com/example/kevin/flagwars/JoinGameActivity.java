@@ -96,8 +96,6 @@ public class JoinGameActivity extends AppCompatActivity {
                             }
 
                             Game game = new Game(name, numPlayers);
-                            game.redTeam = redTeam;
-                            game.blueTeam = blueTeam;
                             game.anchorLocation = anchorLocation;
                             game.redFlag = redFlag;
                             game.blueFlag = blueFlag;

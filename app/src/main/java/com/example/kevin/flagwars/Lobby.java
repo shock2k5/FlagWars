@@ -54,12 +54,12 @@ public class Lobby extends AppCompatActivity {
         btnJoinBlueTeam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (game.getBlueTeam().contains(user)) {
+                if (game.getBlueTeamNames().contains(user.getName())) {
                     return;
                 }
                 game.removeFromRedTeam(user);
                 game.addToBlueTeam(user);
-                if (game.getBlueTeam().size() == 1 && game.getBlueFlagLocation() == null) {
+                if (game.getBlueTeamNames().size() == 1 && game.getBlueFlagLocation() == null) {
                     // TODO update location
                     game.setBlueFlagLocation(null);
                 }
@@ -70,11 +70,11 @@ public class Lobby extends AppCompatActivity {
         btnJoinRedTeam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (game.getRedTeam().contains(user)) return;
+                if (game.getRedTeamNames().contains(user.getName())) return;
 
                 game.removeFromBlueTeam(user);
                 game.addToRedTeam(user);
-                if (game.getRedTeam().size() == 1 && game.getRedFlagLocation() == null) {
+                if (game.getRedTeamNames().size() == 1 && game.getRedFlagLocation() == null) {
                     // TODO update location
                     game.setRedFlagLocation(null);
                 }
@@ -86,7 +86,7 @@ public class Lobby extends AppCompatActivity {
         btnStartGameTeam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (game.getBlueTeam().size() > 0 && game.getRedTeam().size() > 0) {
+                if (game.getBlueTeamNames().size() > 0 && game.getRedTeamNames().size() > 0) {
                     Intent intent = new Intent(Lobby.this, GameActivity.class);
                     intent.putExtra("gameID", getIntent().getStringExtra("gameID"));
                     startActivity(intent);
@@ -102,10 +102,6 @@ public class Lobby extends AppCompatActivity {
                 snapshot = snapshot.child(previous.getStringExtra("gameUid"));
                 String name = snapshot.child("name").getValue(String.class);
                 int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
-                Collection<User> red = snapshot.child("redTeam").getValue(new GenericTypeIndicator<ArrayList<User>>() {});
-                Collection<User> blue = snapshot.child("blueTeam").getValue(new GenericTypeIndicator<ArrayList<User>>() {});
-                ArrayList<User> redTeam = (red == null) ? new ArrayList<User>() : new ArrayList<>(red);
-                ArrayList<User> blueTeam = (blue == null) ? new ArrayList<User>() : new ArrayList<>(blue);
 
                 Location anchorLocation, redFlag, blueFlag;
                 if (snapshot.child("anchorLocationLatitude").getValue() != null) {
@@ -135,8 +131,6 @@ public class Lobby extends AppCompatActivity {
                 game = new Game();
                 game.name = name;
                 game.numPlayers = numPlayers;
-                game.redTeam = redTeam;
-                game.blueTeam = blueTeam;
                 game.anchorLocation = anchorLocation;
                 game.redFlag = redFlag;
                 game.blueFlag = blueFlag;

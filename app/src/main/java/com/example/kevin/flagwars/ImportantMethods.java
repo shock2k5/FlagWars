@@ -34,6 +34,15 @@ public class ImportantMethods {
     public static Firebase getFireBase(){
         return new Firebase("https://flagwar.firebaseio.com/");
     }
+    public static Firebase getFireBase(String key) {
+        if(key.equals("Game")) {
+            return new Firebase("https://flagwar.firebaseio.com/Game/");
+        } else if(key.equals("User")){
+            return new Firebase("https://flagwar.firebaseio.com/Game/User/");
+        }
+        return new Firebase("https://flagwar.firebaseio.com/Game/");
+    }
+
 
     public static String emailToUsername(String str){
         return str.substring(0, str.indexOf("@"));
@@ -49,9 +58,9 @@ public class ImportantMethods {
         String uid = "";
         if (authUser == null) {
             return new User();
-        } else {
-            uid = authUser.getUid();
         }
+        uid = authUser.getUid();
+
         fireRef.child("User/" + uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -64,7 +73,7 @@ public class ImportantMethods {
                 user = null;
             }
         });
-        
+
         return user;
     }
 
@@ -162,8 +171,6 @@ public class ImportantMethods {
 
                 game.name = name;
                 game.numPlayers = numPlayers;
-                game.redTeam = redTeam;
-                game.blueTeam = blueTeam;
                 game.anchorLocation = anchorLocation;
                 game.redFlag = redFlag;
                 game.blueFlag = blueFlag;
