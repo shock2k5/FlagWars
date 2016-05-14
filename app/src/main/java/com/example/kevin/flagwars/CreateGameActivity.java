@@ -25,6 +25,7 @@ public class CreateGameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_game);
+        Firebase.setAndroidContext(getApplicationContext());
 
         createGameButton = (Button) findViewById(R.id.create_game_start_game);
         gameName = (EditText) findViewById(R.id.game_name_edit);
@@ -32,7 +33,7 @@ public class CreateGameActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(getDrawable(R.drawable.ic_action_back));
 
-        location = ImportantMethods.getCurrentLocation(this);
+        //location = ImportantMethods.getCurrentLocation(this);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,8 +52,8 @@ public class CreateGameActivity extends AppCompatActivity {
                 game = new Game(name, numPlayers);
                 location = ImportantMethods.getCurrentLocation(CreateGameActivity.this);
                 game.setRedFlagLocation(location);
-                // game.addToRedTeam(ImportantMethods.getCurrentUser());
-                game.addToBlueTeam(new User("name"));
+                game.addToRedTeam(ImportantMethods.getCurrentUser());
+                //game.addToBlueTeam(new User("name"));
 
                 game.sendToFirebase();
                 Intent intent = new Intent(CreateGameActivity.this, Lobby.class);

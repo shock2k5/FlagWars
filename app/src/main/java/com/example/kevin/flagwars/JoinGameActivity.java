@@ -65,7 +65,7 @@ public class JoinGameActivity extends AppCompatActivity {
                         public void onDataChange(DataSnapshot snapshot) {
                             String name = snapshot.child("name").getValue(String.class);
                             int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
-                            Collection<User> red = snapshot.child("redTeam").getValue(new GenericTypeIndicator<ArrayList<User>>() {});
+                            Collection<User> red = (ArrayList<User>) snapshot.child("redTeam").getValue();
                             Collection<User> blue = snapshot.child("blueTeam").getValue(new GenericTypeIndicator<ArrayList<User>>() {});
                             ArrayList<User> redTeam = (red == null) ? new ArrayList<User>() : new ArrayList<>(red);
                             ArrayList<User> blueTeam = (blue == null) ? new ArrayList<User>() : new ArrayList<>(blue);
