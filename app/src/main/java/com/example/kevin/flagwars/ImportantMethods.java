@@ -30,7 +30,12 @@ public class ImportantMethods {
         return new Firebase("https://flagwar.firebaseio.com/");
     }
 
+    public static String emailToUsername(String str){
+        return str.substring(0, str.indexOf("@"));
+    }
+
     public static void addNewUser(User user){
+        fireRef.child("User").child(emailToUsername(user.username)).setValue(user);
 
     }
 
