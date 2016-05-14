@@ -42,6 +42,13 @@ public class RegisterActivity extends AppCompatActivity {
         mLoginTextView = (TextView) findViewById(R.id.loginText);
         mProfilePicture = (ImageView) findViewById(R.id.profilePictureImageView);
 
+        mFacebookButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(RegisterActivity.this, "Facebook integration not currently supported.", Toast.LENGTH_LONG);
+            }
+        });
+
         mLoginTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

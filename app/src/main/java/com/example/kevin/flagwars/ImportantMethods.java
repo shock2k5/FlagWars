@@ -61,7 +61,7 @@ public class ImportantMethods {
         }
         uid = authUser.getUid();
 
-        fireRef.child("User/" + uid).addValueEventListener(new ValueEventListener() {
+        fireRef.child("User").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();

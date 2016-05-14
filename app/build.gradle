@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.kevin.flagwars"
-        minSdkVersion 21
+        minSdkVersion 18
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -30,6 +30,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'
     compile 'com.google.android.gms:play-services:8.4.0'
-    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.firebase:firebase-client-android:2.5.2+'
 }

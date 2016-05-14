@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.Manifest;
 import android.widget.ProgressBar;
@@ -52,6 +53,7 @@ public class JoinGameActivity extends AppCompatActivity {
 
         mEnterCodeTextView.setCursorVisible(false);
         mEnterCodeTextView.setKeyListener(null);
+
 
         Firebase.setAndroidContext(this.getApplicationContext());
         final Firebase ref = new Firebase("https://flagwar.firebaseio.com/").child("Game");

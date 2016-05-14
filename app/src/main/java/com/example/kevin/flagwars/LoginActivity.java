@@ -42,6 +42,13 @@ public class LoginActivity extends AppCompatActivity {
         Firebase.setAndroidContext(this.getApplicationContext());
         final Firebase ref = new Firebase("https://flagwar.firebaseio.com/");
 
+        mFacebookButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(LoginActivity.this, "Facebook integration not currently supported.", Toast.LENGTH_LONG);
+            }
+        });
+
         mRegisterTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
