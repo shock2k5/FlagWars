@@ -54,16 +54,15 @@ public class Lobby extends AppCompatActivity {
         btnJoinBlueTeam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (game.getBlueTeam().contains(user))
+                if (game.getBlueTeam().contains(user)) {
                     return;
-
+                }
                 game.removeFromRedTeam(user);
                 game.addToBlueTeam(user);
                 if (game.getBlueTeam().size() == 1 && game.getBlueFlagLocation() == null) {
                     // TODO update location
                     game.setBlueFlagLocation(null);
                 }
-
                 updateTeamLists();
             }
         });

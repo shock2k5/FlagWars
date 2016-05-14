@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * Created by E&D on 5/13/2016.
@@ -45,16 +46,17 @@ public class ImportantMethods {
 
     public static User getCurrentUser(){
         AuthData authUser = fireRef.getAuth();
-        String uid = null;
+        String uid = "";
         if (authUser == null) {
-            return null;
+            return new User();
         } else {
             uid = authUser.getUid();
         }
         fireRef.child("User/" + uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                user = dataSnapshot.getValue(User.class);
+                HashMap<String, String> map = (HashMap<String, String>) dataSnapshot.getValue();
+                user = new User(map.get("username"));
             }
 
             @Override
@@ -62,6 +64,7 @@ public class ImportantMethods {
                 user = null;
             }
         });
+        
         return user;
     }
 

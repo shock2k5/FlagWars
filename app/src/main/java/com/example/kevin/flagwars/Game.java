@@ -2,6 +2,7 @@ package com.example.kevin.flagwars;
 
 import android.location.Location;
 import android.location.LocationManager;
+import android.util.Log;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -20,6 +21,16 @@ public class Game {
     protected int numPlayers;
     protected ArrayList<User> redTeam, blueTeam;
     protected Location redFlag, blueFlag, anchorLocation = null;
+
+
+    public String toString(){
+        String str = "";
+        str += "Name: " + this.name + "\n";
+        str += "Number of Players: " + numPlayers + "\n";
+        str += "Red Team: " + redTeam.toString() + "\n";
+        str += "Blue Team: " + blueTeam.toString() + "\n";
+        return str;
+    }
 
     public Game() {
         this.name = null;
@@ -52,9 +63,14 @@ public class Game {
     }
 
     public ArrayList<User> getBlueTeam() {
+        updateBlueTeam();
         return this.blueTeam;
     }
 
+    public void updateBlueTeam(){
+        Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name);
+        //TODO Finish this method
+    }
     public String getUid() { return this.name; }
 
     public Location getRedFlagLocation() {
@@ -96,6 +112,10 @@ public class Game {
     }
 
     public boolean addToRedTeam(User user) {
+        if (user == null) {
+            Log.d("Tag: ", "Null");
+            return false;
+        }
         if(this.redTeam.add(user)) {
             getRedTeamNames().add(user.getUsername());
             return true;
@@ -197,4 +217,5 @@ public class Game {
         });
         return game;
     }
+
 }

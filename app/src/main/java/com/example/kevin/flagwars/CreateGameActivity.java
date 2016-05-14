@@ -5,6 +5,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -53,12 +54,13 @@ public class CreateGameActivity extends AppCompatActivity {
                 location = ImportantMethods.getCurrentLocation(CreateGameActivity.this);
                 game.setRedFlagLocation(location);
                 game.addToRedTeam(ImportantMethods.getCurrentUser());
-                //game.addToBlueTeam(new User("name"));
-
+                Log.d("Tag", ImportantMethods.getCurrentUser().toString());
+                //game.addToBlueTeam(ImportantMethods.getCurrentUser());
                 game.sendToFirebase();
                 Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
                 intent.putExtra("gameUid", game.getUid());
-                startActivity(intent);
+
+               startActivity(intent);
             }
         });
     }
