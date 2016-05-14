@@ -171,8 +171,6 @@ public class Game {
                 game.name = snapshot.child("name").getValue(String.class);
                 game.numPlayers = snapshot.child("numPlayers").getValue(Integer.class);
 
-                Double all = snapshot.child("anchorLocationLatitude").getValue(Double.class);
-
                 if (snapshot.child("anchorLocationLatitude").getValue() == null) {
                     game.anchorLocation = new Location(LocationManager.GPS_PROVIDER);
                     game.anchorLocation.setLatitude(snapshot.child("anchorLocationLatitude").getValue(Double.class));

@@ -84,13 +84,13 @@ public class Lobby extends AppCompatActivity {
         btnStartGameTeam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (game.getBlueTeam().size() > 0 && game.getRedTeam().size() > 0) {
+                //if (game.getBlueTeam().size() > 0 && game.getRedTeam().size() > 0) {
                     Intent intent = new Intent(Lobby.this, GameActivity.class);
                     intent.putExtra("gameID", getIntent().getStringExtra("gameID"));
                     startActivity(intent);
-                } else {
-                    Toast.makeText(Lobby.this, "There needs to be at least one player on each team", Toast.LENGTH_LONG).show();
-                }
+                //} else {
+                //    Toast.makeText(Lobby.this, "There needs to be at least one player on each team", Toast.LENGTH_LONG).show();
+                //}
             }
         });
 
