@@ -54,6 +54,8 @@ public class CreateGameActivity extends AppCompatActivity {
                 game.setRedFlagLocation(location);
 
                 ref.child("Game").child(game.getName()).setValue(game);
+                Intent i = new Intent(CreateGameActivity.this, Lobby.class);
+                startActivity(i);
 
                 Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
                 intent.putExtra("gameUid", game.getUid());
