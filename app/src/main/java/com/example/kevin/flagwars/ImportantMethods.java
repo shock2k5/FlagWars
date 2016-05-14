@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
@@ -15,7 +14,10 @@ import com.firebase.client.AuthData;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
+
+import java.util.ArrayList;
 
 /**
  * Created by E&D on 5/13/2016.
@@ -67,10 +69,10 @@ public class ImportantMethods {
 
             }
         });
-        if(user == null) return "";
         return user.username;
     }
 
+    // TODO DOESNT WORK
     public static Location getCurrentLocation(Activity a) {
         if (ContextCompat.checkSelfPermission(a, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // ask for permission
@@ -85,5 +87,63 @@ public class ImportantMethods {
             Toast.makeText(a.getApplicationContext(), "Permission needs to be granted for this application", Toast.LENGTH_LONG);
             return null;
         }
+    }
+
+    public static Game getGameFromFirebase(String uid) {
+        final Firebase ref = ImportantMethods.getFireBase().child("Game").child(uid);
+        final Game game = new Game();
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String name = snapshot.child("name").getValue(String.class);
+                int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
+                ArrayList<User> redTeam = new ArrayList<>(
+                        snapshot.child("redTeam").getValue(new GenericTypeIndicator<ArrayList<User>>() {}
+                        ));
+                ArrayList<User> blueTeam = new ArrayList<>(
+                        snapshot.child("blueTeam").getValue(new GenericTypeIndicator<ArrayList<User>>() {}
+                        ));
+
+                Location anchorLocation, redFlag, blueFlag;
+                if (snapshot.child("anchorLocationLatitude").getValue() != null) {
+                    anchorLocation = new Location(LocationManager.GPS_PROVIDER);
+                    anchorLocation.setLatitude(snapshot.child("anchorLocationLatitude").getValue(Double.class));
+                    anchorLocation.setLongitude(snapshot.child("anchorLocationLongitude").getValue(Double.class));
+                } else {
+                    anchorLocation = null;
+                }
+
+                if (snapshot.child("redFlagLatitude").getValue() != null) {
+                    redFlag = new Location(LocationManager.GPS_PROVIDER);
+                    redFlag.setLatitude(snapshot.child("redFlagLatitude").getValue(Double.class));
+                    redFlag.setLongitude(snapshot.child("redFlagLongitude").getValue(Double.class));
+                } else {
+                    redFlag = null;
+                }
+
+                if (snapshot.child("blueFlagLatitude").getValue(Double.class) != null) {
+                    blueFlag = new Location(LocationManager.GPS_PROVIDER);
+                    blueFlag.setLatitude(snapshot.child("blueFlagLatitude").getValue(Double.class));
+                    blueFlag.setLongitude(snapshot.child("blueFlagLongitude").getValue(Double.class));
+                } else {
+                    blueFlag = null;
+                }
+
+                game.name = name;
+                game.numPlayers = numPlayers;
+                game.redTeam = redTeam;
+                game.blueTeam = blueTeam;
+                game.anchorLocation = anchorLocation;
+                game.redFlag = redFlag;
+                game.blueFlag = blueFlag;
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.err.println("There was an error getting the Game from Firebase: " + firebaseError);
+            }
+        });
+
+        return game;
     }
 }

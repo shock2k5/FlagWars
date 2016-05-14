@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -98,7 +97,7 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String uid = previous.getStringExtra("gameUid");
-                game = Game.getFromFirebase(uid);
+                game = ImportantMethods.getGameFromFirebase(uid);
                 int i = 0;
                 gameName.setText(game.getName());
                 redAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getRedTeamNames());

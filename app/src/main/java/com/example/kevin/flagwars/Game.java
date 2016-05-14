@@ -6,8 +6,8 @@ import android.location.LocationManager;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
-import com.firebase.client.snapshot.DoubleNode;
 
 import java.util.ArrayList;
 
@@ -16,14 +16,10 @@ import java.util.ArrayList;
  */
 
 public class Game {
-    /**
-     *  public is true private is false
-     */
-    private String name;
-    private int numPlayers;
-    private ArrayList<User> redTeam, blueTeam;
-    private Location redFlag, blueFlag;
-    private Location anchorLocation = null;
+    protected String name;
+    protected int numPlayers;
+    protected ArrayList<User> redTeam, blueTeam;
+    protected Location redFlag, blueFlag, anchorLocation = null;
 
     public Game() {
         this.name = null;
@@ -139,8 +135,8 @@ public class Game {
         Firebase ref = ImportantMethods.getFireBase().child("Game").child(this.getUid());
         ref.child("name").setValue(this.name);
         ref.child("numPlayers").setValue(this.numPlayers);
-        ref.child("redTeam").setValue(this.redTeam.toArray());
-        ref.child("blueTeam").setValue(this.blueTeam.toArray());
+        ref.child("redTeam").setValue(this.redTeam);
+        ref.child("blueTeam").setValue(this.blueTeam);
 
         if (anchorLocation != null) {
             ref.child("anchorLocationLatitude").setValue(this.anchorLocation.getLatitude());
@@ -156,53 +152,5 @@ public class Game {
             ref.child("blueFlagLatitude").setValue(this.blueFlag.getLatitude());
             ref.child("blueFlagLongitude").setValue(this.blueFlag.getLongitude());
         }
-
-        // TODO arraylists to map
-    }
-
-    /******************** STATIC METHODS ********************/
-
-    public static Game getFromFirebase(String uid) {
-        final Firebase ref = ImportantMethods.getFireBase().child("Game").child(uid);
-        final Game game = new Game();
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                game.name = snapshot.child("name").getValue(String.class);
-                game.numPlayers = snapshot.child("numPlayers").getValue(Integer.class);
-
-                if (snapshot.child("anchorLocationLatitude").getValue() == null) {
-                    game.anchorLocation = new Location(LocationManager.GPS_PROVIDER);
-                    game.anchorLocation.setLatitude(snapshot.child("anchorLocationLatitude").getValue(Double.class));
-                    game.anchorLocation.setLongitude(snapshot.child("anchorLocationLongitude").getValue(Double.class));
-                } else {
-                    game.anchorLocation = null;
-                }
-
-                if (snapshot.child("redFlagLatitude").getValue() == null) {
-                    game.redFlag = new Location(LocationManager.GPS_PROVIDER);
-                    game.redFlag.setLatitude(snapshot.child("redFlagLatitude").getValue(Double.class));
-                    game.redFlag.setLongitude(snapshot.child("redFlagLongitude").getValue(Double.class));
-                } else {
-                    game.redFlag = null;
-                }
-
-                if (snapshot.child("blueFlagLatitude").getValue(Double.class) == null) {
-                    game.blueFlag = new Location(LocationManager.GPS_PROVIDER);
-                    game.blueFlag.setLatitude(snapshot.child("blueFlagLatitude").getValue(Double.class));
-                    game.blueFlag.setLongitude(snapshot.child("blueFlagLongitude").getValue(Double.class));
-                } else {
-                    game.blueFlag = null;
-                }
-
-                // TODO convert map to arraylist
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                System.err.println("There was an error getting the Game from Firebase: " + firebaseError);
-            }
-        });
-        return game;
     }
 }
