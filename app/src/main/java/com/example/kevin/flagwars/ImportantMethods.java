@@ -111,6 +111,11 @@ public class ImportantMethods {
         String provider = locationManager.getBestProvider(criteria, true);
         // Get Current Location
         Location myLocation = locationManager.getLastKnownLocation(provider);
+        if (myLocation == null) {
+            myLocation = new Location(LocationManager.GPS_PROVIDER);
+            myLocation.setLongitude(-122.083);
+            myLocation.setLatitude(37.453);
+        }
         return myLocation;
 
     }

@@ -62,6 +62,7 @@ public class JoinGameActivity extends AppCompatActivity {
                 Map<String, ?> games = dataSnapshot.getValue(Map.class);
                 for (String key : games.keySet()) {
                     DataSnapshot snapshot = dataSnapshot.child(key);
+
                     String name = snapshot.child("name").getValue(String.class);
                     int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
                     HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
