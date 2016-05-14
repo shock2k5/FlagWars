@@ -30,9 +30,6 @@ import java.util.Collection;
 public class ImportantMethods {
     private static Firebase fireRef = ImportantMethods.getFireBase();
     private static User user;
-    private static GoogleMap mMap;
-
-
     public static Firebase getFireBase(){
         return new Firebase("https://flagwar.firebaseio.com/");
     }
@@ -83,15 +80,14 @@ public class ImportantMethods {
         });
         return user.username;
     }
+    /*
     public static Location getCurrentLocation(Activity a) {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker").snippet("Snippet"));
 
         // Enable MyLocation Layer of Google Map
         if (ContextCompat.checkSelfPermission(a, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // ask for permission
             ActivityCompat.requestPermissions(a, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
         }
-        mMap.setMyLocationEnabled(true);
 
         // Get LocationManager object from System Service LOCATION_SERVICE
         LocationManager locationManager = (LocationManager) a.getSystemService(Context.LOCATION_SERVICE);
@@ -106,10 +102,8 @@ public class ImportantMethods {
         Location myLocation = locationManager.getLastKnownLocation(provider);
         return myLocation;
 
-    }
-
-
-    /*    // TODO DOESNT WORK
+    }*/
+    // TODO DOESNT WORK
     public static Location getCurrentLocation(Activity a) {
         if (ContextCompat.checkSelfPermission(a, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // ask for permission
@@ -125,7 +119,6 @@ public class ImportantMethods {
             return null;
         }
     }
-*/
     public static Game getGameFromFirebase(String uid) {
         final Firebase ref = ImportantMethods.getFireBase().child("Game").child(uid);
         final Game game = new Game();
