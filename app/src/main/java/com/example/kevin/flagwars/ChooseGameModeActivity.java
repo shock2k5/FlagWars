@@ -31,6 +31,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
     private CharSequence mTitle;
     private ActionBarDrawerToggle mDrawerToggle;
     private Firebase fireRef;
+    private int counter;
 
     final Context context = this;
 
