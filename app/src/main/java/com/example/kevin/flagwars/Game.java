@@ -123,7 +123,8 @@ public class Game {
     }
 
     public void addToBlueTeam(final User user) {
-        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList/");
+        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList");
+        Log.d("Game: ", this.toString());
         fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -169,11 +170,20 @@ public class Game {
     }
 
     public void sendToFirebase() {
-        Firebase ref = ImportantMethods.getFireBase().child("Game").child(this.getUid());
+        Firebase ref = ImportantMethods.getFireBase().child("Game").child(this.name);
+        Log.d("Tag: ", this.name);
         ref.child("name").setValue(this.name);
         ref.child("numPlayers").setValue(this.numPlayers);
-        ref.child("redTeam").setValue(this.getRedTeamNames());
-        ref.child("blueTeam").setValue(this.getBlueTeamNames());
+        HashMap<String, String> playerList = new HashMap<String, String>();
+        ArrayList<String> red = getRedTeamNames();
+        ArrayList<String> blue = getBlueTeamNames();
+        for(String str : red){
+            playerList.put(str, "red");
+        }
+        for(String str : blue){
+            playerList.put(str, "blue");
+        }
+        ref.child("teamList").setValue(playerList);
 
         if (anchorLocation != null) {
             ref.child("anchorLocationLatitude").setValue(this.anchorLocation.getLatitude());
