@@ -98,7 +98,11 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String uid = previous.getStringExtra("gameUid");
-                game = dataSnapshot.child("Game").child(uid).getValue(Game.class);
+                game = Game.getFromFirebase(uid);
+                int i = 0;
+                gameName.setText(game.getName());
+                redAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
+                blueAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());
             }
 
             @Override
@@ -106,10 +110,6 @@ public class Lobby extends AppCompatActivity {
                 Log.e("Firebase Read Error", "Occurred in Lobby/addListenerForSingleValueEvent", firebaseError.toException());
             }
         });
-
-        gameName.setText(game.getName());
-        redAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
-        blueAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());
     }
 
     public void updateTeamLists(){

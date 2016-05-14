@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -56,16 +57,20 @@ public class JoinGameActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Map<String, Game> games = dataSnapshot.child("Game").getValue(Map.class);
-
-                for (Game g : games.values())
+                for (String key : games.keySet()) {
+                    Game g = Game.getFromFirebase(key);
+                    if (g == null)
+                        Log.e("Failure", "Null object retrieved from Firebase", new NullPointerException());
                     gameList.add(g);
+                }
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
-
+                Log.e("Firebase failure", "Error in retrieving object from Firebase in JoinGameActivity", firebaseError.toException());
             }
         });
+
         List<String> gameNames = new ArrayList<>();
         for (Game g : gameList)
             gameNames.add(g.getName());

@@ -55,8 +55,6 @@ public class ImportantMethods {
     }
 
     public static String getUserName(){
-        Firebase fireRef = ImportantMethods.getFireBase();
-        fireRef = new Firebase("https://flagwar.firebaseio.com/");
         String uid = fireRef.getAuth().getUid();
         fireRef.child("User/" + uid).addValueEventListener(new ValueEventListener() {
             @Override

@@ -28,10 +28,14 @@ public class CreateGameActivity extends AppCompatActivity {
         Firebase.setAndroidContext(this.getApplicationContext());
         final Firebase ref = new Firebase("https://flagwar.firebaseio.com/");
 
+        createGameButton = (Button) findViewById(R.id.create_game_start_game);
+        gameName = (EditText) findViewById(R.id.game_name_edit);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         toolbar.setNavigationIcon(getDrawable(R.drawable.ic_action_back));
+
+        location = ImportantMethods.getCurrentLocation(this);
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -39,9 +43,6 @@ public class CreateGameActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-
-        createGameButton = (Button) findViewById(R.id.create_game_start_game);
-        gameName = (EditText) findViewById(R.id.game_name_edit);
 
         createGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,10 +54,7 @@ public class CreateGameActivity extends AppCompatActivity {
                 location = ImportantMethods.getCurrentLocation(CreateGameActivity.this);
                 game.setRedFlagLocation(location);
 
-                ref.child("Game").child(game.getName()).setValue(game);
-                Intent i = new Intent(CreateGameActivity.this, Lobby.class);
-                startActivity(i);
-
+                game.sendToFirebase();
                 Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
                 intent.putExtra("gameUid", game.getUid());
                 startActivity(intent);

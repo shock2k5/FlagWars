@@ -2,18 +2,14 @@ package com.example.kevin.flagwars;
 
 import android.location.Location;
 import android.location.LocationManager;
-import android.provider.ContactsContract;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
-import com.firebase.geofire.GeoFire;
-import com.firebase.geofire.GeoLocation;
-import com.firebase.geofire.LocationCallback;
+import com.firebase.client.snapshot.DoubleNode;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Created by Adi on 4/27/16.
@@ -144,41 +140,22 @@ public class Game {
         ref.child("name").setValue(this.name);
         ref.child("numPlayers").setValue(this.numPlayers);
         ref.child("redTeam").setValue(this.redTeam.toArray());
+        ref.child("blueTeam").setValue(this.blueTeam.toArray());
 
-        GeoFire geoFire = new GeoFire(ref);
-        geoFire.setLocation("anchorLocation",
-                new GeoLocation(anchorLocation.getLatitude(), anchorLocation.getLongitude()), new GeoFire.CompletionListener() {
-            @Override
-            public void onComplete(String key, FirebaseError error) {
-                if (error != null) {
-                    System.err.println("There was an error saving the location to GeoFire: " + error);
-                } else {
-                    System.out.println("Location saved on server successfully!");
-                }
-            }
-        });
-        geoFire.setLocation("redFlag",
-                new GeoLocation(redFlag.getLatitude(), redFlag.getLongitude()), new GeoFire.CompletionListener() {
-                    @Override
-                    public void onComplete(String key, FirebaseError error) {
-                        if (error != null) {
-                            System.err.println("There was an error saving the location to GeoFire: " + error);
-                        } else {
-                            System.out.println("Location saved on server successfully!");
-                        }
-                    }
-                });
-        geoFire.setLocation("blueFlag",
-                new GeoLocation(blueFlag.getLatitude(), blueFlag.getLongitude()), new GeoFire.CompletionListener() {
-                    @Override
-                    public void onComplete(String key, FirebaseError error) {
-                        if (error != null) {
-                            System.err.println("There was an error saving the location to GeoFire: " + error);
-                        } else {
-                            System.out.println("Location saved on server successfully!");
-                        }
-                    }
-                });
+        if (anchorLocation != null) {
+            ref.child("anchorLocationLatitude").setValue(this.anchorLocation.getLatitude());
+            ref.child("anchorLocationLongitude").setValue(this.anchorLocation.getLongitude());
+        }
+
+        if (redFlag != null) {
+            ref.child("redFlagLatitude").setValue(this.redFlag.getLatitude());
+            ref.child("redFlagLongitude").setValue(this.redFlag.getLongitude());
+        }
+
+        if (blueFlag != null) {
+            ref.child("blueFlagLatitude").setValue(this.blueFlag.getLatitude());
+            ref.child("blueFlagLongitude").setValue(this.blueFlag.getLongitude());
+        }
 
         // TODO arraylists to map
     }
@@ -193,46 +170,32 @@ public class Game {
             public void onDataChange(DataSnapshot snapshot) {
                 game.name = snapshot.child("name").getValue(String.class);
                 game.numPlayers = snapshot.child("numPlayers").getValue(Integer.class);
-                GeoFire geoFire = new GeoFire(ref);
-                geoFire.getLocation("anchorLocation", new LocationCallback() {
-                    @Override
-                    public void onLocationResult(String key, GeoLocation location) {
-                        game.anchorLocation = new Location(LocationManager.GPS_PROVIDER);
-                        game.anchorLocation.setLatitude(location.latitude);
-                        game.anchorLocation.setLongitude(location.longitude);
-                    }
 
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError) {
-                        System.err.println("There was an error getting the location from Firebase: " + firebaseError);
-                    }
-                });
-                geoFire.getLocation("redFlag", new LocationCallback() {
-                    @Override
-                    public void onLocationResult(String key, GeoLocation location) {
-                        game.redFlag = new Location(LocationManager.GPS_PROVIDER);
-                        game.redFlag.setLatitude(location.latitude);
-                        game.redFlag.setLongitude(location.longitude);
-                    }
+                Double all = snapshot.child("anchorLocationLatitude").getValue(Double.class);
 
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError) {
-                        System.err.println("There was an error getting the location from Firebase: " + firebaseError);
-                    }
-                });
-                geoFire.getLocation("blueFlag", new LocationCallback() {
-                    @Override
-                    public void onLocationResult(String key, GeoLocation location) {
-                        game.blueFlag = new Location(LocationManager.GPS_PROVIDER);
-                        game.blueFlag.setLatitude(location.latitude);
-                        game.blueFlag.setLongitude(location.longitude);
-                    }
+                if (snapshot.child("anchorLocationLatitude").getValue() == null) {
+                    game.anchorLocation = new Location(LocationManager.GPS_PROVIDER);
+                    game.anchorLocation.setLatitude(snapshot.child("anchorLocationLatitude").getValue(Double.class));
+                    game.anchorLocation.setLongitude(snapshot.child("anchorLocationLongitude").getValue(Double.class));
+                } else {
+                    game.anchorLocation = null;
+                }
 
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError) {
-                        System.err.println("There was an error getting the location from Firebase: " + firebaseError);
-                    }
-                });
+                if (snapshot.child("redFlagLatitude").getValue() == null) {
+                    game.redFlag = new Location(LocationManager.GPS_PROVIDER);
+                    game.redFlag.setLatitude(snapshot.child("redFlagLatitude").getValue(Double.class));
+                    game.redFlag.setLongitude(snapshot.child("redFlagLongitude").getValue(Double.class));
+                } else {
+                    game.redFlag = null;
+                }
+
+                if (snapshot.child("blueFlagLatitude").getValue(Double.class) == null) {
+                    game.blueFlag = new Location(LocationManager.GPS_PROVIDER);
+                    game.blueFlag.setLatitude(snapshot.child("blueFlagLatitude").getValue(Double.class));
+                    game.blueFlag.setLongitude(snapshot.child("blueFlagLongitude").getValue(Double.class));
+                } else {
+                    game.blueFlag = null;
+                }
 
                 // TODO convert map to arraylist
             }
