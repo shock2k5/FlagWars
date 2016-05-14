@@ -31,7 +31,6 @@ public class ChooseGameModeActivity extends AppCompatActivity {
     private CharSequence mTitle;
     private ActionBarDrawerToggle mDrawerToggle;
     private Firebase fireRef;
-    private int counter;
 
     final Context context = this;
 
@@ -75,7 +74,6 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                 } else {
                     // Current user is logged in
                     Intent i = new Intent(ChooseGameModeActivity.this, JoinGameActivity.class);
-
                     startActivity(i);
                 }
             }
@@ -101,7 +99,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
 
 
 
-        mDrawerToggle = new CustomActionBarDrawerToggle(
+        mDrawerToggle = new CustomActionBarDrawerToggle (
                 this,                  /* host Activity */
                 mDrawerLayout)         /* DrawerLayout object */
         {

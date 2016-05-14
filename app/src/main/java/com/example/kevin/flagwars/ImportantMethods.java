@@ -18,6 +18,7 @@ import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by E&D on 5/13/2016.
@@ -102,12 +103,10 @@ public class ImportantMethods {
             public void onDataChange(DataSnapshot snapshot) {
                 String name = snapshot.child("name").getValue(String.class);
                 int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
-                ArrayList<User> redTeam = new ArrayList<>(
-                        snapshot.child("redTeam").getValue(new GenericTypeIndicator<ArrayList<User>>() {}
-                        ));
-                ArrayList<User> blueTeam = new ArrayList<>(
-                        snapshot.child("blueTeam").getValue(new GenericTypeIndicator<ArrayList<User>>() {}
-                        ));
+                Collection<User> red = snapshot.child("redTeam").getValue(new GenericTypeIndicator<ArrayList<User>>() {});
+                Collection<User> blue = snapshot.child("blueTeam").getValue(new GenericTypeIndicator<ArrayList<User>>() {});
+                ArrayList<User> redTeam = (red == null) ? new ArrayList<User>() : new ArrayList<>(red);
+                ArrayList<User> blueTeam = (blue == null) ? new ArrayList<User>() : new ArrayList<>(blue);
 
                 Location anchorLocation, redFlag, blueFlag;
                 if (snapshot.child("anchorLocationLatitude").getValue() != null) {
