@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
@@ -16,6 +17,9 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +30,8 @@ import java.util.Collection;
 public class ImportantMethods {
     private static Firebase fireRef = ImportantMethods.getFireBase();
     private static User user;
+    private static GoogleMap mMap;
+
 
     public static Firebase getFireBase(){
         return new Firebase("https://flagwar.firebaseio.com/");
@@ -77,8 +83,33 @@ public class ImportantMethods {
         });
         return user.username;
     }
+    public static Location getCurrentLocation(Activity a) {
+        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker").snippet("Snippet"));
 
-    // TODO DOESNT WORK
+        // Enable MyLocation Layer of Google Map
+        if (ContextCompat.checkSelfPermission(a, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // ask for permission
+            ActivityCompat.requestPermissions(a, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
+        }
+        mMap.setMyLocationEnabled(true);
+
+        // Get LocationManager object from System Service LOCATION_SERVICE
+        LocationManager locationManager = (LocationManager) a.getSystemService(Context.LOCATION_SERVICE);
+
+
+        // Create a criteria object to retrieve provider
+        Criteria criteria = new Criteria();
+
+        // Get the name of the best provider
+        String provider = locationManager.getBestProvider(criteria, true);
+        // Get Current Location
+        Location myLocation = locationManager.getLastKnownLocation(provider);
+        return myLocation;
+
+    }
+
+
+    /*    // TODO DOESNT WORK
     public static Location getCurrentLocation(Activity a) {
         if (ContextCompat.checkSelfPermission(a, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // ask for permission
@@ -94,7 +125,7 @@ public class ImportantMethods {
             return null;
         }
     }
-
+*/
     public static Game getGameFromFirebase(String uid) {
         final Firebase ref = ImportantMethods.getFireBase().child("Game").child(uid);
         final Game game = new Game();
