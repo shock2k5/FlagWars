@@ -26,6 +26,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +55,9 @@ public class JoinGameActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (Game g : ((Map<String, Game>) dataSnapshot.child("Game/").getValue(Map.class)).values())
+                Map<String, Game> games = dataSnapshot.child("Game").getValue(Map.class);
+
+                for (Game g : games.values())
                     gameList.add(g);
             }
 
@@ -109,7 +112,7 @@ public class JoinGameActivity extends AppCompatActivity {
                     loc = null;
             } else {
                 Toast.makeText(this.getApplicationContext(),
-                        "Permission needs to be granted for this application", Toast.LENGTH_LONG).show();
+                    "Permission needs to be granted for this application", Toast.LENGTH_LONG).show();
             }
         }
     }

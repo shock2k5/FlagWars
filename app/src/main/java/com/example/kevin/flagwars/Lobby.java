@@ -45,9 +45,6 @@ public class Lobby extends AppCompatActivity {
 
         btnStartGameTeam = (Button) findViewById(R.id.btnStartGameTeam);
 
-        redAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
-        blueAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());
-
         redRoster.setAdapter(redAdapter);
         blueRoster.setAdapter(blueAdapter);
 
@@ -101,7 +98,7 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String uid = previous.getStringExtra("gameUid");
-                game = dataSnapshot.child("Game/" + uid).getValue(Game.class);
+                game = dataSnapshot.child("Game").child(uid).getValue(Game.class);
             }
 
             @Override
@@ -111,6 +108,8 @@ public class Lobby extends AppCompatActivity {
         });
 
         gameName.setText(game.getName());
+        redAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
+        blueAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());
     }
 
     public void updateTeamLists(){
