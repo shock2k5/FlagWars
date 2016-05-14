@@ -92,7 +92,6 @@ public class ImportantMethods {
         });
         return (user.name.indexOf('.') == -1) ? user.name : user.name.substring(0, user.name.indexOf('@'));
     }
-    /*
     public static Location getCurrentLocation(Activity a) {
 
         // Enable MyLocation Layer of Google Map
@@ -114,7 +113,8 @@ public class ImportantMethods {
         Location myLocation = locationManager.getLastKnownLocation(provider);
         return myLocation;
 
-    }*/
+    }
+    /*
     // TODO DOESNT WORK
     public static Location getCurrentLocation(Activity a) {
         if (ContextCompat.checkSelfPermission(a, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -130,7 +130,7 @@ public class ImportantMethods {
             Toast.makeText(a.getApplicationContext(), "Permission needs to be granted for this application", Toast.LENGTH_LONG);
             return null;
         }
-    }
+    }*/
     public static Game getGameFromFirebase(String uid) {
         final Firebase ref = ImportantMethods.getFireBase().child("Game").child(uid);
         final Game game = new Game();
