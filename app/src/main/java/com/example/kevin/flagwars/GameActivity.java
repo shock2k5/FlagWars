@@ -74,16 +74,30 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
                 game.teamList = teamList;
                 if (redFlag == null) {
                     redFlag = new Location(LocationManager.GPS_PROVIDER);
-                    redFlag.setLatitude(37.054);
-                    redFlag.setLongitude(-122.556);
+                    redFlag.setLatitude(38.986);
+                    redFlag.setLongitude(-76.94056);
                 }
                 if (blueFlag == null) {
                     blueFlag = new Location(LocationManager.GPS_PROVIDER);
-                    blueFlag.setLatitude(37.154);
-                    blueFlag.setLongitude(-122.656);
+                    blueFlag.setLatitude(38.9859);
+                    blueFlag.setLongitude(-76.944294);
                 }
                 game.redFlag = redFlag;
                 game.blueFlag = blueFlag;
+
+                LatLng currentLocation = locationToLatLng(loc);
+                mMap.addMarker(new MarkerOptions().position(currentLocation).title("Current Location"));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
+                mMap.addMarker(new MarkerOptions()
+                        .position(locationToLatLng(game.getRedFlagLocation()))
+                        .title("Red Flag")
+                        .draggable(false)
+                        .flat(true));
+                mMap.addMarker(new MarkerOptions()
+                        .position(locationToLatLng(game.getBlueFlagLocation()))
+                        .title("Blue Flag")
+                        .draggable(false)
+                        .flat(true));
             }
 
             @Override
@@ -91,24 +105,6 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
                 System.err.println("There was an error getting the Game from Firebase: " + firebaseError);
             }
         });
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        LatLng currentLocation = locationToLatLng(loc);
-        mMap.addMarker(new MarkerOptions().position(currentLocation).title("Current Location"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
-        mMap.addMarker(new MarkerOptions()
-                .position(locationToLatLng(game.getRedFlagLocation()))
-                .title("Red Flag")
-                .draggable(false)
-                .flat(true));
-        mMap.addMarker(new MarkerOptions()
-                .position(locationToLatLng(game.getBlueFlagLocation()))
-                .title("Blue Flag")
-                .draggable(false)
-                .flat(true));
     }
 
     @Override

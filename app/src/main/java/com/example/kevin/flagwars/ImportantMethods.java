@@ -113,8 +113,8 @@ public class ImportantMethods {
         Location myLocation = locationManager.getLastKnownLocation(provider);
         if (myLocation == null) {
             myLocation = new Location(LocationManager.GPS_PROVIDER);
-            myLocation.setLongitude(-122.083);
-            myLocation.setLatitude(37.453);
+            myLocation.setLatitude(38.985933);
+            myLocation.setLongitude(-76.942792);
         }
         return myLocation;
 
