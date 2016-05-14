@@ -4,7 +4,7 @@ package com.example.kevin.flagwars;
  * Created by Adi on 5/13/16.
  */
 public class User {
-    protected String username, uid = null;
+    protected String username, name;
 
     public User() { }
 
@@ -14,5 +14,5 @@ public class User {
 
     public String getUsername() { return this.username; }
 
-    public String getUid() { return this.uid; }
+    public String getName() { return this.name; }
 }
