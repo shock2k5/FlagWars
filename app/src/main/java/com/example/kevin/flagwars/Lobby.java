@@ -49,8 +49,7 @@ public class Lobby extends AppCompatActivity {
 
         btnStartGameTeam = (Button) findViewById(R.id.btnStartGameTeam);
 
-        redRoster.setAdapter(redAdapter);
-        blueRoster.setAdapter(blueAdapter);
+        user = ImportantMethods.getCurrentUser();
 
         btnJoinBlueTeam.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,6 +145,8 @@ public class Lobby extends AppCompatActivity {
                 gameName.setText(game.getName());
                 redAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
                 blueAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());
+                redRoster.setAdapter(redAdapter);
+                blueRoster.setAdapter(blueAdapter);
             }
 
             @Override
@@ -162,5 +163,7 @@ public class Lobby extends AppCompatActivity {
         blueAdapter.clear();
         for (String name : game.getBlueTeamNames())
             blueAdapter.add(name);
+
+        Log.d("Debug", "red:\n" + game.getRedTeamNames().toString() + "\nblue:\n" + game.getBlueTeamNames());
     }
 }
