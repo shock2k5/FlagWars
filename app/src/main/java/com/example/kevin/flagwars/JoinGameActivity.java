@@ -58,7 +58,7 @@ public class JoinGameActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // TODO update it to allow for calling all objects in a "class"
-                Map<String, Game> games = dataSnapshot.getValue(Map.class);
+                Map<String, ?> games = dataSnapshot.getValue(Map.class);
                 for (String key : games.keySet()) {
                     ref.child(key).addValueEventListener(new ValueEventListener() {
                         @Override
