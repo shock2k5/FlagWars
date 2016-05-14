@@ -25,8 +25,6 @@ public class CreateGameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_game);
-        Firebase.setAndroidContext(this.getApplicationContext());
-        final Firebase ref = new Firebase("https://flagwar.firebaseio.com/");
 
         createGameButton = (Button) findViewById(R.id.create_game_start_game);
         gameName = (EditText) findViewById(R.id.game_name_edit);
@@ -53,6 +51,8 @@ public class CreateGameActivity extends AppCompatActivity {
                 game = new Game(name, numPlayers);
                 location = ImportantMethods.getCurrentLocation(CreateGameActivity.this);
                 game.setRedFlagLocation(location);
+                game.addToRedTeam(new User("red test"));
+                game.addToBlueTeam(new User("blue test"));
 
                 game.sendToFirebase();
                 Intent intent = new Intent(CreateGameActivity.this, Lobby.class);

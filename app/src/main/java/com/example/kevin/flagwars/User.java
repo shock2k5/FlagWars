@@ -6,10 +6,10 @@ package com.example.kevin.flagwars;
 public class User {
     protected String username, uid = null;
 
-    public User() { username = "null"; }
+    public User() { }
 
     public User(String name){
-        username = name;
+        this.username = name;
     }
 
     public String getUsername() { return this.username; }

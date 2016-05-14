@@ -6,8 +6,8 @@ import android.location.LocationManager;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
-import com.firebase.client.snapshot.DoubleNode;
 
 import java.util.ArrayList;
 
@@ -16,14 +16,10 @@ import java.util.ArrayList;
  */
 
 public class Game {
-    /**
-     *  public is true private is false
-     */
-    private String name;
-    private int numPlayers;
-    private ArrayList<User> redTeam, blueTeam;
-    private Location redFlag, blueFlag;
-    private Location anchorLocation = null;
+    protected String name;
+    protected int numPlayers;
+    protected ArrayList<User> redTeam, blueTeam;
+    protected Location redFlag, blueFlag, anchorLocation = null;
 
     public Game() {
         this.name = null;
@@ -139,8 +135,8 @@ public class Game {
         Firebase ref = ImportantMethods.getFireBase().child("Game").child(this.getUid());
         ref.child("name").setValue(this.name);
         ref.child("numPlayers").setValue(this.numPlayers);
-        ref.child("redTeam").setValue(this.redTeam.toArray());
-        ref.child("blueTeam").setValue(this.blueTeam.toArray());
+        ref.child("redTeam").setValue(this.redTeam);
+        ref.child("blueTeam").setValue(this.blueTeam);
 
         if (anchorLocation != null) {
             ref.child("anchorLocationLatitude").setValue(this.anchorLocation.getLatitude());
