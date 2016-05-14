@@ -51,8 +51,7 @@ public class CreateGameActivity extends AppCompatActivity {
                 game = new Game(name, numPlayers);
                 location = ImportantMethods.getCurrentLocation(CreateGameActivity.this);
                 game.setRedFlagLocation(location);
-                // game.addToRedTeam(ImportantMethods.getCurrentUser());
-                game.addToBlueTeam(new User("name"));
+                game.addToRedTeam(ImportantMethods.getCurrentUser());
 
                 game.sendToFirebase();
                 Intent intent = new Intent(CreateGameActivity.this, Lobby.class);

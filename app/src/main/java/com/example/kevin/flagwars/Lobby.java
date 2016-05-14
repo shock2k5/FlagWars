@@ -143,7 +143,6 @@ public class Lobby extends AppCompatActivity {
                 game.redFlag = redFlag;
                 game.blueFlag = blueFlag;
 
-                int i = 0;
                 gameName.setText(game.getName());
                 redAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
                 blueAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());

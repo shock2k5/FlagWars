@@ -152,8 +152,6 @@ public class Game {
             ref.child("blueFlagLatitude").setValue(this.blueFlag.getLatitude());
             ref.child("blueFlagLongitude").setValue(this.blueFlag.getLongitude());
         }
-
-        // TODO arraylists to map
     }
 
     /******************** STATIC METHODS ********************/
@@ -166,8 +164,6 @@ public class Game {
             public void onDataChange(DataSnapshot snapshot) {
                 game.name = snapshot.child("name").getValue(String.class);
                 game.numPlayers = snapshot.child("numPlayers").getValue(Integer.class);
-
-                Double all = snapshot.child("anchorLocationLatitude").getValue(Double.class);
 
                 if (snapshot.child("anchorLocationLatitude").getValue() == null) {
                     game.anchorLocation = new Location(LocationManager.GPS_PROVIDER);
@@ -192,8 +188,6 @@ public class Game {
                 } else {
                     game.blueFlag = null;
                 }
-
-                // TODO convert map to arraylist
             }
 
             @Override
