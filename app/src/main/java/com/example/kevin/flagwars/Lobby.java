@@ -21,6 +21,7 @@ import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 public class Lobby extends AppCompatActivity {
     ArrayList<String> redTeam, blueTeam;
@@ -57,8 +58,10 @@ public class Lobby extends AppCompatActivity {
                 if (game.getBlueTeamNames().contains(user.getName())) {
                     return;
                 }
-                game.removeFromRedTeam(user);
-                game.addToBlueTeam(user);
+
+                Log.d("Debug", "About to switch teams\nred:\n" + game.getRedTeamNames().toString() + "\nblue:\n" + game.getBlueTeamNames());
+                game.switchRedtoBlue(user);
+                Log.d("Debug", "Switched teams\nred:\n" + game.getRedTeamNames().toString() + "\nblue:\n" + game.getBlueTeamNames());
                 if (game.getBlueTeamNames().size() == 1 && game.getBlueFlagLocation() == null) {
                     // TODO update location
                     game.setBlueFlagLocation(null);
@@ -72,8 +75,7 @@ public class Lobby extends AppCompatActivity {
             public void onClick(View v) {
                 if (game.getRedTeamNames().contains(user.getName())) return;
 
-                game.removeFromBlueTeam(user);
-                game.addToRedTeam(user);
+                game.switchBlueToRed(user);
                 if (game.getRedTeamNames().size() == 1 && game.getRedFlagLocation() == null) {
                     // TODO update location
                     game.setRedFlagLocation(null);
@@ -88,7 +90,7 @@ public class Lobby extends AppCompatActivity {
             public void onClick(View v) {
                 if (game.getBlueTeamNames().size() > 0 && game.getRedTeamNames().size() > 0) {
                     Intent intent = new Intent(Lobby.this, GameActivity.class);
-                    intent.putExtra("gameID", getIntent().getStringExtra("gameID"));
+                    intent.putExtra("gameUid", getIntent().getStringExtra("gameUid"));
                     startActivity(intent);
                 } else {
                     Toast.makeText(Lobby.this, "There needs to be at least one player on each team", Toast.LENGTH_LONG).show();
@@ -101,10 +103,8 @@ public class Lobby extends AppCompatActivity {
             public void onDataChange(DataSnapshot snapshot) {
                 String name = snapshot.child("name").getValue(String.class);
                 int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
-                Collection<User> red = (ArrayList<User>) snapshot.child("redTeam").getValue();
-                Collection<User> blue = (ArrayList<User>) snapshot.child("blueTeam").getValue();
-                ArrayList<User> redTeam = (red == null) ? new ArrayList<User>() : new ArrayList<>(red);
-                ArrayList<User> blueTeam = (blue == null) ? new ArrayList<User>() : new ArrayList<>(blue);
+                HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
+                if (teamList == null) teamList = new HashMap<>();
 
                 Location anchorLocation, redFlag, blueFlag;
                 if (snapshot.child("anchorLocationLatitude").getValue() != null) {
@@ -135,8 +135,7 @@ public class Lobby extends AppCompatActivity {
                 game.anchorLocation = anchorLocation;
                 game.redFlag = redFlag;
                 game.blueFlag = blueFlag;
-                game.setRedTeam(redTeam);
-                game.setBlueTeam(blueTeam);
+                game.teamList = teamList;
 
                 gameName.setText(game.getName());
                 redAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getRedTeamNames());

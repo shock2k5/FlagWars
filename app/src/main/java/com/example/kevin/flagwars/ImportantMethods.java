@@ -139,10 +139,8 @@ public class ImportantMethods {
             public void onDataChange(DataSnapshot snapshot) {
                 String name = snapshot.child("name").getValue(String.class);
                 int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
-                Collection<User> red = snapshot.child("redTeam").getValue(new GenericTypeIndicator<ArrayList<User>>() {});
-                Collection<User> blue = snapshot.child("blueTeam").getValue(new GenericTypeIndicator<ArrayList<User>>() {});
-                ArrayList<User> redTeam = (red == null) ? new ArrayList<User>() : new ArrayList<>(red);
-                ArrayList<User> blueTeam = (blue == null) ? new ArrayList<User>() : new ArrayList<>(blue);
+                HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
+                if (teamList == null) teamList = new HashMap<>();
 
                 Location anchorLocation, redFlag, blueFlag;
                 if (snapshot.child("anchorLocationLatitude").getValue() != null) {
@@ -172,6 +170,7 @@ public class ImportantMethods {
                 game.name = name;
                 game.numPlayers = numPlayers;
                 game.anchorLocation = anchorLocation;
+                game.teamList = teamList;
                 game.redFlag = redFlag;
                 game.blueFlag = blueFlag;
             }

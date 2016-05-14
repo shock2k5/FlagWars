@@ -7,7 +7,6 @@ import android.util.Log;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
@@ -22,8 +21,6 @@ public class Game {
     protected int numPlayers;
     protected HashMap<String, String> teamList;
     protected Location redFlag, blueFlag, anchorLocation = null;
-    Firebase fireRef;
-
 
     public String toString(){
         String str = "";
@@ -38,8 +35,7 @@ public class Game {
         this.numPlayers = -1;
         this.redFlag = null;
         this.blueFlag = null;
-        teamList = new HashMap<String, String>();
-        teamList.put(ImportantMethods.getUserName(), "red");
+        teamList = new HashMap<>();
     }
 
     public Game(String name, int numPlayers) {
@@ -47,8 +43,7 @@ public class Game {
         this.numPlayers = numPlayers;
         this.redFlag = null;
         this.blueFlag = null;
-        teamList = new HashMap<String, String>();
-        teamList.put(ImportantMethods.getUserName(), "red");
+        teamList = new HashMap<>();
     }
 
     public String getName() { return this.name; }
@@ -66,16 +61,6 @@ public class Game {
     public Location getBlueFlagLocation() { return this.blueFlag; }
 
     public Location getLocation() { return this.anchorLocation; }
-
-    public void setRedTeam(ArrayList<User> redTeam) {
-        for (User u : redTeam)
-            this.teamList.put(u.getName(), "red");
-    }
-
-    public void setBlueTeam(ArrayList<User> blueTeam) {
-        for (User u : blueTeam)
-            this.teamList.put(u.getName(), "blue");
-    }
 
     public void setRedFlagLocation(Location loc) {
         this.redFlag = loc;
@@ -109,83 +94,129 @@ public class Game {
         return blue;
     }
 
-    public void addToRedTeam(final User user) {
-        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList/");
-        fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
-                if(teamList == null) teamList = new HashMap<String, String>();
-                if(teamList.get(user.getName()) == null){
-                    teamList.put(user.getName(), "red");
-                    fireRef.setValue(teamList);
-                }
-            }
+//    public void addToRedTeam(final User user) {
+//        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList/");
+//        fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
+//                if(teamList == null) teamList = new HashMap<String, String>();
+//                if(teamList.get(user.getName()) == null){
+//                    teamList.put(user.getName(), "red");
+//                    fireRef.setValue(teamList);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//
+//            }
+//        });
+//    }
+//
+//    public void addToBlueTeam(final User user) {
+//        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList");
+//        Log.d("Game: ", this.toString());
+//        fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
+//                if(teamList == null) teamList = new HashMap<String, String>();
+//                if(teamList.get(user.getName()) == null){
+//                    teamList.put(user.getName(), "blue");
+//                    fireRef.setValue(teamList);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//
+//            }
+//        });
+//    }
+//
+//    public void removeFromRedTeam(final User user) {
+//        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList/");
+//        fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
+//                if (teamList == null) teamList = new HashMap<String, String>();
+//                if(teamList.get(user.getName()) == null){
+//                    teamList.remove(user.getName());
+//                    fireRef.setValue(teamList);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//
+//            }
+//        });
+//    }
+//
+//    public void removeFromBlueTeam(final User user) {
+//        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList/");
+//        fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
+//                if(teamList.get(user.getName()) == null){
+//                    teamList.remove(user.getName());
+//                    fireRef.setValue(teamList);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//
+//            }
+//        });
+//    }
 
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
 
-            }
-        });
+    public void switchRedtoBlue(final User user) {
+        this.teamList.put(user.getName(), "blue");
+        this.sendToFirebase();
+//        final Firebase fireRef = ImportantMethods.getFireBase().child("Game").child(this.name).child("teamList");
+//        fireRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
+//                if (teamList == null) teamList = new HashMap<>();
+//                if (teamList.get(user.getName()) == null) {
+//                    teamList.put(user.getName(), "blue");
+//                    fireRef.setValue(teamList);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//                Log.e("Firebase error", "Game switchRedToBlue", firebaseError.toException());
+//            }
+//        }
     }
 
-    public void addToBlueTeam(final User user) {
-        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList");
-        Log.d("Game: ", this.toString());
-        fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
-                if(teamList == null) teamList = new HashMap<String, String>();
-                if(teamList.get(user.getName()) == null){
-                    teamList.put(user.getName(), "blue");
-                    fireRef.setValue(teamList);
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-    }
-
-    public void removeFromRedTeam(final User user) {
-        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList/");
-        fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
-                if(teamList.get(user.getName()) == null){
-                    teamList.remove(user.getName());
-                    fireRef.setValue(teamList);
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-    }
-
-    public void removeFromBlueTeam(final User user) {
-        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList/");
-        fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
-                if(teamList.get(user.getName()) == null){
-                    teamList.remove(user.getName());
-                    fireRef.setValue(teamList);
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
+    public void switchBlueToRed(final User user) {
+        this.teamList.put(user.getName(), "red");
+        this.sendToFirebase();
+//        final Firebase fireRef = ImportantMethods.getFireBase().child("Game").child(this.name).child("teamList");
+//        fireRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
+//                if (teamList == null) teamList = new HashMap<>();
+//                if (teamList.get(user.getName()) == null) {
+//                    teamList.put(user.getName(), "red");
+//                    fireRef.setValue(teamList);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//                Log.e("Firebase error", "Game switchBlueToRed", firebaseError.toException());
+//            }
+//        });
     }
 
     public void sendToFirebase() {

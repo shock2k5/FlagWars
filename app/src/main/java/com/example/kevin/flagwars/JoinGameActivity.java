@@ -29,6 +29,7 @@ import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,10 +64,8 @@ public class JoinGameActivity extends AppCompatActivity {
                     DataSnapshot snapshot = dataSnapshot.child(key);
                     String name = snapshot.child("name").getValue(String.class);
                     int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
-                    Collection<User> red = (ArrayList<User>) snapshot.child("redTeam").getValue();
-                    Collection<User> blue = (ArrayList<User>) snapshot.child("blueTeam").getValue();
-                    ArrayList<User> redTeam = (red == null) ? new ArrayList<User>() : new ArrayList<>(red);
-                    ArrayList<User> blueTeam = (blue == null) ? new ArrayList<User>() : new ArrayList<>(blue);
+                    HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
+                    if (teamList == null) teamList = new HashMap<>();
 
                     Location anchorLocation, redFlag, blueFlag;
                     if (snapshot.child("anchorLocationLatitude").getValue() != null) {
@@ -97,10 +96,9 @@ public class JoinGameActivity extends AppCompatActivity {
                     game.anchorLocation = anchorLocation;
                     game.redFlag = redFlag;
                     game.blueFlag = blueFlag;
-
-                    if (game == null)
-                        Log.e("Failure", "Null object retrieved from Firebase", new NullPointerException());
+                    game.teamList = teamList;
                     gameList.add(game);
+
                     List<String> gameNames = new ArrayList<>();
                     for (Game g : gameList)
                         gameNames.add(g.getName());
