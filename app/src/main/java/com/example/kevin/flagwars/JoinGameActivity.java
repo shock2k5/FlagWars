@@ -60,67 +60,58 @@ public class JoinGameActivity extends AppCompatActivity {
                 // TODO update it to allow for calling all objects in a "class"
                 Map<String, ?> games = dataSnapshot.getValue(Map.class);
                 for (String key : games.keySet()) {
-                    ref.child(key).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-                            String name = snapshot.child("name").getValue(String.class);
-                            int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
-                            Collection<User> red = (ArrayList<User>) snapshot.child("redTeam").getValue();
-                            Collection<User> blue = snapshot.child("blueTeam").getValue(new GenericTypeIndicator<ArrayList<User>>() {});
-                            ArrayList<User> redTeam = (red == null) ? new ArrayList<User>() : new ArrayList<>(red);
-                            ArrayList<User> blueTeam = (blue == null) ? new ArrayList<User>() : new ArrayList<>(blue);
+                    DataSnapshot snapshot = dataSnapshot.child(key);
+                    String name = snapshot.child("name").getValue(String.class);
+                    int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
+                    Collection<User> red = (ArrayList<User>) snapshot.child("redTeam").getValue();
+                    Collection<User> blue = (ArrayList<User>) snapshot.child("blueTeam").getValue();
+                    ArrayList<User> redTeam = (red == null) ? new ArrayList<User>() : new ArrayList<>(red);
+                    ArrayList<User> blueTeam = (blue == null) ? new ArrayList<User>() : new ArrayList<>(blue);
 
-                            Location anchorLocation, redFlag, blueFlag;
-                            if (snapshot.child("anchorLocationLatitude").getValue() != null) {
-                                anchorLocation = new Location(LocationManager.GPS_PROVIDER);
-                                anchorLocation.setLatitude(snapshot.child("anchorLocationLatitude").getValue(Double.class));
-                                anchorLocation.setLongitude(snapshot.child("anchorLocationLongitude").getValue(Double.class));
-                            } else {
-                                anchorLocation = null;
-                            }
+                    Location anchorLocation, redFlag, blueFlag;
+                    if (snapshot.child("anchorLocationLatitude").getValue() != null) {
+                        anchorLocation = new Location(LocationManager.GPS_PROVIDER);
+                        anchorLocation.setLatitude(snapshot.child("anchorLocationLatitude").getValue(Double.class));
+                        anchorLocation.setLongitude(snapshot.child("anchorLocationLongitude").getValue(Double.class));
+                    } else {
+                        anchorLocation = null;
+                    }
 
-                            if (snapshot.child("redFlagLatitude").getValue() != null) {
-                                redFlag = new Location(LocationManager.GPS_PROVIDER);
-                                redFlag.setLatitude(snapshot.child("redFlagLatitude").getValue(Double.class));
-                                redFlag.setLongitude(snapshot.child("redFlagLongitude").getValue(Double.class));
-                            } else {
-                                redFlag = null;
-                            }
+                    if (snapshot.child("redFlagLatitude").getValue() != null) {
+                        redFlag = new Location(LocationManager.GPS_PROVIDER);
+                        redFlag.setLatitude(snapshot.child("redFlagLatitude").getValue(Double.class));
+                        redFlag.setLongitude(snapshot.child("redFlagLongitude").getValue(Double.class));
+                    } else {
+                        redFlag = null;
+                    }
 
-                            if (snapshot.child("blueFlagLatitude").getValue(Double.class) != null) {
-                                blueFlag = new Location(LocationManager.GPS_PROVIDER);
-                                blueFlag.setLatitude(snapshot.child("blueFlagLatitude").getValue(Double.class));
-                                blueFlag.setLongitude(snapshot.child("blueFlagLongitude").getValue(Double.class));
-                            } else {
-                                blueFlag = null;
-                            }
+                    if (snapshot.child("blueFlagLatitude").getValue(Double.class) != null) {
+                        blueFlag = new Location(LocationManager.GPS_PROVIDER);
+                        blueFlag.setLatitude(snapshot.child("blueFlagLatitude").getValue(Double.class));
+                        blueFlag.setLongitude(snapshot.child("blueFlagLongitude").getValue(Double.class));
+                    } else {
+                        blueFlag = null;
+                    }
 
-                            Game game = new Game(name, numPlayers);
-                            game.anchorLocation = anchorLocation;
-                            game.redFlag = redFlag;
-                            game.blueFlag = blueFlag;
+                    Game game = new Game(name, numPlayers);
+                    game.anchorLocation = anchorLocation;
+                    game.redFlag = redFlag;
+                    game.blueFlag = blueFlag;
 
-                            if (game == null)
-                                Log.e("Failure", "Null object retrieved from Firebase", new NullPointerException());
-                            gameList.add(game);
-                            List<String> gameNames = new ArrayList<>();
-                            for (Game g : gameList)
-                                gameNames.add(g.getName());
+                    if (game == null)
+                        Log.e("Failure", "Null object retrieved from Firebase", new NullPointerException());
+                    gameList.add(game);
+                    List<String> gameNames = new ArrayList<>();
+                    for (Game g : gameList)
+                        gameNames.add(g.getName());
 
-                            if (gameNames.size() == 0) {
-                                gameNames.add("No games near you.");
-                                mGameListView.setClickable(false);
-                            }
+                    if (gameNames.size() == 0) {
+                        gameNames.add("No games near you.");
+                        mGameListView.setClickable(false);
+                    }
 
-                            mGameListView.setAdapter(new ArrayAdapter<>(JoinGameActivity.this, android.R.layout.simple_list_item_1, gameNames));
-                            mLoadGamesProgressBar.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onCancelled(FirebaseError firebaseError) {
-                            System.err.println("There was an error getting the Game from Firebase: " + firebaseError);
-                        }
-                    });
+                    mGameListView.setAdapter(new ArrayAdapter<>(JoinGameActivity.this, android.R.layout.simple_list_item_1, gameNames));
+                    mLoadGamesProgressBar.setVisibility(View.GONE);
                 }
             }
 

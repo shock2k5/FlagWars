@@ -39,7 +39,7 @@ public class Game {
         this.redFlag = null;
         this.blueFlag = null;
         teamList = new HashMap<String, String>();
-        teamList.put(ImportantMethods.getCurrentUser().getName(), "red");
+        teamList.put(ImportantMethods.getUserName(), "red");
     }
 
     public Game(String name, int numPlayers) {
@@ -51,9 +51,7 @@ public class Game {
         teamList.put(ImportantMethods.getUserName(), "red");
     }
 
-    public String getName() {
-        return this.name;
-    }
+    public String getName() { return this.name; }
 
     public int getNumPlayers() {
         return this.numPlayers;
@@ -68,6 +66,16 @@ public class Game {
     public Location getBlueFlagLocation() { return this.blueFlag; }
 
     public Location getLocation() { return this.anchorLocation; }
+
+    public void setRedTeam(ArrayList<User> redTeam) {
+        for (User u : redTeam)
+            this.teamList.put(u.getName(), "red");
+    }
+
+    public void setBlueTeam(ArrayList<User> blueTeam) {
+        for (User u : blueTeam)
+            this.teamList.put(u.getName(), "blue");
+    }
 
     public void setRedFlagLocation(Location loc) {
         this.redFlag = loc;
@@ -109,10 +117,9 @@ public class Game {
                 HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
                 if(teamList == null) teamList = new HashMap<String, String>();
                 if(teamList.get(user.getName()) == null){
-                    return;
+                    teamList.put(user.getName(), "red");
+                    fireRef.setValue(teamList);
                 }
-                teamList.put(user.getName(), "red");
-                fireRef.setValue(teamList);
             }
 
             @Override
@@ -129,11 +136,11 @@ public class Game {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
+                if(teamList == null) teamList = new HashMap<String, String>();
                 if(teamList.get(user.getName()) == null){
-                    return;
+                    teamList.put(user.getName(), "blue");
+                    fireRef.setValue(teamList);
                 }
-                teamList.put(user.getName(), "red");
-                fireRef.setValue(teamList);
             }
 
             @Override
@@ -143,23 +150,35 @@ public class Game {
         });
     }
 
-    public boolean removeFromRedTeam(User user) {
-       //TODO
-        return false;
-    }
-
-    public void removeFromBlueTeam(final User user) {
-
-        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/blueTeam/");
+    public void removeFromRedTeam(final User user) {
+        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList/");
         fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
                 if(teamList.get(user.getName()) == null){
-                    return;
+                    teamList.remove(user.getName());
+                    fireRef.setValue(teamList);
                 }
-                teamList.remove(user.getName());
-                fireRef.setValue(teamList);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+    }
+
+    public void removeFromBlueTeam(final User user) {
+        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList/");
+        fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
+                if(teamList.get(user.getName()) == null){
+                    teamList.remove(user.getName());
+                    fireRef.setValue(teamList);
+                }
             }
 
             @Override
@@ -244,5 +263,4 @@ public class Game {
         });
         return game;
     }
-
 }

@@ -96,12 +96,15 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.child(previous.getStringExtra("gameUid")).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                snapshot = snapshot.child(previous.getStringExtra("gameUid"));
                 String name = snapshot.child("name").getValue(String.class);
                 int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
+                Collection<User> red = (ArrayList<User>) snapshot.child("redTeam").getValue();
+                Collection<User> blue = (ArrayList<User>) snapshot.child("blueTeam").getValue();
+                ArrayList<User> redTeam = (red == null) ? new ArrayList<User>() : new ArrayList<>(red);
+                ArrayList<User> blueTeam = (blue == null) ? new ArrayList<User>() : new ArrayList<>(blue);
 
                 Location anchorLocation, redFlag, blueFlag;
                 if (snapshot.child("anchorLocationLatitude").getValue() != null) {
@@ -128,12 +131,12 @@ public class Lobby extends AppCompatActivity {
                     blueFlag = null;
                 }
 
-                game = new Game();
-                game.name = name;
-                game.numPlayers = numPlayers;
+                game = new Game(name, numPlayers);
                 game.anchorLocation = anchorLocation;
                 game.redFlag = redFlag;
                 game.blueFlag = blueFlag;
+                game.setRedTeam(redTeam);
+                game.setBlueTeam(blueTeam);
 
                 gameName.setText(game.getName());
                 redAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getRedTeamNames());

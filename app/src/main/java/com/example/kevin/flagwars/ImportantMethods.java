@@ -64,8 +64,8 @@ public class ImportantMethods {
         fireRef.child("User/" + uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, String> map = (HashMap<String, String>) dataSnapshot.getValue();
-                user = new User(map.get("username"));
+                HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
+                user = new User((String) map.get("username"));
             }
 
             @Override
@@ -90,7 +90,7 @@ public class ImportantMethods {
 
             }
         });
-        return user.username;
+        return (user.name.indexOf('.') == -1) ? user.name : user.name.substring(0, user.name.indexOf('@'));
     }
     /*
     public static Location getCurrentLocation(Activity a) {

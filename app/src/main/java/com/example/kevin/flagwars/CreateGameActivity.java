@@ -53,13 +53,12 @@ public class CreateGameActivity extends AppCompatActivity {
                 game = new Game(name, numPlayers);
                 location = ImportantMethods.getCurrentLocation(CreateGameActivity.this);
                 game.setRedFlagLocation(location);
-                game.addToRedTeam(ImportantMethods.getCurrentUser());
                 game.sendToFirebase();
-                /*
+                game.addToRedTeam(ImportantMethods.getCurrentUser());
+
                 Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
                 intent.putExtra("gameUid", game.getUid());
                 startActivity(intent);
-                */
             }
         });
     }
