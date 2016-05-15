@@ -124,8 +124,6 @@ public class ChooseGameModeActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-
-
     }
 
     @Override
