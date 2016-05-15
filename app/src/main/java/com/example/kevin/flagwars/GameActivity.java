@@ -124,6 +124,7 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
 
                     game.redFlag = redFlag;
                     game.blueFlag = blueFlag;
+                    mMap.clear();
 
                     mMap.addMarker(new MarkerOptions()
                             .position(locationToLatLng(game.getRedFlagLocation()))
