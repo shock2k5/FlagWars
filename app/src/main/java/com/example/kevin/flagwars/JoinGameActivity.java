@@ -38,9 +38,8 @@ public class JoinGameActivity extends AppCompatActivity {
 
     protected AdapterView mGameListView;
     protected EditText mEnterCodeTextView;
-    protected List<Game> gameList = new ArrayList<>();
+    protected List<Game> gameList;
     protected ProgressBar mLoadGamesProgressBar;
-    protected Location loc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,13 +53,13 @@ public class JoinGameActivity extends AppCompatActivity {
         mEnterCodeTextView.setCursorVisible(false);
         mEnterCodeTextView.setKeyListener(null);
 
-
         Firebase.setAndroidContext(this.getApplicationContext());
         final Firebase ref = new Firebase("https://flagwar.firebaseio.com/").child("Game");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Map<String, ?> games = dataSnapshot.getValue(Map.class);
+                gameList = new ArrayList<>();
                 for (String key : games.keySet()) {
                     DataSnapshot snapshot = dataSnapshot.child(key);
 
@@ -73,6 +72,7 @@ public class JoinGameActivity extends AppCompatActivity {
                     game.teamList = teamList;
                     gameList.add(game);
                 }
+
                 List<String> gameNames = new ArrayList<>();
                 for (Game g : gameList)
                     gameNames.add(g.getName());
@@ -91,8 +91,6 @@ public class JoinGameActivity extends AppCompatActivity {
                 Log.e("Firebase failure", "Error in retrieving object from Firebase in JoinGameActivity", firebaseError.toException());
             }
         });
-
-        loc = ImportantMethods.getCurrentLocation(this);
 
         mGameListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -113,21 +111,5 @@ public class JoinGameActivity extends AppCompatActivity {
                         .show();
             }
         });
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        if (requestCode == 0) {
-            // If request is cancelled, the result arrays are empty.
-            if (grantResults.length > 0) {
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                    // TODO get current location
-                    loc = null;
-            } else {
-                Toast.makeText(this.getApplicationContext(),
-                    "Permission needs to be granted for this application", Toast.LENGTH_LONG).show();
-            }
-        }
     }
 }

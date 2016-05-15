@@ -116,7 +116,9 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
                 LatLng currentLocation = locationToLatLng(loc);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16.0f), 4000, null);
                 if (snapshot.child("redFlagLatitude").getValue(Double.class) != null &&
-                        snapshot.child("blueFlagLatitude").getValue(Double.class) != null) {
+                        snapshot.child("redFlagLongitude").getValue(Double.class) != null &&
+                        snapshot.child("blueFlagLatitude").getValue(Double.class) != null &&
+                        snapshot.child("blueFlagLongitude").getValue(Double.class) != null) {
                     redFlag = new Location(LocationManager.GPS_PROVIDER);
                     redFlag.setLatitude(snapshot.child("redFlagLatitude").getValue(Double.class));
                     redFlag.setLongitude(snapshot.child("redFlagLongitude").getValue(Double.class));
