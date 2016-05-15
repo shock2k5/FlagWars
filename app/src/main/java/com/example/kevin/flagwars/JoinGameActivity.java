@@ -60,7 +60,6 @@ public class JoinGameActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // TODO update it to allow for calling all objects in a "class"
                 Map<String, ?> games = dataSnapshot.getValue(Map.class);
                 for (String key : games.keySet()) {
                     DataSnapshot snapshot = dataSnapshot.child(key);
@@ -70,50 +69,21 @@ public class JoinGameActivity extends AppCompatActivity {
                     HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
                     if (teamList == null) teamList = new HashMap<>();
 
-                    Location anchorLocation, redFlag, blueFlag;
-                    if (snapshot.child("anchorLocationLatitude").getValue() != null) {
-                        anchorLocation = new Location(LocationManager.GPS_PROVIDER);
-                        anchorLocation.setLatitude(snapshot.child("anchorLocationLatitude").getValue(Double.class));
-                        anchorLocation.setLongitude(snapshot.child("anchorLocationLongitude").getValue(Double.class));
-                    } else {
-                        anchorLocation = null;
-                    }
-
-                    if (snapshot.child("redFlagLatitude").getValue() != null) {
-                        redFlag = new Location(LocationManager.GPS_PROVIDER);
-                        redFlag.setLatitude(snapshot.child("redFlagLatitude").getValue(Double.class));
-                        redFlag.setLongitude(snapshot.child("redFlagLongitude").getValue(Double.class));
-                    } else {
-                        redFlag = null;
-                    }
-
-                    if (snapshot.child("blueFlagLatitude").getValue(Double.class) != null) {
-                        blueFlag = new Location(LocationManager.GPS_PROVIDER);
-                        blueFlag.setLatitude(snapshot.child("blueFlagLatitude").getValue(Double.class));
-                        blueFlag.setLongitude(snapshot.child("blueFlagLongitude").getValue(Double.class));
-                    } else {
-                        blueFlag = null;
-                    }
-
                     Game game = new Game(name, numPlayers);
-                    game.anchorLocation = anchorLocation;
-                    game.redFlag = redFlag;
-                    game.blueFlag = blueFlag;
                     game.teamList = teamList;
                     gameList.add(game);
-
-                    List<String> gameNames = new ArrayList<>();
-                    for (Game g : gameList)
-                        gameNames.add(g.getName());
-
-                    if (gameNames.size() == 0) {
-                        gameNames.add("No games near you.");
-                        mGameListView.setClickable(false);
-                    }
-
-                    mGameListView.setAdapter(new ArrayAdapter<>(JoinGameActivity.this, android.R.layout.simple_list_item_1, gameNames));
-                    mLoadGamesProgressBar.setVisibility(View.GONE);
                 }
+                List<String> gameNames = new ArrayList<>();
+                for (Game g : gameList)
+                    gameNames.add(g.getName());
+
+                if (gameNames.size() == 0) {
+                    gameNames.add("No games near you.");
+                    mGameListView.setClickable(false);
+                }
+
+                mGameListView.setAdapter(new ArrayAdapter<>(JoinGameActivity.this, android.R.layout.simple_list_item_1, gameNames));
+                mLoadGamesProgressBar.setVisibility(View.GONE);
             }
 
             @Override

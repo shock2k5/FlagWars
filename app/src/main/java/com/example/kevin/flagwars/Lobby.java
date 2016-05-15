@@ -1,8 +1,14 @@
 package com.example.kevin.flagwars;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,11 +22,9 @@ import android.widget.Toast;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
 public class Lobby extends AppCompatActivity {
@@ -31,6 +35,7 @@ public class Lobby extends AppCompatActivity {
     Game game;
     User user;
     Button btnJoinRedTeam, btnJoinBlueTeam, btnStartGameTeam;
+    boolean onRed = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +43,7 @@ public class Lobby extends AppCompatActivity {
         setContentView(R.layout.activity_lobby);
 
         Firebase.setAndroidContext(this.getApplicationContext());
-        Firebase ref = new Firebase("https://flagwar.firebaseio.com/").child("Game");
+        final Firebase ref = new Firebase("https://flagwar.firebaseio.com/").child("Game");
         final Intent previous = getIntent();
 
         gameName = (TextView) findViewById(R.id.LobbyGameName);
@@ -55,17 +60,9 @@ public class Lobby extends AppCompatActivity {
         btnJoinBlueTeam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (game.getBlueTeamNames().contains(user.getName())) {
-                    return;
-                }
-
-                Log.d("Debug", "About to switch teams\nred:\n" + game.getRedTeamNames().toString() + "\nblue:\n" + game.getBlueTeamNames());
+                if (game.getBlueTeamNames().contains(user.getName())) return;
                 game.switchRedtoBlue(user);
-                Log.d("Debug", "Switched teams\nred:\n" + game.getRedTeamNames().toString() + "\nblue:\n" + game.getBlueTeamNames());
-                if (game.getBlueTeamNames().size() == 1 && game.getBlueFlagLocation() == null) {
-                    // TODO update location
-                    game.setBlueFlagLocation(null);
-                }
+                onRed = false;
                 updateTeamLists();
             }
         });
@@ -74,13 +71,8 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (game.getRedTeamNames().contains(user.getName())) return;
-
                 game.switchBlueToRed(user);
-                if (game.getRedTeamNames().size() == 1 && game.getRedFlagLocation() == null) {
-                    // TODO update location
-                    game.setRedFlagLocation(null);
-                }
-
+                onRed = true;
                 updateTeamLists();
             }
         });
@@ -89,8 +81,44 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (game.getBlueTeamNames().size() > 0 && game.getRedTeamNames().size() > 0) {
+                    String uid = getIntent().getStringExtra("gameUid");
                     Intent intent = new Intent(Lobby.this, GameActivity.class);
-                    intent.putExtra("gameUid", getIntent().getStringExtra("gameUid"));
+                    if (game.getBlueTeamNames().get(0).equals(user.getName())) {
+                        if (ContextCompat.checkSelfPermission(Lobby.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(Lobby.this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
+                        }
+
+                        LocationManager locationManager = (LocationManager) Lobby.this.getSystemService(Context.LOCATION_SERVICE);
+                        Criteria criteria = new Criteria();
+
+                        String provider = locationManager.getBestProvider(criteria, true);
+                        Location myLocation = locationManager.getLastKnownLocation(provider);
+                        if (myLocation == null) {
+                            myLocation = new Location(LocationManager.GPS_PROVIDER);
+                            myLocation.setLatitude(38.9859);
+                            myLocation.setLongitude(-76.944294);
+                        }
+                        ref.child(uid).child("blueFlagLatitude").setValue(myLocation.getLatitude());
+                        ref.child(uid).child("blueFlagLongitude").setValue(myLocation.getLongitude());
+                    } else if (game.getRedTeamNames().get(0).equals(user.getName())) {
+                        if (ContextCompat.checkSelfPermission(Lobby.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                            ActivityCompat.requestPermissions(Lobby.this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
+
+                        LocationManager locationManager = (LocationManager) Lobby.this.getSystemService(Context.LOCATION_SERVICE);
+                        Criteria criteria = new Criteria();
+
+                        String provider = locationManager.getBestProvider(criteria, true);
+                        Location myLocation = locationManager.getLastKnownLocation(provider);
+                        if (myLocation == null) {
+                            myLocation = new Location(LocationManager.GPS_PROVIDER);
+                            myLocation.setLatitude(38.986);
+                            myLocation.setLongitude(-76.94056);
+                        }
+                        ref.child(uid).child("redFlagLatitude").setValue(myLocation.getLatitude());
+                        ref.child(uid).child("redFlagLongitude").setValue(myLocation.getLongitude());
+                    }
+                    intent.putExtra("gameUid", uid);
+                    intent.putExtra("teamColor", (onRed) ? "red" : "blue");
                     startActivity(intent);
                 } else {
                     Toast.makeText(Lobby.this, "There needs to be at least one player on each team", Toast.LENGTH_LONG).show();
@@ -106,35 +134,7 @@ public class Lobby extends AppCompatActivity {
                 HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
                 if (teamList == null) teamList = new HashMap<>();
 
-                Location anchorLocation, redFlag, blueFlag;
-                if (snapshot.child("anchorLocationLatitude").getValue() != null) {
-                    anchorLocation = new Location(LocationManager.GPS_PROVIDER);
-                    anchorLocation.setLatitude(snapshot.child("anchorLocationLatitude").getValue(Double.class));
-                    anchorLocation.setLongitude(snapshot.child("anchorLocationLongitude").getValue(Double.class));
-                } else {
-                    anchorLocation = null;
-                }
-
-                if (snapshot.child("redFlagLatitude").getValue() != null) {
-                    redFlag = new Location(LocationManager.GPS_PROVIDER);
-                    redFlag.setLatitude(snapshot.child("redFlagLatitude").getValue(Double.class));
-                    redFlag.setLongitude(snapshot.child("redFlagLongitude").getValue(Double.class));
-                } else {
-                    redFlag = null;
-                }
-
-                if (snapshot.child("blueFlagLatitude").getValue(Double.class) != null) {
-                    blueFlag = new Location(LocationManager.GPS_PROVIDER);
-                    blueFlag.setLatitude(snapshot.child("blueFlagLatitude").getValue(Double.class));
-                    blueFlag.setLongitude(snapshot.child("blueFlagLongitude").getValue(Double.class));
-                } else {
-                    blueFlag = null;
-                }
-
                 game = new Game(name, numPlayers);
-                game.anchorLocation = anchorLocation;
-                game.redFlag = redFlag;
-                game.blueFlag = blueFlag;
                 game.teamList = teamList;
 
                 gameName.setText(game.getName());
@@ -151,14 +151,12 @@ public class Lobby extends AppCompatActivity {
         });
     }
 
-    public void updateTeamLists(){
+    public void updateTeamLists() {
         redAdapter.clear();
         for (String name : game.getRedTeamNames())
             redAdapter.add(name);
         blueAdapter.clear();
         for (String name : game.getBlueTeamNames())
             blueAdapter.add(name);
-
-        Log.d("Debug", "red:\n" + game.getRedTeamNames().toString() + "\nblue:\n" + game.getBlueTeamNames());
     }
 }

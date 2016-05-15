@@ -1,13 +1,23 @@
 package com.example.kevin.flagwars;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,6 +33,7 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private Location loc;
     private Game game;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,72 +43,107 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        loc = ImportantMethods.getCurrentLocation(this);
-        String uid = getIntent().getStringExtra("gameUid");
 
+        final String uid = getIntent().getStringExtra("gameUid");
+        final String teamColor = getIntent().getStringExtra("teamColor");
+        Firebase.setAndroidContext(this.getApplicationContext());
         final Firebase ref = ImportantMethods.getFireBase().child("Game").child(uid);
+        currentUser = ImportantMethods.getCurrentUser();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
+        }
+
+        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        final Criteria criteria = new Criteria();
+
+        String provider = locationManager.getBestProvider(criteria, true);
+        loc = locationManager.getLastKnownLocation(provider);
+        if (loc == null) {
+            loc = new Location(provider);
+            loc.setLatitude(38.985933);
+            loc.setLongitude(-76.942792);
+        }
+        Firebase childLocationsRef = ref.child("liveLocations").child(currentUser.getName());
+        childLocationsRef.child("teamColor").setValue(teamColor);
+        childLocationsRef.child("locations").child("latitude").setValue(loc.getLatitude());
+        childLocationsRef.child("locations").child("longitude").setValue(loc.getLongitude());
+
+
+        locationManager.requestLocationUpdates(provider, 0, 0, new LocationListener() {
+            @Override
+            public void onLocationChanged(final Location location) {
+                loc = location;
+                Log.d("Debug", "Location changed to: " + location.toString());
+                ref.child("liveLocations").child(currentUser.getName()).child("locations").child("latitude").setValue(loc.getLatitude());
+                ref.child("liveLocations").child(currentUser.getName()).child("locations").child("longitude").setValue(loc.getLongitude());
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+                // loc.setProvider(provider);
+            }
+
+            @Override
+            public void onProviderEnabled(String p) {
+                loc.setProvider(p);
+            }
+
+            @Override
+            public void onProviderDisabled(String p) {
+                loc.setProvider(locationManager.getBestProvider(criteria, true));
+            }
+        });
+
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 String name = snapshot.child("name").getValue(String.class);
-                int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
+                int numPlayers = snapshot.child("numPlayers").getValue(Integer.class);
                 HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
                 if (teamList == null) teamList = new HashMap<>();
 
-                Location anchorLocation, redFlag, blueFlag;
-                if (snapshot.child("anchorLocationLatitude").getValue() != null) {
-                    anchorLocation = new Location(LocationManager.GPS_PROVIDER);
-                    anchorLocation.setLatitude(snapshot.child("anchorLocationLatitude").getValue(Double.class));
-                    anchorLocation.setLongitude(snapshot.child("anchorLocationLongitude").getValue(Double.class));
-                } else {
-                    anchorLocation = null;
-                }
+                HashMap<String, HashMap<String, Object>> liveLocationsMap =
+                        (HashMap<String, HashMap<String, Object>>) snapshot.child("liveLocations").getValue();
 
-                if (snapshot.child("redFlagLatitude").getValue() != null) {
+                Location redFlag = null, blueFlag = null;
+                game = new Game(name, numPlayers);
+                game.teamList = teamList;
+
+                LatLng currentLocation = locationToLatLng(loc);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 5));
+                if (snapshot.child("redFlagLatitude").getValue(Double.class) != null &&
+                        snapshot.child("blueFlagLatitude").getValue(Double.class) != null) {
                     redFlag = new Location(LocationManager.GPS_PROVIDER);
                     redFlag.setLatitude(snapshot.child("redFlagLatitude").getValue(Double.class));
                     redFlag.setLongitude(snapshot.child("redFlagLongitude").getValue(Double.class));
-                } else {
-                    redFlag = null;
-                }
 
-                if (snapshot.child("blueFlagLatitude").getValue(Double.class) != null) {
                     blueFlag = new Location(LocationManager.GPS_PROVIDER);
                     blueFlag.setLatitude(snapshot.child("blueFlagLatitude").getValue(Double.class));
                     blueFlag.setLongitude(snapshot.child("blueFlagLongitude").getValue(Double.class));
-                } else {
-                    blueFlag = null;
+
+                    game.redFlag = redFlag;
+                    game.blueFlag = blueFlag;
+
+                    mMap.addMarker(new MarkerOptions()
+                            .position(locationToLatLng(game.getRedFlagLocation()))
+                            .title("Red Flag")
+                            .draggable(false));
+                    mMap.addMarker(new MarkerOptions()
+                            .position(locationToLatLng(game.getBlueFlagLocation()))
+                            .title("Blue Flag")
+                            .draggable(false));
                 }
 
-                game = new Game(name, numPlayers);
-                game.anchorLocation = anchorLocation;
-                game.teamList = teamList;
-                if (redFlag == null) {
-                    redFlag = new Location(LocationManager.GPS_PROVIDER);
-                    redFlag.setLatitude(38.986);
-                    redFlag.setLongitude(-76.94056);
+                for (String userName : liveLocationsMap.keySet()) {
+                    String teamColor = (String) liveLocationsMap.get(userName).get("teamColor");
+                    LatLng userLocation = new LatLng(
+                            (Double) ((HashMap<String, Double>) liveLocationsMap.get(userName).get("locations")).get("latitude"),
+                            (Double) ((HashMap<String, Double>) liveLocationsMap.get(userName).get("locations")).get("longitude"));
+                    mMap.addMarker(new MarkerOptions()
+                            .position(userLocation)
+                            .title(teamColor+" "+userName));
                 }
-                if (blueFlag == null) {
-                    blueFlag = new Location(LocationManager.GPS_PROVIDER);
-                    blueFlag.setLatitude(38.9859);
-                    blueFlag.setLongitude(-76.944294);
-                }
-                game.redFlag = redFlag;
-                game.blueFlag = blueFlag;
-
-                LatLng currentLocation = locationToLatLng(loc);
-                mMap.addMarker(new MarkerOptions().position(currentLocation).title("Current Location"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
-                mMap.addMarker(new MarkerOptions()
-                        .position(locationToLatLng(game.getRedFlagLocation()))
-                        .title("Red Flag")
-                        .draggable(false)
-                        .flat(true));
-                mMap.addMarker(new MarkerOptions()
-                        .position(locationToLatLng(game.getBlueFlagLocation()))
-                        .title("Blue Flag")
-                        .draggable(false)
-                        .flat(true));
             }
 
             @Override

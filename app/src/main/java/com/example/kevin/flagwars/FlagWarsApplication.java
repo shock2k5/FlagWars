@@ -1,7 +1,5 @@
 package com.example.kevin.flagwars;
 
-import com.facebook.FacebookSdk;
-
 import android.app.Application;
 
 /**
@@ -12,7 +10,5 @@ public class FlagWarsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        FacebookSdk.sdkInitialize(this.getApplicationContext());
     }
 }

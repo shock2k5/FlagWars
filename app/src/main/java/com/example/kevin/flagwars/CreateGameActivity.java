@@ -32,9 +32,7 @@ public class CreateGameActivity extends AppCompatActivity {
         gameName = (EditText) findViewById(R.id.game_name_edit);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(getDrawable(R.drawable.ic_action_back));
-
-        //location = ImportantMethods.getCurrentLocation(this);
+        //toolbar.setNavigationIcon(getDrawable(R.drawable.ic_action_back));
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

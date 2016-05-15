@@ -21,6 +21,7 @@ public class Game {
     protected int numPlayers;
     protected HashMap<String, String> teamList;
     protected Location redFlag, blueFlag, anchorLocation = null;
+    protected HashMap<String, HashMap<String, HashMap<String, Double>>> userMap = new HashMap<>();
 
     public String toString(){
         String str = "";
