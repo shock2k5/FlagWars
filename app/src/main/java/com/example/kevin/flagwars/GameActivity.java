@@ -106,7 +106,7 @@ public class GameActivity
                 game = new Game(name, numPlayers);
                 game.teamList = teamList;
 
-                LatLng currentLocation = locationToLatLng(loc);
+                mMap.clear();
                 if (snapshot.child("redFlagLatitude").getValue(Double.class) != null &&
                         snapshot.child("redFlagLongitude").getValue(Double.class) != null &&
                         snapshot.child("blueFlagLatitude").getValue(Double.class) != null &&
@@ -121,8 +121,6 @@ public class GameActivity
 
                     game.redFlag = redFlag;
                     game.blueFlag = blueFlag;
-                    mMap.clear();
-
                     mMap.addMarker(new MarkerOptions()
                             .position(locationToLatLng(game.getRedFlagLocation()))
                             .title("Red Flag")
@@ -131,13 +129,14 @@ public class GameActivity
                             .position(locationToLatLng(game.getBlueFlagLocation()))
                             .title("Blue Flag")
                             .draggable(false));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
                 }
 
                 for (String userName : liveLocationsMap.keySet()) {
                     String teamColor = (String) liveLocationsMap.get(userName).get("teamColor");
                     LatLng userLocation = new LatLng(
-                            (Double) ((HashMap<String, Double>) liveLocationsMap.get(userName).get("locations")).get("latitude"),
-                            (Double) ((HashMap<String, Double>) liveLocationsMap.get(userName).get("locations")).get("longitude"));
+                            ((HashMap<String, Double>) liveLocationsMap.get(userName).get("locations")).get("latitude"),
+                            ((HashMap<String, Double>) liveLocationsMap.get(userName).get("locations")).get("longitude"));
                     mMap.addMarker(new MarkerOptions()
                             .position(userLocation)
                             .title(teamColor + " " + userName));
