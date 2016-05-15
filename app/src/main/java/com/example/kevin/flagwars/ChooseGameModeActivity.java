@@ -50,20 +50,23 @@ public class ChooseGameModeActivity extends AppCompatActivity {
 
         mCreateGameButton = (Button) findViewById(R.id.createGameBT);
         mJoinGameButton = (Button) findViewById(R.id.joinGameBT);
+        if(ImportantMethods.getFireBase().getAuth() != null){
+            String uid = ImportantMethods.getFireBase().getAuth().getUid();
+            ImportantMethods.getFireBase().child("User").child(uid)
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
+                            currentUser = new User((String) map.get("username"));
+                        }
 
-        ImportantMethods.getFireBase().child("User").child(ImportantMethods.getFireBase().getAuth().getUid())
-                .addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
-                currentUser = new User((String) map.get("username"));
-            }
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+                            currentUser = null;
+                        }
+                    });
 
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                currentUser = null;
-            }
-        });
+        }
 
         mTitle = "test";
         if (fireRef.getAuth() == null) {
@@ -104,8 +107,10 @@ public class ChooseGameModeActivity extends AppCompatActivity {
             }
         };
 
+        //TODO I COMMENTED THIS OUT TO GET IT TO WORK ON MY OLD PHONE --->
         // Set the drawer toggle as the DrawerListener
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
+        //mDrawerLayout.addDrawerListener(mDrawerToggle);
+        //TODO <----- UNCOMMENT THIS LINE FOR THE DRAWER
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
