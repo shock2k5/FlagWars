@@ -1,102 +1,95 @@
 package com.example.kevin.flagwars;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
-import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
 
-public class GameActivity extends FragmentActivity implements OnMapReadyCallback {
+public class GameActivity
+        extends FragmentActivity
+        implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleMap mMap;
     private Location loc;
     private Game game;
     private User currentUser;
+    private GoogleApiClient myClient;
+    private Firebase ref;
+    LocationListener locationListener;
+    final float ZOOM_LEVEL = 16.5f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        final String uid = getIntent().getStringExtra("gameUid");
-        final String teamColor = getIntent().getStringExtra("teamColor");
         Firebase.setAndroidContext(this.getApplicationContext());
-        final Firebase ref = ImportantMethods.getFireBase().child("Game").child(uid);
+        ref = ImportantMethods.getFireBase().child("Game").child(getIntent().getStringExtra("gameUid"));
         currentUser = ImportantMethods.getCurrentUser();
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
-        }
-
-        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        final Criteria criteria = new Criteria();
-
-        String provider = locationManager.getBestProvider(criteria, true);
-        loc = locationManager.getLastKnownLocation(provider);
-        if (loc == null) {
-            loc = new Location(provider);
-            loc.setLatitude(38.985933);
-            loc.setLongitude(-76.942792);
-        }
-        Firebase childLocationsRef = ref.child("liveLocations").child(currentUser.getName());
-        childLocationsRef.child("teamColor").setValue(teamColor);
-        childLocationsRef.child("locations").child("latitude").setValue(loc.getLatitude());
-        childLocationsRef.child("locations").child("longitude").setValue(loc.getLongitude());
-
-
-        locationManager.requestLocationUpdates(provider, 0, 0, new LocationListener() {
+        ref.child("liveLocations").child(currentUser.getName()).child("teamColor").setValue(getIntent().getStringExtra("teamColor"));
+        locationListener = new LocationListener() {
             @Override
-            public void onLocationChanged(final Location location) {
+            public void onLocationChanged(Location location) {
                 loc = location;
-                Log.d("Debug", "Location changed to: " + location.toString());
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
                 ref.child("liveLocations").child(currentUser.getName()).child("locations").child("latitude").setValue(loc.getLatitude());
                 ref.child("liveLocations").child(currentUser.getName()).child("locations").child("longitude").setValue(loc.getLongitude());
             }
+        };
 
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-                // loc.setProvider(provider);
-            }
+        myClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API).addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this).build();
+    }
 
-            @Override
-            public void onProviderEnabled(String p) {
-                loc.setProvider(p);
-            }
+    public void onStart() {
+        super.onStart();
+        myClient.connect();
+    }
 
-            @Override
-            public void onProviderDisabled(String p) {
-                loc.setProvider(locationManager.getBestProvider(criteria, true));
-            }
-        });
+    public void onStop() {
+        super.onStop();
+        LocationServices.FusedLocationApi.removeLocationUpdates(myClient, locationListener);
+        myClient.disconnect();
+    }
+
+    public void onConnected(Bundle connectionHint) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+
+        loc = LocationServices.FusedLocationApi.getLastLocation(myClient);
+        if (loc == null) {
+            loc = new Location(LocationManager.GPS_PROVIDER);
+            loc.setLatitude(38.985933);
+            loc.setLongitude(-76.942792);
+        }
+
+        LocationRequest locationRequest = new LocationRequest();
+        LocationServices.FusedLocationApi.requestLocationUpdates(myClient, locationRequest, locationListener);
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -114,7 +107,6 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
                 game.teamList = teamList;
 
                 LatLng currentLocation = locationToLatLng(loc);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16.0f), 4000, null);
                 if (snapshot.child("redFlagLatitude").getValue(Double.class) != null &&
                         snapshot.child("redFlagLongitude").getValue(Double.class) != null &&
                         snapshot.child("blueFlagLatitude").getValue(Double.class) != null &&
@@ -148,7 +140,7 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
                             (Double) ((HashMap<String, Double>) liveLocationsMap.get(userName).get("locations")).get("longitude"));
                     mMap.addMarker(new MarkerOptions()
                             .position(userLocation)
-                            .title(teamColor+" "+userName));
+                            .title(teamColor + " " + userName));
                 }
             }
 
@@ -159,12 +151,37 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    public void onConnectionSuspended(int cause) {
+    }
+
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED)
+                == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
+            mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+                @Override
+                public boolean onMyLocationButtonClick() {
+                    if (ActivityCompat.checkSelfPermission(GameActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(GameActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+                        return false;
+                    } else {
+                        loc = LocationServices.FusedLocationApi.getLastLocation(myClient);
+                        if (loc == null) {
+                            loc = new Location(LocationManager.GPS_PROVIDER);
+                            loc.setLatitude(38.985933);
+                            loc.setLongitude(-76.942792);
+                        }
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
+                        return true;
+                    }
+                }
+            });
+        }
         mMap.getUiSettings().setMapToolbarEnabled(false);
     }
 
