@@ -19,11 +19,14 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
@@ -111,7 +114,7 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
                 game.teamList = teamList;
 
                 LatLng currentLocation = locationToLatLng(loc);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 5));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16.0f), 4000, null);
                 if (snapshot.child("redFlagLatitude").getValue(Double.class) != null &&
                         snapshot.child("blueFlagLatitude").getValue(Double.class) != null) {
                     redFlag = new Location(LocationManager.GPS_PROVIDER);
@@ -157,6 +160,10 @@ public class GameActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED)
+            mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
     }
 
     private LatLng locationToLatLng(Location loc) {
