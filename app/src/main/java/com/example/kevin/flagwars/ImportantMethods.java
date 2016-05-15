@@ -53,30 +53,6 @@ public class ImportantMethods {
 
     }
 
-    public static User getCurrentUser(){
-        AuthData authUser = fireRef.getAuth();
-        String uid = "";
-        if (authUser == null) {
-            return new User();
-        }
-        uid = authUser.getUid();
-
-        fireRef.child("User").child(uid).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
-                user = new User((String) map.get("username"));
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                user = null;
-            }
-        });
-
-        return user;
-    }
-
     public static String getUserName(){
         String uid = fireRef.getAuth().getUid();
         fireRef.child("User/" + uid).addValueEventListener(new ValueEventListener() {

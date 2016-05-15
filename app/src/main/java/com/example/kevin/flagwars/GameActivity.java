@@ -8,6 +8,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -50,20 +51,34 @@ public class GameActivity
 
         Firebase.setAndroidContext(this.getApplicationContext());
         ref = ImportantMethods.getFireBase().child("Game").child(getIntent().getStringExtra("gameUid"));
-        currentUser = ImportantMethods.getCurrentUser();
-        ref.child("liveLocations").child(currentUser.getName()).child("teamColor").setValue(getIntent().getStringExtra("teamColor"));
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                loc = location;
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
-                ref.child("liveLocations").child(currentUser.getName()).child("locations").child("latitude").setValue(loc.getLatitude());
-                ref.child("liveLocations").child(currentUser.getName()).child("locations").child("longitude").setValue(loc.getLongitude());
-            }
-        };
 
-        myClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API).addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this).build();
+        myClient = new GoogleApiClient.Builder(GameActivity.this).addApi(LocationServices.API).addConnectionCallbacks(GameActivity.this)
+                .addOnConnectionFailedListener(GameActivity.this).build();
+
+        ImportantMethods.getFireBase().child("User").child(ImportantMethods.getFireBase().getAuth().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
+                currentUser = new User((String) map.get("username"));
+
+                ref.child("liveLocations").child(currentUser.getName()).child("teamColor").setValue(getIntent().getStringExtra("teamColor"));
+                locationListener = new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        loc = location;
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
+                        ref.child("liveLocations").child(currentUser.getName()).child("locations").child("latitude").setValue(loc.getLatitude());
+                        ref.child("liveLocations").child(currentUser.getName()).child("locations").child("longitude").setValue(loc.getLongitude());
+                    }
+                };
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Log.e("Firebase error", "Error in GameActivity onCreate", firebaseError.toException());
+                currentUser = null;
+            }
+        });
     }
 
     public void onStart() {

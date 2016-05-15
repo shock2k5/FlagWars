@@ -17,7 +17,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
+import java.util.HashMap;
 
 
 public class ChooseGameModeActivity extends AppCompatActivity {
@@ -46,7 +51,65 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         mCreateGameButton = (Button) findViewById(R.id.createGameBT);
         mJoinGameButton = (Button) findViewById(R.id.joinGameBT);
 
-        currentUser = ImportantMethods.getCurrentUser();
+        ImportantMethods.getFireBase().child("User").child(ImportantMethods.getFireBase().getAuth().getUid())
+                .addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
+                currentUser = new User((String) map.get("username"));
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                currentUser = null;
+            }
+        });
+
+        mTitle = "test";
+        if (fireRef.getAuth() == null) {
+            mDrawerItems = new String[]{"Log In", "Settings", "Rules"};
+        } else {
+            mDrawerItems = new String[]{ /*currentUser.getUsername(),*/ "Settings", "Rules", "Log Out"};
+        }
+
+        //mDrawerItems = getResources().getStringArray(R.array.drawer_list);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<String>(ChooseGameModeActivity.this,
+                R.layout.drawer_list_item, mDrawerItems));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+
+
+        mDrawerToggle = new CustomActionBarDrawerToggle (
+                ChooseGameModeActivity.this,                  /* host Activity */
+                mDrawerLayout)         /* DrawerLayout object */
+        {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                getSupportActionBar().setTitle("FlagWars");
+                //mJoinGameButton.setVisibility(View.VISIBLE);
+                //mCreateGameButton.setVisibility(View.VISIBLE);
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                getSupportActionBar().setTitle("FlagWars");
+                //mJoinGameButton.setVisibility(View.GONE);
+                //mCreateGameButton.setVisibility(View.GONE);
+            }
+        };
+
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
         mCreateGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,52 +141,6 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                 }
             }
         });
-        mTitle = "test";
-
-
-        if (currentUser == null) {
-            mDrawerItems = new String[]{"Log In", "Settings", "Rules"};
-        } else {
-            mDrawerItems = new String[]{currentUser.getUsername(), "Settings", "Rules", "Log Out"};
-        }
-
-        //mDrawerItems = getResources().getStringArray(R.array.drawer_list);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-        // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mDrawerItems));
-        // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-
-
-        mDrawerToggle = new CustomActionBarDrawerToggle (
-                this,                  /* host Activity */
-                mDrawerLayout)         /* DrawerLayout object */
-        {
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                getSupportActionBar().setTitle("FlagWars");
-                //mJoinGameButton.setVisibility(View.VISIBLE);
-                //mCreateGameButton.setVisibility(View.VISIBLE);
-            }
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                getSupportActionBar().setTitle("FlagWars");
-                //mJoinGameButton.setVisibility(View.GONE);
-                //mCreateGameButton.setVisibility(View.GONE);
-            }
-        };
-
-        // Set the drawer toggle as the DrawerListener
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     @Override
@@ -156,7 +173,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
      */
     private void selectItem(int position) {
         if (position == 0) {
-            if (currentUser == null) {
+            if (fireRef.getAuth() == null) {
                 Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
                 i.putExtra("gameMode", "fromNavDrawer");
                 startActivity(i);
@@ -168,7 +185,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         } else if (position == 2) {
             //rules page
         } else if (position == 3) {
-            if (currentUser == null) {
+            if (fireRef.getAuth() == null) {
                 new AlertDialog.Builder(context)
                         .setTitle("Log Out")
                         .setMessage("Are you sure you want to log out?")
