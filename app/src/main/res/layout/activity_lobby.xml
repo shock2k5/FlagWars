@@ -18,7 +18,9 @@
         android:layout_toEndOf="@+id/btnStartGameTeam"
         android:layout_above="@+id/btnStartGameTeam"
         android:choiceMode="none"
-        android:layout_below="@+id/LobbyGameName" />
+        android:background="@drawable/border_ui"
+        android:layout_below="@+id/LobbyGameName"
+        android:textAlignment="center" />
 
     <ListView
         android:layout_width="wrap_content"
@@ -28,7 +30,10 @@
         android:layout_alignBottom="@+id/redRosterList"
         android:layout_toStartOf="@+id/btnStartGameTeam"
         android:choiceMode="none"
-        android:layout_below="@+id/LobbyGameName" />
+        android:background="@drawable/border_ui"
+        android:layout_below="@+id/LobbyGameName"
+        android:footerDividersEnabled="false"
+        android:textAlignment="center" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -53,15 +58,15 @@
         android:layout_alignEnd="@+id/redRosterList" />
 
     <Button
-        android:layout_width="115dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start"
         android:id="@+id/btnStartGameTeam"
         android:background="@color/colorAccent"
-        android:visibility="invisible"
+        android:visibility="visible"
+        android:layout_marginStart="10dp"
         android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/btnJoinBlue"
-        android:layout_marginStart="0dp" />
+        android:layout_toEndOf="@+id/btnJoinBlue" />
 
     <Button
         android:layout_width="wrap_content"
