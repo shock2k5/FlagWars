@@ -45,7 +45,7 @@ public class RegisterActivity extends AppCompatActivity {
         mFacebookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(RegisterActivity.this, "Facebook integration not currently supported.", Toast.LENGTH_LONG);
+                Toast.makeText(RegisterActivity.this, "Facebook integration not currently supported.", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -111,18 +111,4 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-    private boolean isEmailValid(String email) {
-        boolean at = false, dot = false;
-
-        for (int i = 0; i < email.length(); i++) {
-            if (email.charAt(i) == '@')
-                at = true;
-            else if (email.charAt(i) == '.')
-                dot = true;
-        }
-
-        return at && dot;
-    }
-
 }

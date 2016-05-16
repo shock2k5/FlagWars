@@ -1,10 +1,8 @@
 package com.example.kevin.flagwars;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
@@ -19,11 +17,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.AuthData;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.firebase.client.annotations.NotNull;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -34,7 +32,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Lobby extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-    ArrayList<String> redTeam, blueTeam;
     TextView gameName;
     ArrayAdapter<String> redAdapter, blueAdapter;
     ListView redRoster, blueRoster;
@@ -58,7 +55,7 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
         btnStartGameTeam = (Button) findViewById(R.id.btnStartGameTeam);
 
         Firebase.setAndroidContext(this.getApplicationContext());
-        final Firebase ref = new Firebase("https://flagwar.firebaseio.com/").child("Game");
+        final Firebase fireRef = new Firebase("https://flagwar.firebaseio.com/");
         final Intent previous = getIntent();
         locationListener = new LocationListener() {
             @Override
@@ -69,11 +66,15 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
         myClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API).addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this).build();
 
-        ImportantMethods.getFireBase().child("User").child(ImportantMethods.getFireBase().getAuth().getUid()).addValueEventListener(new ValueEventListener() {
+        fireRef.child("User").child(fireRef.getAuth().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                Firebase ref = fireRef.child("Game");
                 HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
                 user = new User((String) map.get("username"));
+
+                if (getIntent().getStringExtra("creator").equals(user.getName()))
+                    btnStartGameTeam.setVisibility(Button.VISIBLE);
 
                 btnJoinBlueTeam.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -112,16 +113,16 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
                                     loc.setLatitude(38.9859);
                                     loc.setLongitude(-76.944294);
                                 }
-                                ref.child(uid).child("blueFlagLatitude").setValue(loc.getLatitude());
-                                ref.child(uid).child("blueFlagLongitude").setValue(loc.getLongitude());
+                                fireRef.child("Game").child(uid).child("blueFlagLatitude").setValue(loc.getLatitude());
+                                fireRef.child("Game").child(uid).child("blueFlagLongitude").setValue(loc.getLongitude());
                             } else if (game.getRedTeamNames().get(0).equals(user.getName())) {
                                 if (loc == null) {
                                     loc = new Location(LocationManager.GPS_PROVIDER);
                                     loc.setLatitude(38.986);
                                     loc.setLongitude(-76.94056);
                                 }
-                                ref.child(uid).child("redFlagLatitude").setValue(loc.getLatitude());
-                                ref.child(uid).child("redFlagLongitude").setValue(loc.getLongitude());
+                                fireRef.child("Game").child(uid).child("redFlagLatitude").setValue(loc.getLatitude());
+                                fireRef.child("Game").child(uid).child("redFlagLongitude").setValue(loc.getLongitude());
                             }
                             intent.putExtra("gameUid", uid);
                             intent.putExtra("teamColor", (onRed) ? "red" : "blue");
@@ -182,5 +183,5 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
 
     public void onConnectionSuspended(int cause) {}
 
-    public void onConnectionFailed(ConnectionResult connectionResult) {}
+    public void onConnectionFailed(@NotNull ConnectionResult connectionResult) {}
 }

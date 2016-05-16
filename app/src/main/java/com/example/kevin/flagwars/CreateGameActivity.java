@@ -1,10 +1,8 @@
 package com.example.kevin.flagwars;
 
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -21,7 +19,6 @@ import java.util.HashMap;
 public class CreateGameActivity extends AppCompatActivity {
     protected EditText gameName; // radio0 is Red, radio1 is Blue
     protected Button createGameButton;
-    protected Location location;
     protected Game game;
 
     @Override
@@ -51,8 +48,6 @@ public class CreateGameActivity extends AppCompatActivity {
                 int numPlayers = 4;
 
                 game = new Game(name, numPlayers);
-                location = ImportantMethods.getCurrentLocation(CreateGameActivity.this);
-                game.setRedFlagLocation(location);
                 game.sendToFirebase();
                 ImportantMethods.getFireBase().child("User").child(ImportantMethods.getFireBase().getAuth().getUid())
                         .addValueEventListener(new ValueEventListener() {
@@ -61,6 +56,10 @@ public class CreateGameActivity extends AppCompatActivity {
                                 HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
                                 User currentUser = new User((String) map.get("username"));
                                 game.switchBlueToRed(currentUser);
+                                Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
+                                intent.putExtra("gameUid", game.getUid());
+                                intent.putExtra("creator", currentUser.getName());
+                                startActivity(intent);
                             }
 
                             @Override
@@ -68,10 +67,6 @@ public class CreateGameActivity extends AppCompatActivity {
                                 Log.e("Firebase error", "CreateGameActivity setOnClickListener createGameButton", firebaseError.toException());
                             }
                         });
-
-                Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
-                intent.putExtra("gameUid", game.getUid());
-                startActivity(intent);
             }
         });
     }

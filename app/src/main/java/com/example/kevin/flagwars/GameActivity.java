@@ -24,6 +24,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
@@ -61,7 +62,6 @@ public class GameActivity
                 HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
                 currentUser = new User((String) map.get("username"));
 
-                ref.child("liveLocations").child(currentUser.getName()).child("teamColor").setValue(getIntent().getStringExtra("teamColor"));
                 locationListener = new LocationListener() {
                     @Override
                     public void onLocationChanged(Location location) {
@@ -69,6 +69,7 @@ public class GameActivity
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
                         ref.child("liveLocations").child(currentUser.getName()).child("locations").child("latitude").setValue(loc.getLatitude());
                         ref.child("liveLocations").child(currentUser.getName()).child("locations").child("longitude").setValue(loc.getLongitude());
+                        ref.child("liveLocations").child(currentUser.getName()).child("teamColor").setValue(getIntent().getStringExtra("teamColor"));
                     }
                 };
             }
@@ -103,8 +104,9 @@ public class GameActivity
             loc.setLongitude(-76.942792);
         }
 
-        LocationRequest locationRequest = new LocationRequest();
+        final LocationRequest locationRequest = new LocationRequest();
         LocationServices.FusedLocationApi.requestLocationUpdates(myClient, locationRequest, locationListener);
+
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -144,17 +146,19 @@ public class GameActivity
                             .position(locationToLatLng(game.getBlueFlagLocation()))
                             .title("Blue Flag")
                             .draggable(false));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
                 }
 
                 for (String userName : liveLocationsMap.keySet()) {
                     String teamColor = (String) liveLocationsMap.get(userName).get("teamColor");
-                    LatLng userLocation = new LatLng(
-                            ((HashMap<String, Double>) liveLocationsMap.get(userName).get("locations")).get("latitude"),
-                            ((HashMap<String, Double>) liveLocationsMap.get(userName).get("locations")).get("longitude"));
-                    mMap.addMarker(new MarkerOptions()
-                            .position(userLocation)
-                            .title(teamColor + " " + userName));
+                    HashMap<String, Double> locationsMap = (HashMap<String, Double>) liveLocationsMap.get(userName).get("locations");
+                    if (locationsMap != null) {
+                        LatLng userLocation = new LatLng(locationsMap.get("latitude"), locationsMap.get("longitude"));
+                        mMap.addMarker(new MarkerOptions()
+                                .position(userLocation)
+                                .title(teamColor + " " + userName));
+                    } else {
+                        Log.d("Null locations", userName + " " + teamColor);
+                    }
                 }
             }
 
@@ -197,6 +201,10 @@ public class GameActivity
             });
         }
         mMap.getUiSettings().setMapToolbarEnabled(false);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(
+                new LatLng(38.985439, -76.944562), // SW corner of mall
+                new LatLng(38.986507, -76.940271) // NE corner of mall
+        ), 0));
     }
 
     private LatLng locationToLatLng(Location loc) {

@@ -3,33 +3,21 @@ package com.example.kevin.flagwars;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.Manifest;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +46,7 @@ public class JoinGameActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Map<String, ?> games = dataSnapshot.getValue(Map.class);
+                Map<String, ?> games = (HashMap<String, ?>) dataSnapshot.getValue();
                 gameList = new ArrayList<>();
                 for (String key : games.keySet()) {
                     DataSnapshot snapshot = dataSnapshot.child(key);
@@ -102,9 +90,23 @@ public class JoinGameActivity extends AppCompatActivity {
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(JoinGameActivity.this, Lobby.class);
-                                intent.putExtra("gameUid", game.getUid());
-                                startActivity(intent);
+                                ImportantMethods.getFireBase().child("User").child(ImportantMethods.getFireBase().getAuth().getUid())
+                                        .addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
+                                                User currentUser = new User((String) map.get("username"));
+                                                Intent intent = new Intent(JoinGameActivity.this, Lobby.class);
+                                                intent.putExtra("gameUid", game.getUid());
+                                                intent.putExtra("creator", currentUser.getName());
+                                                startActivity(intent);
+                                            }
+
+                                            @Override
+                                            public void onCancelled(FirebaseError firebaseError) {
+                                                Log.e("Firebase error", "JoinGameActivity mGameListView onClick", firebaseError.toException());
+                                            }
+                                        });
                             }
                         })
                         .setNegativeButton(android.R.string.no, null)

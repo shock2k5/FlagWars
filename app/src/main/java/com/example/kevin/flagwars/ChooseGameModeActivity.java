@@ -24,7 +24,6 @@ import com.firebase.client.ValueEventListener;
 
 import java.util.HashMap;
 
-
 public class ChooseGameModeActivity extends AppCompatActivity {
 
     protected Button mCreateGameButton, mJoinGameButton;
@@ -80,7 +79,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(ChooseGameModeActivity.this,
+        mDrawerList.setAdapter(new ArrayAdapter<>(ChooseGameModeActivity.this,
                 R.layout.drawer_list_item, mDrawerItems));
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());

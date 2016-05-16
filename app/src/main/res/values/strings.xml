@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">FlagWars</string>
-
-    <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -26,11 +24,7 @@
     <string name="title_activity_join_game">JoinGameActivity</string>
     <string name="google_app_id">com.example.kevin.flagwars</string>
     <string name="facebook_app_id">1048567448555778</string>
-    <string name="parse_app_id">iEVgiEIkebbBlikxwCSSEPZnepg0khNnUXbhoPwy</string>
-    <string name="parse_client_id">JIj1LA0LQQTHzq6vd8nB5FyTdKbCxcvfxfmF1qL1</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
     <string name="title_activity_game">Map</string>
-
-    >>>>>>> origin/master
 </resources>
