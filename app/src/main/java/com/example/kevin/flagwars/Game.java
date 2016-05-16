@@ -103,9 +103,9 @@ public class Game {
 
     public void sendToFirebase() {
         Firebase ref = ImportantMethods.getFireBase().child("Game").child(this.name);
-        Log.d("Tag: ", this.name);
         ref.child("name").setValue(this.name);
         ref.child("numPlayers").setValue(this.numPlayers);
+        ref.child("started").setValue(false);
         HashMap<String, String> playerList = new HashMap<String, String>();
         ArrayList<String> red = getRedTeamNames();
         ArrayList<String> blue = getBlueTeamNames();

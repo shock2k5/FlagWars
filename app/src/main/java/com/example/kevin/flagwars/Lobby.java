@@ -38,7 +38,7 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
     Game game;
     User user;
     Button btnJoinRedTeam, btnJoinBlueTeam, btnStartGameTeam;
-    boolean onRed = true;
+    Boolean onRed = null;
     GoogleApiClient myClient;
     Location loc;
     LocationListener locationListener;
@@ -69,7 +69,7 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
         fireRef.child("User").child(fireRef.getAuth().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Firebase ref = fireRef.child("Game");
+                final Firebase ref = fireRef.child("Game").child(getIntent().getStringExtra("gameUid"));
                 HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
                 user = new User((String) map.get("username"));
 
@@ -101,7 +101,7 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
                     public void onClick(View v) {
                         if (game.getBlueTeamNames().size() > 0 && game.getRedTeamNames().size() > 0) {
                             String uid = getIntent().getStringExtra("gameUid");
-                            Intent intent = new Intent(Lobby.this, GameActivity.class);
+                            ref.child("started").setValue(true);
 
                             if (ContextCompat.checkSelfPermission(Lobby.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                                 ActivityCompat.requestPermissions(Lobby.this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
@@ -113,17 +113,19 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
                                     loc.setLatitude(38.9859);
                                     loc.setLongitude(-76.944294);
                                 }
-                                fireRef.child("Game").child(uid).child("blueFlagLatitude").setValue(loc.getLatitude());
-                                fireRef.child("Game").child(uid).child("blueFlagLongitude").setValue(loc.getLongitude());
+                                ref.child("blueFlagLatitude").setValue(loc.getLatitude());
+                                ref.child("blueFlagLongitude").setValue(loc.getLongitude());
                             } else if (game.getRedTeamNames().get(0).equals(user.getName())) {
                                 if (loc == null) {
                                     loc = new Location(LocationManager.GPS_PROVIDER);
                                     loc.setLatitude(38.986);
                                     loc.setLongitude(-76.94056);
                                 }
-                                fireRef.child("Game").child(uid).child("redFlagLatitude").setValue(loc.getLatitude());
-                                fireRef.child("Game").child(uid).child("redFlagLongitude").setValue(loc.getLongitude());
+                                ref.child("redFlagLatitude").setValue(loc.getLatitude());
+                                ref.child("redFlagLongitude").setValue(loc.getLongitude());
                             }
+
+                            Intent intent = new Intent(Lobby.this, GameActivity.class);
                             intent.putExtra("gameUid", uid);
                             intent.putExtra("teamColor", (onRed) ? "red" : "blue");
                             startActivity(intent);
@@ -133,22 +135,39 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
                     }
                 });
 
-                ref.child(previous.getStringExtra("gameUid")).addValueEventListener(new ValueEventListener() {
+                // Listener to check for changes to the Game class
+                ref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        String name = snapshot.child("name").getValue(String.class);
-                        int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
-                        HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
-                        if (teamList == null) teamList = new HashMap<>();
+                        if (snapshot.child("started").getValue(Boolean.class)) {
+                            if (onRed == null) {
+                                Toast.makeText(Lobby.this.getApplicationContext(),
+                                        "This game was started without you. Taking you back...", Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(Lobby.this, JoinGameActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                            } else {
+                                Intent intent = new Intent(Lobby.this, GameActivity.class);
+                                intent.putExtra("gameUid", previous.getStringExtra("gameUid"));
+                                intent.putExtra("teamColor", (onRed) ? "red" : "blue");
+                                startActivity(intent);
+                            }
+                        } else {
+                                String name = snapshot.child("name").getValue(String.class);
+                                int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
+                                HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
+                                if (teamList == null) teamList = new HashMap<>();
 
-                        game = new Game(name, numPlayers);
-                        game.teamList = teamList;
+                                game = new Game(name, numPlayers);
+                                game.teamList = teamList;
 
-                        gameName.setText(game.getName());
-                        redAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
-                        blueAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());
-                        redRoster.setAdapter(redAdapter);
-                        blueRoster.setAdapter(blueAdapter);
+                                gameName.setText(game.getName());
+                                redAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
+                                blueAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());
+                                redRoster.setAdapter(redAdapter);
+                                blueRoster.setAdapter(blueAdapter);
+                            }
                     }
 
                     @Override
