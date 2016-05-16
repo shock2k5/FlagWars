@@ -1,8 +1,10 @@
 package com.example.kevin.flagwars;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
@@ -17,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.AuthData;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -31,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Lobby extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    ArrayList<String> redTeam, blueTeam;
     TextView gameName;
     ArrayAdapter<String> redAdapter, blueAdapter;
     ListView redRoster, blueRoster;
@@ -45,7 +49,6 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        user = CurrentUser.getCurrentUser(Lobby.this.getApplicationContext());
         setContentView(R.layout.activity_lobby);
         gameName = (TextView) findViewById(R.id.LobbyGameName);
         btnJoinRedTeam = (Button) findViewById(R.id.btnJoinRed);
@@ -66,84 +69,97 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
         myClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API).addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this).build();
 
-        btnJoinBlueTeam.setOnClickListener(new View.OnClickListener() {
+        ImportantMethods.getFireBase().child("User").child(ImportantMethods.getFireBase().getAuth().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                if (game.getBlueTeamNames().contains(user.getName())) return;
-                game.switchRedToBlue(user);
-                onRed = false;
-                updateTeamLists();
-            }
-        });
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
+                user = new User((String) map.get("username"));
 
-        btnJoinRedTeam.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (game.getRedTeamNames().contains(user.getName())) return;
-                game.switchBlueToRed(user);
-                onRed = true;
-                updateTeamLists();
-            }
-        });
-
-        btnStartGameTeam.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (game.getBlueTeamNames().size() > 0 && game.getRedTeamNames().size() > 0) {
-                    String uid = getIntent().getStringExtra("gameUid");
-                    Intent intent = new Intent(Lobby.this, GameActivity.class);
-
-                    if (ContextCompat.checkSelfPermission(Lobby.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-                        ActivityCompat.requestPermissions(Lobby.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-
-                    loc = LocationServices.FusedLocationApi.getLastLocation(myClient);
-                    if (game.getBlueTeamNames().get(0).equals(user.getName())) {
-                        if (loc == null) {
-                            loc = new Location(LocationManager.GPS_PROVIDER);
-                            loc.setLatitude(38.9859);
-                            loc.setLongitude(-76.944294);
-                        }
-                        ref.child(uid).child("blueFlagLatitude").setValue(loc.getLatitude());
-                        ref.child(uid).child("blueFlagLongitude").setValue(loc.getLongitude());
-                    } else if (game.getRedTeamNames().get(0).equals(user.getName())) {
-                        if (loc == null) {
-                            loc = new Location(LocationManager.GPS_PROVIDER);
-                            loc.setLatitude(38.986);
-                            loc.setLongitude(-76.94056);
-                        }
-                        ref.child(uid).child("redFlagLatitude").setValue(loc.getLatitude());
-                        ref.child(uid).child("redFlagLongitude").setValue(loc.getLongitude());
+                btnJoinBlueTeam.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (game.getBlueTeamNames().contains(user.getName())) return;
+                        game.switchRedtoBlue(user);
+                        onRed = false;
+                        updateTeamLists();
                     }
-                    intent.putExtra("gameUid", uid);
-                    intent.putExtra("teamColor", (onRed) ? "red" : "blue");
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(Lobby.this, "There needs to be at least one player on each team", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+                });
 
-        ref.child(previous.getStringExtra("gameUid")).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                String name = snapshot.child("name").getValue(String.class);
-                int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
-                HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
-                if (teamList == null) teamList = new HashMap<>();
+                btnJoinRedTeam.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (game.getRedTeamNames().contains(user.getName())) return;
+                        game.switchBlueToRed(user);
+                        onRed = true;
+                        updateTeamLists();
+                    }
+                });
 
-                game = new Game(name, numPlayers);
-                game.teamList = teamList;
+                btnStartGameTeam.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (game.getBlueTeamNames().size() > 0 && game.getRedTeamNames().size() > 0) {
+                            String uid = getIntent().getStringExtra("gameUid");
+                            Intent intent = new Intent(Lobby.this, GameActivity.class);
 
-                gameName.setText(game.getName());
-                redAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
-                blueAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());
-                redRoster.setAdapter(redAdapter);
-                blueRoster.setAdapter(blueAdapter);
+                            if (ContextCompat.checkSelfPermission(Lobby.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                                ActivityCompat.requestPermissions(Lobby.this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
+
+                            loc = LocationServices.FusedLocationApi.getLastLocation(myClient);
+                            if (game.getBlueTeamNames().get(0).equals(user.getName())) {
+                                if (loc == null) {
+                                    loc = new Location(LocationManager.GPS_PROVIDER);
+                                    loc.setLatitude(38.9859);
+                                    loc.setLongitude(-76.944294);
+                                }
+                                ref.child(uid).child("blueFlagLatitude").setValue(loc.getLatitude());
+                                ref.child(uid).child("blueFlagLongitude").setValue(loc.getLongitude());
+                            } else if (game.getRedTeamNames().get(0).equals(user.getName())) {
+                                if (loc == null) {
+                                    loc = new Location(LocationManager.GPS_PROVIDER);
+                                    loc.setLatitude(38.986);
+                                    loc.setLongitude(-76.94056);
+                                }
+                                ref.child(uid).child("redFlagLatitude").setValue(loc.getLatitude());
+                                ref.child(uid).child("redFlagLongitude").setValue(loc.getLongitude());
+                            }
+                            intent.putExtra("gameUid", uid);
+                            intent.putExtra("teamColor", (onRed) ? "red" : "blue");
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(Lobby.this, "There needs to be at least one player on each team", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
+                ref.child(previous.getStringExtra("gameUid")).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        String name = snapshot.child("name").getValue(String.class);
+                        int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
+                        HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
+                        if (teamList == null) teamList = new HashMap<>();
+
+                        game = new Game(name, numPlayers);
+                        game.teamList = teamList;
+
+                        gameName.setText(game.getName());
+                        redAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
+                        blueAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());
+                        redRoster.setAdapter(redAdapter);
+                        blueRoster.setAdapter(blueAdapter);
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+                        Log.e("Firebase Read Error", "Occurred in Lobby/addListenerForSingleValueEvent", firebaseError.toException());
+                    }
+                });
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
-                Log.e("Firebase Read Error", "Occurred in Lobby/addListenerForSingleValueEvent", firebaseError.toException());
+                user = null;
             }
         });
     }

@@ -77,7 +77,6 @@ public class LoginActivity extends AppCompatActivity {
                     ref.authWithPassword(email, password, new Firebase.AuthResultHandler() {
                         @Override
                         public void onAuthenticated(AuthData authData) {
-                            CurrentUser.setCurrentUser(LoginActivity.this.getApplicationContext());
                             Intent i;
                             Intent previousIntent = getIntent();
                             if (previousIntent.getStringExtra("gameMode").equals("createGame")){

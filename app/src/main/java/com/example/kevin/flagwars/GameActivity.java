@@ -44,7 +44,6 @@ public class GameActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        currentUser = CurrentUser.getCurrentUser(GameActivity.this.getApplicationContext());
         setContentView(R.layout.activity_game);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -56,16 +55,30 @@ public class GameActivity
         myClient = new GoogleApiClient.Builder(GameActivity.this).addApi(LocationServices.API).addConnectionCallbacks(GameActivity.this)
                 .addOnConnectionFailedListener(GameActivity.this).build();
 
-        ref.child("liveLocations").child(currentUser.getName()).child("teamColor").setValue(getIntent().getStringExtra("teamColor"));
-        locationListener = new LocationListener() {
+        ImportantMethods.getFireBase().child("User").child(ImportantMethods.getFireBase().getAuth().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onLocationChanged(Location location) {
-                loc = location;
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
-                ref.child("liveLocations").child(currentUser.getName()).child("locations").child("latitude").setValue(loc.getLatitude());
-                ref.child("liveLocations").child(currentUser.getName()).child("locations").child("longitude").setValue(loc.getLongitude());
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
+                currentUser = new User((String) map.get("username"));
+
+                ref.child("liveLocations").child(currentUser.getName()).child("teamColor").setValue(getIntent().getStringExtra("teamColor"));
+                locationListener = new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        loc = location;
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
+                        ref.child("liveLocations").child(currentUser.getName()).child("locations").child("latitude").setValue(loc.getLatitude());
+                        ref.child("liveLocations").child(currentUser.getName()).child("locations").child("longitude").setValue(loc.getLongitude());
+                    }
+                };
             }
-        };
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Log.e("Firebase error", "Error in GameActivity onCreate", firebaseError.toException());
+                currentUser = null;
+            }
+        });
     }
 
     public void onStart() {
@@ -93,44 +106,36 @@ public class GameActivity
         LocationRequest locationRequest = new LocationRequest();
         LocationServices.FusedLocationApi.requestLocationUpdates(myClient, locationRequest, locationListener);
 
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 String name = snapshot.child("name").getValue(String.class);
                 int numPlayers = snapshot.child("numPlayers").getValue(Integer.class);
                 HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
                 if (teamList == null) teamList = new HashMap<>();
-                game = new Game(name, numPlayers);
-                game.teamList = teamList;
-            }
 
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                System.err.println("There was an error getting the Game from Firebase: " + firebaseError);
-            }
-        });
-
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
                 HashMap<String, HashMap<String, Object>> liveLocationsMap =
                         (HashMap<String, HashMap<String, Object>>) snapshot.child("liveLocations").getValue();
 
+                Location redFlag = null, blueFlag = null;
+                game = new Game(name, numPlayers);
+                game.teamList = teamList;
+
                 mMap.clear();
-                Double rfLat = snapshot.child("redFlagLatitude").getValue(Double.class);
-                Double rfLong = snapshot.child("redFlagLongitude").getValue(Double.class);
-                Double bfLat = snapshot.child("blueFlagLatitude").getValue(Double.class);
-                Double bfLong = snapshot.child("blueFlagLongitude").getValue(Double.class);
+                if (snapshot.child("redFlagLatitude").getValue(Double.class) != null &&
+                        snapshot.child("redFlagLongitude").getValue(Double.class) != null &&
+                        snapshot.child("blueFlagLatitude").getValue(Double.class) != null &&
+                        snapshot.child("blueFlagLongitude").getValue(Double.class) != null) {
+                    redFlag = new Location(LocationManager.GPS_PROVIDER);
+                    redFlag.setLatitude(snapshot.child("redFlagLatitude").getValue(Double.class));
+                    redFlag.setLongitude(snapshot.child("redFlagLongitude").getValue(Double.class));
 
-                if (game != null && rfLat != null && rfLong != null && bfLat != null && bfLong != null) {
-                    game.redFlag = new Location(LocationManager.GPS_PROVIDER);
-                    game.redFlag.setLatitude(rfLat);
-                    game.redFlag.setLongitude(rfLong);
+                    blueFlag = new Location(LocationManager.GPS_PROVIDER);
+                    blueFlag.setLatitude(snapshot.child("blueFlagLatitude").getValue(Double.class));
+                    blueFlag.setLongitude(snapshot.child("blueFlagLongitude").getValue(Double.class));
 
-                    game.blueFlag = new Location(LocationManager.GPS_PROVIDER);
-                    game.blueFlag.setLatitude(bfLat);
-                    game.blueFlag.setLongitude(bfLong);
-
+                    game.redFlag = redFlag;
+                    game.blueFlag = blueFlag;
                     mMap.addMarker(new MarkerOptions()
                             .position(locationToLatLng(game.getRedFlagLocation()))
                             .title("Red Flag")
@@ -149,14 +154,13 @@ public class GameActivity
                             ((HashMap<String, Double>) liveLocationsMap.get(userName).get("locations")).get("longitude"));
                     mMap.addMarker(new MarkerOptions()
                             .position(userLocation)
-                            .title(teamColor + " " + userName)
-                            .draggable(false));
+                            .title(teamColor + " " + userName));
                 }
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
-                System.err.println("There was an error getting the LiveLocations from Firebase: " + firebaseError);
+                System.err.println("There was an error getting the Game from Firebase: " + firebaseError);
             }
         });
     }
@@ -170,7 +174,8 @@ public class GameActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
                 @Override
@@ -190,8 +195,6 @@ public class GameActivity
                     }
                 }
             });
-        } else {
-            ActivityCompat.requestPermissions(GameActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }
         mMap.getUiSettings().setMapToolbarEnabled(false);
     }

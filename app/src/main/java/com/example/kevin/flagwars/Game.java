@@ -21,6 +21,7 @@ public class Game {
     protected int numPlayers;
     protected HashMap<String, String> teamList;
     protected Location redFlag, blueFlag, anchorLocation = null;
+    protected HashMap<String, HashMap<String, HashMap<String, Double>>> userMap = new HashMap<>();
 
     public String toString(){
         String str = "";
@@ -94,14 +95,129 @@ public class Game {
         return blue;
     }
 
-    public void switchRedToBlue(final User user) {
+//    public void addToRedTeam(final User user) {
+//        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList/");
+//        fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
+//                if(teamList == null) teamList = new HashMap<String, String>();
+//                if(teamList.get(user.getName()) == null){
+//                    teamList.put(user.getName(), "red");
+//                    fireRef.setValue(teamList);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//
+//            }
+//        });
+//    }
+//
+//    public void addToBlueTeam(final User user) {
+//        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList");
+//        Log.d("Game: ", this.toString());
+//        fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
+//                if(teamList == null) teamList = new HashMap<String, String>();
+//                if(teamList.get(user.getName()) == null){
+//                    teamList.put(user.getName(), "blue");
+//                    fireRef.setValue(teamList);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//
+//            }
+//        });
+//    }
+//
+//    public void removeFromRedTeam(final User user) {
+//        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList/");
+//        fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
+//                if (teamList == null) teamList = new HashMap<String, String>();
+//                if(teamList.get(user.getName()) == null){
+//                    teamList.remove(user.getName());
+//                    fireRef.setValue(teamList);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//
+//            }
+//        });
+//    }
+//
+//    public void removeFromBlueTeam(final User user) {
+//        final Firebase fireRef = ImportantMethods.getFireBase().child("Game/" + this.name + "/teamList/");
+//        fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
+//                if(teamList.get(user.getName()) == null){
+//                    teamList.remove(user.getName());
+//                    fireRef.setValue(teamList);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//
+//            }
+//        });
+//    }
+
+
+    public void switchRedtoBlue(final User user) {
         this.teamList.put(user.getName(), "blue");
         this.sendToFirebase();
+//        final Firebase fireRef = ImportantMethods.getFireBase().child("Game").child(this.name).child("teamList");
+//        fireRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
+//                if (teamList == null) teamList = new HashMap<>();
+//                if (teamList.get(user.getName()) == null) {
+//                    teamList.put(user.getName(), "blue");
+//                    fireRef.setValue(teamList);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//                Log.e("Firebase error", "Game switchRedToBlue", firebaseError.toException());
+//            }
+//        }
     }
 
     public void switchBlueToRed(final User user) {
         this.teamList.put(user.getName(), "red");
         this.sendToFirebase();
+//        final Firebase fireRef = ImportantMethods.getFireBase().child("Game").child(this.name).child("teamList");
+//        fireRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.getValue();
+//                if (teamList == null) teamList = new HashMap<>();
+//                if (teamList.get(user.getName()) == null) {
+//                    teamList.put(user.getName(), "red");
+//                    fireRef.setValue(teamList);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//                Log.e("Firebase error", "Game switchBlueToRed", firebaseError.toException());
+//            }
+//        });
     }
 
     public void sendToFirebase() {
@@ -134,5 +250,49 @@ public class Game {
             ref.child("blueFlagLatitude").setValue(this.blueFlag.getLatitude());
             ref.child("blueFlagLongitude").setValue(this.blueFlag.getLongitude());
         }
+    }
+
+    /******************** STATIC METHODS ********************/
+
+    public static Game getFromFirebase(String uid) {
+        final Firebase ref = ImportantMethods.getFireBase().child("Game").child(uid);
+        final Game game = new Game();
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                game.name = snapshot.child("name").getValue(String.class);
+                game.numPlayers = snapshot.child("numPlayers").getValue(Integer.class);
+
+                if (snapshot.child("anchorLocationLatitude").getValue() == null) {
+                    game.anchorLocation = new Location(LocationManager.GPS_PROVIDER);
+                    game.anchorLocation.setLatitude(snapshot.child("anchorLocationLatitude").getValue(Double.class));
+                    game.anchorLocation.setLongitude(snapshot.child("anchorLocationLongitude").getValue(Double.class));
+                } else {
+                    game.anchorLocation = null;
+                }
+
+                if (snapshot.child("redFlagLatitude").getValue() == null) {
+                    game.redFlag = new Location(LocationManager.GPS_PROVIDER);
+                    game.redFlag.setLatitude(snapshot.child("redFlagLatitude").getValue(Double.class));
+                    game.redFlag.setLongitude(snapshot.child("redFlagLongitude").getValue(Double.class));
+                } else {
+                    game.redFlag = null;
+                }
+
+                if (snapshot.child("blueFlagLatitude").getValue(Double.class) == null) {
+                    game.blueFlag = new Location(LocationManager.GPS_PROVIDER);
+                    game.blueFlag.setLatitude(snapshot.child("blueFlagLatitude").getValue(Double.class));
+                    game.blueFlag.setLongitude(snapshot.child("blueFlagLongitude").getValue(Double.class));
+                } else {
+                    game.blueFlag = null;
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.err.println("There was an error getting the Game from Firebase: " + firebaseError);
+            }
+        });
+        return game;
     }
 }

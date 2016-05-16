@@ -17,7 +17,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
+import java.util.HashMap;
 
 
 public class ChooseGameModeActivity extends AppCompatActivity {
@@ -38,7 +43,6 @@ public class ChooseGameModeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        currentUser = CurrentUser.getCurrentUser(ChooseGameModeActivity.this.getApplicationContext());
         setContentView(R.layout.activity_choose_game_mode);
         Firebase.setAndroidContext(this.getApplicationContext());
         setContentView(R.layout.activity_choose_game_mode);
@@ -46,12 +50,29 @@ public class ChooseGameModeActivity extends AppCompatActivity {
 
         mCreateGameButton = (Button) findViewById(R.id.createGameBT);
         mJoinGameButton = (Button) findViewById(R.id.joinGameBT);
-        mTitle = "test";
+        if(ImportantMethods.getFireBase().getAuth() != null){
+            String uid = ImportantMethods.getFireBase().getAuth().getUid();
+            ImportantMethods.getFireBase().child("User").child(uid)
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
+                            currentUser = new User((String) map.get("username"));
+                        }
 
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+                            currentUser = null;
+                        }
+                    });
+
+        }
+
+        mTitle = "test";
         if (fireRef.getAuth() == null) {
             mDrawerItems = new String[]{"Log In", "Settings", "Rules"};
         } else {
-            mDrawerItems = new String[]{ currentUser.getUsername(), "Settings", "Rules", "Log Out"};
+            mDrawerItems = new String[]{ /*currentUser.getUsername(),*/ "Settings", "Rules", "Log Out"};
         }
 
         //mDrawerItems = getResources().getStringArray(R.array.drawer_list);
@@ -176,7 +197,6 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 fireRef.unauth();
-                                mDrawerItems = new String[]{"Log In", "Settings", "Rules"};
                                 Intent i = new Intent(ChooseGameModeActivity.this, ChooseGameModeActivity.class);
                                 startActivity(i);
                             }
