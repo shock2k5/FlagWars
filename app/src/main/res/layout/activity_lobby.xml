@@ -53,15 +53,15 @@
         android:layout_alignEnd="@+id/redRosterList" />
 
     <Button
-        android:layout_width="70dp"
+        android:layout_width="115dp"
         android:layout_height="wrap_content"
         android:text="Start"
         android:id="@+id/btnStartGameTeam"
         android:background="@color/colorAccent"
+        android:visibility="invisible"
         android:layout_alignParentBottom="true"
         android:layout_toEndOf="@+id/btnJoinBlue"
-        android:layout_marginStart="19dp"
-        android:visibility="invisible" />
+        android:layout_marginStart="0dp" />
 
     <Button
         android:layout_width="wrap_content"

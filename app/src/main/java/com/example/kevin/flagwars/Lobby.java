@@ -95,7 +95,7 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
                         updateTeamLists();
                     }
                 });
-
+                
                 btnStartGameTeam.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
