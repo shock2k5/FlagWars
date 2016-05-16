@@ -81,6 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
                             @Override
                             public void onAuthenticated(AuthData authData) {
                                 ImportantMethods.addNewUser(new User(email));
+                                CurrentUser.setCurrentUser(RegisterActivity.this.getApplicationContext());
                                 String mode = getIntent().getStringExtra("gameMode");
                                 Intent intent;
                                 if(mode.equals("createGame")){
