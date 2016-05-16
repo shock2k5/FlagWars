@@ -25,14 +25,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Name Your Game" />
+            android:text="Name Your Game"
+            android:textColor="#fff" />
 
         <EditText
             android:id="@+id/game_name_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:ems="10">
+            android:ems="10"
+            android:textColor="#000">
             <requestFocus />
         </EditText>
 
@@ -51,7 +53,9 @@
             android:id="@+id/create_game_start_game"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="START GAME" />
+            android:text="START GAME"
+            android:background="@color/colorAccent"
+            android:textColor="@color/colorPrimaryDark" />
 
     </LinearLayout>
 

@@ -7,15 +7,19 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.kevin.flagwars.Lobby">
+    tools:context="com.example.kevin.flagwars.Lobby"
+    android:background="@color/colorPrimary">
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="90dp"
         android:layout_height="wrap_content"
         android:text="Start"
         android:id="@+id/btnStartGameTeam"
-        android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@+id/btnJoinRed" />
+        android:layout_marginLeft="5dp"
+        android:background="@color/colorAccent"
+        android:layout_alignTop="@+id/btnJoinRed"
+        android:layout_toEndOf="@+id/btnJoinBlue"
+        android:layout_marginStart="8dp" />
 
     <ListView
         android:layout_width="wrap_content"
@@ -54,15 +58,21 @@
         android:layout_height="wrap_content"
         android:text="Join Red Team"
         android:id="@+id/btnJoinRed"
+        android:background="@color/colorAccent"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignEnd="@+id/redRosterList"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Join Blue Team"
         android:id="@+id/btnJoinBlue"
-        android:layout_alignTop="@+id/btnStartGameTeam"
-        android:layout_toStartOf="@+id/btnStartGameTeam" />
+        android:background="@color/colorAccent"
+        android:paddingRight="8dp"
+        android:paddingLeft="8dp"
+        android:layout_below="@+id/blueRosterList"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
