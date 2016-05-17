@@ -43,8 +43,8 @@ public class GameActivity
         extends FragmentActivity
         implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     final float ZOOM_LEVEL = 16.5f;
-    final int RADIUS = 100;
-    final int REFRESH_INTERVAL = 10000;
+    final int RADIUS = 1000000;
+    final int REFRESH_INTERVAL = 100;
 
     private GoogleMap mMap;
     private Location loc = null;
@@ -103,36 +103,37 @@ public class GameActivity
                         if (teamColor.equals("blue")) { // blue
                             if (rfLatBool && rfLongBool) { // red flag held ->
                                 if (distToBlue < RADIUS) { // blue capture red flag
-                                    ref.child("redFlagLatitude").removeValue();
-                                    ref.child("redFlagLongitude").removeValue();
+                                    ref.child("holding").child("redFlagLatitude").removeValue();
+                                    ref.child("holding").child("redFlagLongitude").removeValue();
                                     Toast.makeText(GameActivity.this, "Red flag captured! Game over!!!", Toast.LENGTH_LONG).show();
                                     startActivity(end);
-                                } else { // blue take red flag
-                                    ref.child("redFlagLatitude").setValue(loc.getLatitude());
-                                    ref.child("redFlagLongitude").setValue(loc.getLongitude());
-                                    Toast.makeText(GameActivity.this, "Red flag taken.", Toast.LENGTH_LONG).show();
                                 }
                             } else if (bfLatBool && bfLongBool) { // blue flag held -> blue return blue flag
-                                ref.child("blueFlagLatitude").removeValue();
-                                ref.child("blueFlagLongitude").removeValue();
+                                ref.child("holding").child("blueFlagLatitude").removeValue();
+                                ref.child("holding").child("blueFlagLongitude").removeValue();
                                 Toast.makeText(GameActivity.this, "Blue flag returned.", Toast.LENGTH_LONG).show();
+                            } else { // blue take red flag
+                                ref.child("holding").child("redFlagLatitude").setValue(loc.getLatitude());
+                                ref.child("holding").child("redFlagLongitude").setValue(loc.getLongitude());
+                                Toast.makeText(GameActivity.this, "Red flag taken.", Toast.LENGTH_LONG).show();
                             }
                         } else { // red
                             if (bfLatBool && bfLongBool) { // blue flag held ->
                                 if (distToRed < RADIUS) { // red capture blue flag
-                                    ref.child("blueFlagLatitude").removeValue();
-                                    ref.child("blueFlagLongitude").removeValue();
+                                    ref.child("holding").child("blueFlagLatitude").removeValue();
+                                    ref.child("holding").child("blueFlagLongitude").removeValue();
                                     Toast.makeText(GameActivity.this, "Blue flag captured! Game over!!!", Toast.LENGTH_LONG).show();
-                                } else { // red take blue flag
-                                    ref.child("blueFlagLatitude").setValue(loc.getLatitude());
-                                    ref.child("blueFlagLongitude").setValue(loc.getLongitude());
-                                    Toast.makeText(GameActivity.this, "Blue flag taken.", Toast.LENGTH_LONG).show();
+                                    startActivity(end);
                                 }
                             } else if (rfLatBool && rfLongBool) { // red flag held -> red return red flag
-                                ref.child("redFlagLatitude").removeValue();
-                                ref.child("redFlagLongitude").removeValue();
+                                ref.child("holding").child("redFlagLatitude").removeValue();
+                                ref.child("holding").child("redFlagLongitude").removeValue();
                                 Toast.makeText(GameActivity.this, "Red flag returned.", Toast.LENGTH_LONG).show();
                                 startActivity(end);
+                            } else { // red take blue flag
+                                ref.child("holding").child("blueFlagLatitude").setValue(loc.getLatitude());
+                                ref.child("holding").child("blueFlagLongitude").setValue(loc.getLongitude());
+                                Toast.makeText(GameActivity.this, "Blue flag taken.", Toast.LENGTH_LONG).show();
                             }
                         }
 
