@@ -50,7 +50,7 @@ public class Lobby extends AppCompatActivity {
         final Firebase fireRef = new Firebase("https://flagwar.firebaseio.com/");
         final Intent previous = getIntent();
 
-        fireRef.child("User").child(fireRef.getAuth().getUid()).addValueEventListener(new ValueEventListener() {
+        fireRef.child("User").child(fireRef.getAuth().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final Firebase ref = fireRef.child("Game").child(getIntent().getStringExtra("gameUid"));
@@ -110,7 +110,7 @@ public class Lobby extends AppCompatActivity {
                 });
 
                 // Listener to check for changes to the Game class
-                ref.addValueEventListener(new ValueEventListener() {
+                ValueEventListener vle = new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         if (snapshot.child("creator").getValue(String.class).equals(user.getName()))
@@ -124,27 +124,30 @@ public class Lobby extends AppCompatActivity {
                             intent.putExtra("teamColor", (onRed) ? "red" : "blue");
                             intent.putExtra("currentUser", user.getName());
                             startActivity(intent);
+                            ref.removeEventListener(this);
                         } else {
-                                String name = snapshot.child("name").getValue(String.class);
-                                HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
-                                if (teamList == null) teamList = new HashMap<>();
+                            String name = snapshot.child("name").getValue(String.class);
+                            HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
+                            if (teamList == null) teamList = new HashMap<>();
 
-                                game = new Game(name);
-                                game.teamList = teamList;
+                            game = new Game(name);
+                            game.teamList = teamList;
 
-                                gameName.setText(game.getName());
-                                redAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
-                                blueAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());
-                                redRoster.setAdapter(redAdapter);
-                                blueRoster.setAdapter(blueAdapter);
-                            }
+                            gameName.setText(game.getName());
+                            redAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getRedTeamNames());
+                            blueAdapter = new ArrayAdapter<>(Lobby.this, android.R.layout.simple_list_item_1, game.getBlueTeamNames());
+                            redRoster.setAdapter(redAdapter);
+                            blueRoster.setAdapter(blueAdapter);
+                        }
                     }
 
                     @Override
                     public void onCancelled(FirebaseError firebaseError) {
                         Log.e("Firebase Read Error", "Occurred in Lobby/addListenerForSingleValueEvent", firebaseError.toException());
                     }
-                });
+                };
+
+                ref.addValueEventListener(vle);
             }
 
             @Override
