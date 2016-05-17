@@ -51,12 +51,12 @@ public class GameActivity
         mapFragment.getMapAsync(this);
 
         Firebase.setAndroidContext(this.getApplicationContext());
-        ref = ImportantMethods.getFireBase().child("Game").child(getIntent().getStringExtra("gameUid"));
+        ref = ImportantMethods.getFireBase();
 
         myClient = new GoogleApiClient.Builder(GameActivity.this).addApi(LocationServices.API).addConnectionCallbacks(GameActivity.this)
                 .addOnConnectionFailedListener(GameActivity.this).build();
 
-        ImportantMethods.getFireBase().child("User").child(ImportantMethods.getFireBase().getAuth().getUid()).addValueEventListener(new ValueEventListener() {
+        ref.child("User").child(ref.getAuth().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
@@ -80,6 +80,8 @@ public class GameActivity
                 currentUser = null;
             }
         });
+
+        ref = ref.child("Game").child(getIntent().getStringExtra("gameUid"));
     }
 
     public void onStart() {
@@ -204,7 +206,7 @@ public class GameActivity
         return new LatLng(loc.getLatitude(), loc.getLongitude());
     }
 
-    private double distanceInKm(double lat1, double lng1, double lat2, double lng2) {
+    private double distanceInMeters(double lat1, double lng1, double lat2, double lng2) {
         int r = 6371; // average radius of the earth in km
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lng2 - lng1);
@@ -213,6 +215,6 @@ public class GameActivity
                         * Math.sin(dLon / 2) * Math.sin(dLon / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double d = r * c;
-        return d;
+        return d/1000;
     }
 }

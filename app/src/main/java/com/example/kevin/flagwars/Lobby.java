@@ -21,7 +21,6 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
-import com.firebase.client.annotations.NotNull;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -149,13 +148,7 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
                         Boolean started = snapshot.child("started").getValue(Boolean.class);
                         if (started != null && started) {
                             if (onRed == null) {
-                                Toast.makeText(Lobby.this.getApplicationContext(),
-                                        "This game was started without you. Taking you back...", Toast.LENGTH_LONG).show();
-                                Intent intent = new Intent(Lobby.this, JoinGameActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                            } else {
+                                onRed = true;
                                 Intent intent = new Intent(Lobby.this, GameActivity.class);
                                 intent.putExtra("gameUid", previous.getStringExtra("gameUid"));
                                 intent.putExtra("teamColor", (onRed) ? "red" : "blue");
