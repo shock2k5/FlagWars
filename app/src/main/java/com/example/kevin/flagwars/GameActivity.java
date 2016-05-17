@@ -118,25 +118,22 @@ public class GameActivity
                 HashMap<String, HashMap<String, Object>> liveLocationsMap =
                         (HashMap<String, HashMap<String, Object>>) snapshot.child("liveLocations").getValue();
 
-                Location redFlag = null, blueFlag = null;
                 game = new Game(name);
                 game.teamList = teamList;
 
                 mMap.clear();
-                if (snapshot.child("redFlagLatitude").getValue(Double.class) != null &&
+                if (    snapshot.child("redFlagLatitude").getValue(Double.class) != null &&
                         snapshot.child("redFlagLongitude").getValue(Double.class) != null &&
                         snapshot.child("blueFlagLatitude").getValue(Double.class) != null &&
                         snapshot.child("blueFlagLongitude").getValue(Double.class) != null) {
-                    redFlag = new Location(LocationManager.GPS_PROVIDER);
-                    redFlag.setLatitude(snapshot.child("redFlagLatitude").getValue(Double.class));
-                    redFlag.setLongitude(snapshot.child("redFlagLongitude").getValue(Double.class));
+                    game.redFlag = new Location(LocationManager.GPS_PROVIDER);
+                    game.redFlag.setLatitude(snapshot.child("redFlagLatitude").getValue(Double.class));
+                    game.redFlag.setLongitude(snapshot.child("redFlagLongitude").getValue(Double.class));
 
-                    blueFlag = new Location(LocationManager.GPS_PROVIDER);
-                    blueFlag.setLatitude(snapshot.child("blueFlagLatitude").getValue(Double.class));
-                    blueFlag.setLongitude(snapshot.child("blueFlagLongitude").getValue(Double.class));
+                    game.blueFlag = new Location(LocationManager.GPS_PROVIDER);
+                    game.blueFlag.setLatitude(snapshot.child("blueFlagLatitude").getValue(Double.class));
+                    game.blueFlag.setLongitude(snapshot.child("blueFlagLongitude").getValue(Double.class));
 
-                    game.redFlag = redFlag;
-                    game.blueFlag = blueFlag;
                     mMap.addMarker(new MarkerOptions()
                             .position(locationToLatLng(game.getRedFlagLocation()))
                             .title("Red Flag")
@@ -145,19 +142,15 @@ public class GameActivity
                             .position(locationToLatLng(game.getBlueFlagLocation()))
                             .title("Blue Flag")
                             .draggable(false));
-                }
 
-                if (liveLocationsMap != null) {
                     for (String userName : liveLocationsMap.keySet()) {
                         String teamColor = (String) liveLocationsMap.get(userName).get("teamColor");
-                        HashMap<String, Double> locationsMap = (HashMap<String, Double>) liveLocationsMap.get(userName).get("locations");
-                        if (locationsMap != null) {
+                        if (teamColor != null) {
+                            HashMap<String, Double> locationsMap = (HashMap<String, Double>) liveLocationsMap.get(userName).get("locations");
                             LatLng userLocation = new LatLng(locationsMap.get("latitude"), locationsMap.get("longitude"));
                             mMap.addMarker(new MarkerOptions()
                                     .position(userLocation)
                                     .title(teamColor + " " + userName));
-                        } else {
-                            Log.d("Null locations", userName + " " + teamColor);
                         }
                     }
                 }
