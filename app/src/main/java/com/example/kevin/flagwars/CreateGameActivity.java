@@ -46,52 +46,31 @@ public class CreateGameActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String name = gameName.getText().toString();
-<<<<<<< HEAD
                 if(name == null || name.isEmpty()){
                     Toast.makeText(CreateGameActivity.this, "Please enter a Game Name.", Toast.LENGTH_LONG).show();
-
-                }else{
-                    int numPlayers = 4;
-=======
-
-                game = new Game(name);
-                game.sendToFirebase();
-                final Firebase ref = ImportantMethods.getFireBase();
-                ref.child("User").child(ImportantMethods.getFireBase().getAuth().getUid())
-                        .addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
-                                User currentUser = new User((String) map.get("username"));
-                                game.switchBlueToRed(currentUser);
-                                ref.child("Game").child(game.getUid()).child("creator").setValue(currentUser.getName());
-                                Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
-                                intent.putExtra("gameUid", game.getUid());
-                                startActivity(intent);
-                            }
->>>>>>> origin/master
-
-                    game = new Game(name, numPlayers);
+                } else {
+                    game = new Game(name);
                     game.sendToFirebase();
-                    ImportantMethods.getFireBase().child("User").child(ImportantMethods.getFireBase().getAuth().getUid())
+                    final Firebase ref = ImportantMethods.getFireBase();
+                    ref.child("User").child(ImportantMethods.getFireBase().getAuth().getUid())
                             .addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
                                     User currentUser = new User((String) map.get("username"));
                                     game.switchBlueToRed(currentUser);
+                                    ref.child("Game").child(game.getUid()).child("creator").setValue(currentUser.getName());
                                     Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
                                     intent.putExtra("gameUid", game.getUid());
-                                    intent.putExtra("creator", currentUser.getName());
                                     startActivity(intent);
                                 }
 
                                 @Override
                                 public void onCancelled(FirebaseError firebaseError) {
-                                    Log.e("Firebase error", "CreateGameActivity setOnClickListener createGameButton", firebaseError.toException());
+                                    Log.e("Firebase error", "CreateGameActivity createGameButton", firebaseError.toException());
                                 }
                             });
-                }
+                    }
             }
         });
     }
