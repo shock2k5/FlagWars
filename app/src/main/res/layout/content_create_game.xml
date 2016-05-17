@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:ems="10"
-            android:textColor="#000">
+            android:textColor="#fff">
             <requestFocus />
         </EditText>
 
