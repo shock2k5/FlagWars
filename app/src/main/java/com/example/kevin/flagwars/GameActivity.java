@@ -112,7 +112,6 @@ public class GameActivity
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 String name = snapshot.child("name").getValue(String.class);
-                int numPlayers = snapshot.child("numPlayers").getValue(Integer.class);
                 HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
                 if (teamList == null) teamList = new HashMap<>();
 
@@ -120,7 +119,7 @@ public class GameActivity
                         (HashMap<String, HashMap<String, Object>>) snapshot.child("liveLocations").getValue();
 
                 Location redFlag = null, blueFlag = null;
-                game = new Game(name, numPlayers);
+                game = new Game(name);
                 game.teamList = teamList;
 
                 mMap.clear();

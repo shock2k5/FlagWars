@@ -72,9 +72,6 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
                 HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
                 user = new User((String) map.get("username"));
 
-                if (getIntent().getStringExtra("creator").equals(user.getName()))
-                    btnStartGameTeam.setVisibility(Button.VISIBLE);
-
                 btnJoinBlueTeam.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -138,6 +135,8 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
                 ref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
+                        if (snapshot.child("creator").getValue(String.class).equals(user.getName()))
+                            btnStartGameTeam.setVisibility(Button.VISIBLE);
                         Boolean started = snapshot.child("started").getValue(Boolean.class);
                         if (started != null && started) {
                             if (onRed == null) {
@@ -155,11 +154,10 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
                             }
                         } else {
                                 String name = snapshot.child("name").getValue(String.class);
-                                int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
                                 HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
                                 if (teamList == null) teamList = new HashMap<>();
 
-                                game = new Game(name, numPlayers);
+                                game = new Game(name);
                                 game.teamList = teamList;
 
                                 gameName.setText(game.getName());

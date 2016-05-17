@@ -13,7 +13,6 @@ import java.util.HashMap;
  */
 public class Game {
     protected String name;
-    protected int numPlayers;
     protected HashMap<String, String> teamList;
     protected Location redFlag, blueFlag, anchorLocation = null;
     protected HashMap<String, HashMap<String, HashMap<String, Double>>> userMap = new HashMap<>();
@@ -21,32 +20,25 @@ public class Game {
     public String toString(){
         String str = "";
         str += "Name: " + this.name + "\n";
-        str += "Number of Players: " + numPlayers + "\n";
         str += "Red Team: " + teamList.toString() + "\n";
         return str;
     }
 
     public Game() {
         this.name = null;
-        this.numPlayers = -1;
         this.redFlag = null;
         this.blueFlag = null;
         teamList = new HashMap<>();
     }
 
-    public Game(String name, int numPlayers) {
+    public Game(String name) {
         this.name = name;
-        this.numPlayers = numPlayers;
         this.redFlag = null;
         this.blueFlag = null;
         teamList = new HashMap<>();
     }
 
     public String getName() { return this.name; }
-
-    public int getNumPlayers() {
-        return this.numPlayers;
-    }
 
     public String getUid() { return this.name; }
 
@@ -104,7 +96,6 @@ public class Game {
     public void sendToFirebase() {
         Firebase ref = ImportantMethods.getFireBase().child("Game").child(this.name);
         ref.child("name").setValue(this.name);
-        ref.child("numPlayers").setValue(this.numPlayers);
         ref.child("started").setValue(false);
         HashMap<String, String> playerList = new HashMap<String, String>();
         ArrayList<String> red = getRedTeamNames();

@@ -52,10 +52,10 @@ public class JoinGameActivity extends AppCompatActivity {
                 for (String key : games.keySet()) {
                     DataSnapshot snapshot = dataSnapshot.child(key);
                     String name = snapshot.child("name").getValue(String.class);
-                    int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
                     HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
                     if (teamList == null) teamList = new HashMap<>();
-                    Game game = new Game(name, numPlayers);
+
+                    Game game = new Game(name);
                     game.teamList = teamList;
                     gameList.add(game);
                 }
@@ -91,7 +91,6 @@ public class JoinGameActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 Intent intent = new Intent(JoinGameActivity.this, Lobby.class);
                                 intent.putExtra("gameUid", game.getUid());
-                                intent.putExtra("creator", "");
                                 startActivity(intent);
                             }
                         })
