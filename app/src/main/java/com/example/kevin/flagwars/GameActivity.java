@@ -50,6 +50,7 @@ public class GameActivity
     private FloatingActionButton mCaptureButton;
     private UpdatedLocation changed = new UpdatedLocation();
     private ChangedObserver observer = new ChangedObserver();
+    private float[] distance = new float[2];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
