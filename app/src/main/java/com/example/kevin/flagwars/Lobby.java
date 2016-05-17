@@ -204,5 +204,5 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
 
     public void onConnectionSuspended(int cause) {}
 
-    public void onConnectionFailed(@NotNull ConnectionResult connectionResult) {}
+    public void onConnectionFailed(ConnectionResult connectionResult) {}
 }
