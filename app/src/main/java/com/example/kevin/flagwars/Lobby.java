@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -21,15 +20,10 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 
 import java.util.HashMap;
 
-public class Lobby extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class Lobby extends AppCompatActivity {
     TextView gameName;
     ArrayAdapter<String> redAdapter, blueAdapter;
     ListView redRoster, blueRoster;
@@ -37,9 +31,6 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
     User user;
     Button btnJoinRedTeam, btnJoinBlueTeam, btnStartGameTeam;
     Boolean onRed = null;
-    GoogleApiClient myClient;
-    Location loc = null;
-    LocationListener locationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,20 +43,12 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
         blueRoster = (ListView) findViewById(R.id.blueRosterList);
         btnStartGameTeam = (Button) findViewById(R.id.btnStartGameTeam);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        while (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
 
         Firebase.setAndroidContext(this.getApplicationContext());
         final Firebase fireRef = new Firebase("https://flagwar.firebaseio.com/");
         final Intent previous = getIntent();
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                loc = location;
-            }
-        };
-        myClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API).addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this).build();
 
         fireRef.child("User").child(fireRef.getAuth().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
@@ -104,24 +87,13 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
                             if (ContextCompat.checkSelfPermission(Lobby.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                                 ActivityCompat.requestPermissions(Lobby.this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
 
-                            loc = LocationServices.FusedLocationApi.getLastLocation(myClient);
+                            Location loc;
                             if (game.getBlueTeamNames().get(0).equals(user.getName())) {
-                                if (loc == null) {
-                                    loc = new Location(LocationManager.GPS_PROVIDER);
-                                    loc.setLatitude(38.9859);
-                                    loc.setLongitude(-76.944294);
-                                }
-
-                                ref.child("blueFlagLatitude").setValue(loc.getLatitude());
-                                ref.child("blueFlagLongitude").setValue(loc.getLongitude());
+                                ref.child("blueFlagLatitude").setValue(38.9859);
+                                ref.child("blueFlagLongitude").setValue(-76.944294);
                             } else if (game.getRedTeamNames().get(0).equals(user.getName())) {
-                                if (loc == null) {
-                                    loc = new Location(LocationManager.GPS_PROVIDER);
-                                    loc.setLatitude(38.986);
-                                    loc.setLongitude(-76.94056);
-                                }
-                                ref.child("redFlagLatitude").setValue(loc.getLatitude());
-                                ref.child("redFlagLongitude").setValue(loc.getLongitude());
+                                ref.child("redFlagLatitude").setValue(38.9859);
+                                ref.child("redFlagLongitude").setValue(-76.94056);
                             }
 
                             if (game.getBlueTeamNames().contains(user.getName()))
@@ -145,15 +117,14 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
                     public void onDataChange(DataSnapshot snapshot) {
                         if (snapshot.child("creator").getValue(String.class).equals(user.getName()))
                             btnStartGameTeam.setVisibility(Button.VISIBLE);
-                        Boolean started = snapshot.child("started").getValue(Boolean.class);
-                        if (started != null && started) {
-                            if (onRed == null) {
+                        boolean started = snapshot.child("started").getValue(Boolean.class);
+                        if (started) {
+                            if (onRed == null)
                                 onRed = true;
-                                Intent intent = new Intent(Lobby.this, GameActivity.class);
-                                intent.putExtra("gameUid", previous.getStringExtra("gameUid"));
-                                intent.putExtra("teamColor", (onRed) ? "red" : "blue");
-                                startActivity(intent);
-                            }
+                            Intent intent = new Intent(Lobby.this, GameActivity.class);
+                            intent.putExtra("gameUid", previous.getStringExtra("gameUid"));
+                            intent.putExtra("teamColor", (onRed) ? "red" : "blue");
+                            startActivity(intent);
                         } else {
                                 String name = snapshot.child("name").getValue(String.class);
                                 HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
@@ -192,17 +163,4 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
         for (String name : game.getBlueTeamNames())
             blueAdapter.add(name);
     }
-
-    public void onConnected(Bundle connectedHint) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
-        else {
-            LocationRequest locationRequest = new LocationRequest();
-            LocationServices.FusedLocationApi.requestLocationUpdates(myClient, locationRequest, locationListener);
-        }
-    }
-
-    public void onConnectionSuspended(int cause) {}
-
-    public void onConnectionFailed(ConnectionResult connectionResult) {}
 }
