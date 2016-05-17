@@ -43,7 +43,8 @@ public class JoinGameActivity extends AppCompatActivity {
 
         Firebase.setAndroidContext(this.getApplicationContext());
         final Firebase ref = new Firebase("https://flagwar.firebaseio.com/").child("Game");
-        ref.addValueEventListener(new ValueEventListener() {
+
+        final ValueEventListener vle = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Map<String, ?> games = (HashMap<String, ?>) dataSnapshot.getValue();
@@ -77,7 +78,9 @@ public class JoinGameActivity extends AppCompatActivity {
             public void onCancelled(FirebaseError firebaseError) {
                 Log.e("Firebase failure", "Error in retrieving object from Firebase in JoinGameActivity", firebaseError.toException());
             }
-        });
+        };
+
+        ref.addValueEventListener(vle);
 
         mGameListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -93,6 +96,7 @@ public class JoinGameActivity extends AppCompatActivity {
                                     Intent intent = new Intent(JoinGameActivity.this, Lobby.class);
                                     intent.putExtra("gameUid", game.getUid());
                                     startActivity(intent);
+                                    ref.removeEventListener(vle);
                                 }
                             })
                             .setNegativeButton(android.R.string.no, null)

@@ -52,7 +52,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         if(ImportantMethods.getFireBase().getAuth() != null){
             String uid = ImportantMethods.getFireBase().getAuth().getUid();
             ImportantMethods.getFireBase().child("User").child(uid)
-                    .addValueEventListener(new ValueEventListener() {
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();

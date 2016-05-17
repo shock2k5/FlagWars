@@ -138,6 +138,7 @@ public class GameActivity
                     game.blueFlag.setLatitude(snapshot.child("blueFlagLatitude").getValue(Double.class));
                     game.blueFlag.setLongitude(snapshot.child("blueFlagLongitude").getValue(Double.class));
 
+                    mMap.clear();
                     mMap.addMarker(new MarkerOptions()
                             .position(locationToLatLng(game.getRedFlagLocation()))
                             .title("Red Flag")
