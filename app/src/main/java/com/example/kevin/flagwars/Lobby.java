@@ -87,14 +87,10 @@ public class Lobby extends AppCompatActivity {
                             if (ContextCompat.checkSelfPermission(Lobby.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                                 ActivityCompat.requestPermissions(Lobby.this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
 
-                            Location loc;
-                            if (game.getBlueTeamNames().get(0).equals(user.getName())) {
-                                ref.child("blueFlagLatitude").setValue(38.9859);
-                                ref.child("blueFlagLongitude").setValue(-76.944294);
-                            } else if (game.getRedTeamNames().get(0).equals(user.getName())) {
-                                ref.child("redFlagLatitude").setValue(38.9859);
-                                ref.child("redFlagLongitude").setValue(-76.94056);
-                            }
+                            ref.child("blueFlagLatitude").setValue(38.9859);
+                            ref.child("blueFlagLongitude").setValue(-76.944294);
+                            ref.child("redFlagLatitude").setValue(38.9859);
+                            ref.child("redFlagLongitude").setValue(-76.94056);
 
                             if (game.getBlueTeamNames().contains(user.getName()))
                                 onRed = false;
