@@ -23,6 +23,8 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ChooseGameModeActivity extends AppCompatActivity {
 
@@ -61,7 +63,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                             if (fireRef.getAuth() == null) {
                                 mDrawerItems = new String[]{"Log In", "Settings", "Rules"};
                             } else {
-                                mDrawerItems = new String[]{ "Profile", "Settings", "Rules", "Log Out"};
+                                mDrawerItems = new String[]{ currentUser.toString(), "Settings", "Rules", "Log Out"};
                             }
                         }
 
@@ -75,7 +77,16 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         if (fireRef.getAuth() == null) {
             mDrawerItems = new String[]{"Log In", "Settings", "Rules"};
         } else {
-            mDrawerItems = new String[]{ "Profile", "Settings", "Rules", "Log Out"};
+            String username = "profile";
+            String pattern = "email=(.*?)@";
+            Pattern p = Pattern.compile(pattern);
+            Matcher m = p.matcher(fireRef.getAuth().toString());
+
+            if (m.find()) {
+                username = m.group(1);
+                //username = username.substring(6);
+            }
+            mDrawerItems = new String[]{username, "Settings", "Rules", "Log Out"};
         }
 
         //mDrawerItems = getResources().getStringArray(R.array.drawer_list);
@@ -186,14 +197,15 @@ public class ChooseGameModeActivity extends AppCompatActivity {
         } else if (position == 2) {
             //rules page
         } else if (position == 3) {
-            if (fireRef.getAuth() == null) {
+            //if (fireRef.getAuth() == null) {
                 new AlertDialog.Builder(context)
                         .setTitle("Log Out")
                         .setMessage("Are you sure you want to log out?")
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 fireRef.unauth();
-                                Intent i = new Intent(ChooseGameModeActivity.this, ChooseGameModeActivity.class);
+                                Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
+                                i.putExtra("gameMode", "fromNavDrawer");
                                 startActivity(i);
                             }
                         })
@@ -203,10 +215,10 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                             }
                         })
                         .show();
-            } else {
+           /* } else {
                 Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
                 startActivity(i);
-            }
+            }*/
         }
 
         mDrawerLayout.closeDrawer(mDrawerList);
