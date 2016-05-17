@@ -147,16 +147,18 @@ public class GameActivity
                             .draggable(false));
                 }
 
-                for (String userName : liveLocationsMap.keySet()) {
-                    String teamColor = (String) liveLocationsMap.get(userName).get("teamColor");
-                    HashMap<String, Double> locationsMap = (HashMap<String, Double>) liveLocationsMap.get(userName).get("locations");
-                    if (locationsMap != null) {
-                        LatLng userLocation = new LatLng(locationsMap.get("latitude"), locationsMap.get("longitude"));
-                        mMap.addMarker(new MarkerOptions()
-                                .position(userLocation)
-                                .title(teamColor + " " + userName));
-                    } else {
-                        Log.d("Null locations", userName + " " + teamColor);
+                if (liveLocationsMap != null) {
+                    for (String userName : liveLocationsMap.keySet()) {
+                        String teamColor = (String) liveLocationsMap.get(userName).get("teamColor");
+                        HashMap<String, Double> locationsMap = (HashMap<String, Double>) liveLocationsMap.get(userName).get("locations");
+                        if (locationsMap != null) {
+                            LatLng userLocation = new LatLng(locationsMap.get("latitude"), locationsMap.get("longitude"));
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(userLocation)
+                                    .title(teamColor + " " + userName));
+                        } else {
+                            Log.d("Null locations", userName + " " + teamColor);
+                        }
                     }
                 }
             }
