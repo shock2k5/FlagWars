@@ -137,13 +137,19 @@ public class GameActivity
                                         LatLng playerLocation = new LatLng(locationsMap.get("latitude"), locationsMap.get("longitude"));
                                         mMap.addMarker(new MarkerOptions().position(playerLocation).title(teamColor + " " + userName));
 
-                                        if ( distance[0] <= 10 && teamColor == "red") {
+                                        if (teamColor == "red") {
                                             Location.distanceBetween(locationsMap.get("latitude"), locationsMap.get("longitude"), game.blueFlag.getLatitude(), game.blueFlag.getLongitude(), distance);
+                                            if (distance[0] <= 10){
+
+                                            }
 
 
                                         }
-                                        else if (distance[0] <= 10 && teamColor == "blue") {
+                                        else if (teamColor == "blue") {
                                             Location.distanceBetween(locationsMap.get("latitude"), locationsMap.get("longitude"), game.redFlag.getLatitude(), game.redFlag.getLongitude(), distance);
+                                            if (distance[0] <= 10){
+
+                                            }
 
 
                                         }
