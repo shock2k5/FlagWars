@@ -84,23 +84,24 @@ public class Lobby extends AppCompatActivity {
                             String uid = getIntent().getStringExtra("gameUid");
                             ref.child("started").setValue(true);
 
-                            if (ContextCompat.checkSelfPermission(Lobby.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-                                ActivityCompat.requestPermissions(Lobby.this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
+                            if (ContextCompat.checkSelfPermission(Lobby.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                ActivityCompat.requestPermissions(Lobby.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+                            } else {
+                                ref.child("redFlagLatitude").setValue(38.9859);
+                                ref.child("redFlagLongitude").setValue(-76.94056);
+                                ref.child("blueFlagLatitude").setValue(38.9859);
+                                ref.child("blueFlagLongitude").setValue(-76.944294);
 
-                            ref.child("blueFlagLatitude").setValue(38.9859);
-                            ref.child("blueFlagLongitude").setValue(-76.944294);
-                            ref.child("redFlagLatitude").setValue(38.9859);
-                            ref.child("redFlagLongitude").setValue(-76.94056);
+                                if (game.getBlueTeamNames().contains(user.getName()))
+                                    onRed = false;
+                                else if (game.getRedTeamNames().contains(user.getName()))
+                                    onRed = true;
 
-                            if (game.getBlueTeamNames().contains(user.getName()))
-                                onRed = false;
-                            else if (game.getRedTeamNames().contains(user.getName()))
-                                onRed = true;
-
-                            Intent intent = new Intent(Lobby.this, GameActivity.class);
-                            intent.putExtra("gameUid", uid);
-                            intent.putExtra("teamColor", (onRed == null) ? "red" : "blue");
-                            startActivity(intent);
+                                Intent intent = new Intent(Lobby.this, GameActivity.class);
+                                intent.putExtra("gameUid", uid);
+                                intent.putExtra("teamColor", (onRed == null) ? "red" : "blue");
+                                startActivity(intent);
+                            }
                         } else {
                             Toast.makeText(Lobby.this, "There needs to be at least one player on each team", Toast.LENGTH_LONG).show();
                         }
