@@ -143,6 +143,8 @@ public class GameActivity
                             .title("Blue Flag")
                             .draggable(false));
 
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL));
+
                     for (String userName : liveLocationsMap.keySet()) {
                         String teamColor = (String) liveLocationsMap.get(userName).get("teamColor");
                         if (teamColor != null) {
@@ -194,10 +196,6 @@ public class GameActivity
                 }
             });
             mMap.getUiSettings().setMapToolbarEnabled(false);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(
-                    new LatLng(38.985439, -76.944562), // SW corner of mall
-                    new LatLng(38.986507, -76.940271) // NE corner of mall
-            ), 0));
         }
     }
 

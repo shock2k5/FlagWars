@@ -82,20 +82,22 @@ public class JoinGameActivity extends AppCompatActivity {
         mGameListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final Game game = gameList.get(position);
-                new AlertDialog.Builder(JoinGameActivity.this)
-                        .setTitle("Join game")
-                        .setMessage("Are you sure you want to join " + game.getName() + "?")
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(JoinGameActivity.this, Lobby.class);
-                                intent.putExtra("gameUid", game.getUid());
-                                startActivity(intent);
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, null)
-                        .show();
+                if (gameList.size() > 0) {
+                    final Game game = gameList.get(position);
+                    new AlertDialog.Builder(JoinGameActivity.this)
+                            .setTitle("Join game")
+                            .setMessage("Are you sure you want to join " + game.getName() + "?")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent intent = new Intent(JoinGameActivity.this, Lobby.class);
+                                    intent.putExtra("gameUid", game.getUid());
+                                    startActivity(intent);
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, null)
+                            .show();
+                }
             }
         });
     }
