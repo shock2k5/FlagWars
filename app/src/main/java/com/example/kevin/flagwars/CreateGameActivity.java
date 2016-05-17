@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -45,28 +46,33 @@ public class CreateGameActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String name = gameName.getText().toString();
-                int numPlayers = 4;
+                if(name == null || name.isEmpty()){
+                    Toast.makeText(CreateGameActivity.this, "Please enter a Game Name.", Toast.LENGTH_LONG).show();
 
-                game = new Game(name, numPlayers);
-                game.sendToFirebase();
-                ImportantMethods.getFireBase().child("User").child(ImportantMethods.getFireBase().getAuth().getUid())
-                        .addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
-                                User currentUser = new User((String) map.get("username"));
-                                game.switchBlueToRed(currentUser);
-                                Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
-                                intent.putExtra("gameUid", game.getUid());
-                                intent.putExtra("creator", currentUser.getName());
-                                startActivity(intent);
-                            }
+                }else{
+                    int numPlayers = 4;
 
-                            @Override
-                            public void onCancelled(FirebaseError firebaseError) {
-                                Log.e("Firebase error", "CreateGameActivity setOnClickListener createGameButton", firebaseError.toException());
-                            }
-                        });
+                    game = new Game(name, numPlayers);
+                    game.sendToFirebase();
+                    ImportantMethods.getFireBase().child("User").child(ImportantMethods.getFireBase().getAuth().getUid())
+                            .addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
+                                    User currentUser = new User((String) map.get("username"));
+                                    game.switchBlueToRed(currentUser);
+                                    Intent intent = new Intent(CreateGameActivity.this, Lobby.class);
+                                    intent.putExtra("gameUid", game.getUid());
+                                    intent.putExtra("creator", currentUser.getName());
+                                    startActivity(intent);
+                                }
+
+                                @Override
+                                public void onCancelled(FirebaseError firebaseError) {
+                                    Log.e("Firebase error", "CreateGameActivity setOnClickListener createGameButton", firebaseError.toException());
+                                }
+                            });
+                }
             }
         });
     }
