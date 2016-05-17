@@ -30,7 +30,7 @@ public class Lobby extends AppCompatActivity {
     Game game;
     User user;
     Button btnJoinRedTeam, btnJoinBlueTeam, btnStartGameTeam;
-    Boolean onRed = null;
+    boolean onRed = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,12 +91,11 @@ public class Lobby extends AppCompatActivity {
 
                             ref.updateChildren(setMap);
 
-                            if (game.getBlueTeamNames().contains(user.getName()))
-                                onRed = false;
+                            onRed = !game.getBlueTeamNames().contains(user.getName());
 
                             Intent intent = new Intent(Lobby.this, GameActivity.class);
                             intent.putExtra("gameUid", uid);
-                            intent.putExtra("teamColor", (onRed == null) ? "red" : "blue");
+                            intent.putExtra("teamColor", (onRed) ? "red" : "blue");
                             intent.putExtra("currentUser", user.getName());
                             startActivity(intent);
                         } else {
@@ -114,7 +113,7 @@ public class Lobby extends AppCompatActivity {
                         if (snapshot.child("started").getValue(Boolean.class)) {
                             Intent intent = new Intent(Lobby.this, GameActivity.class);
                             intent.putExtra("gameUid", previous.getStringExtra("gameUid"));
-                            intent.putExtra("teamColor", (onRed == null && onRed) ? "red" : "blue");
+                            intent.putExtra("teamColor", (onRed) ? "red" : "blue");
                             intent.putExtra("currentUser", user.getName());
                             startActivity(intent);
                             ref.removeEventListener(this);
