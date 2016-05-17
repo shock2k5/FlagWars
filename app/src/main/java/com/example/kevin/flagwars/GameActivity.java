@@ -24,7 +24,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
@@ -66,7 +65,10 @@ public class GameActivity
                     @Override
                     public void onLocationChanged(Location location) {
                         loc = location;
+<<<<<<< Updated upstream
                        /* mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);*/
+=======
+>>>>>>> Stashed changes
                         ref.child("liveLocations").child(currentUser.getName()).child("locations").child("latitude").setValue(loc.getLatitude());
                         ref.child("liveLocations").child(currentUser.getName()).child("locations").child("longitude").setValue(loc.getLongitude());
                         ref.child("liveLocations").child(currentUser.getName()).child("teamColor").setValue(getIntent().getStringExtra("teamColor"));
@@ -91,7 +93,6 @@ public class GameActivity
 
     public void onStop() {
         super.onStop();
-        LocationServices.FusedLocationApi.removeLocationUpdates(myClient, locationListener);
         myClient.disconnect();
     }
 
@@ -106,55 +107,60 @@ public class GameActivity
             loc.setLongitude(-76.942792);
         }
 
-        final LocationRequest locationRequest = new LocationRequest();
+        final LocationRequest locationRequest = new LocationRequest().setInterval(50);
         LocationServices.FusedLocationApi.requestLocationUpdates(myClient, locationRequest, locationListener);
 
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                String name = snapshot.child("name").getValue(String.class);
-                HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.child("name").getValue(String.class);
+                HashMap<String, String> teamList = (HashMap<String, String>) dataSnapshot.child("teamList").getValue();
                 if (teamList == null) teamList = new HashMap<>();
-
-                HashMap<String, HashMap<String, Object>> liveLocationsMap =
-                        (HashMap<String, HashMap<String, Object>>) snapshot.child("liveLocations").getValue();
 
                 game = new Game(name);
                 game.teamList = teamList;
+                ref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        if (snapshot.child("redFlagLatitude").getValue(Double.class) != null &&
+                                snapshot.child("redFlagLongitude").getValue(Double.class) != null &&
+                                snapshot.child("blueFlagLatitude").getValue(Double.class) != null &&
+                                snapshot.child("blueFlagLongitude").getValue(Double.class) != null) {
+                            HashMap<String, HashMap<String, Object>> liveLocationsMap =
+                                    (HashMap<String, HashMap<String, Object>>) snapshot.child("liveLocations").getValue();
+                            game.redFlag = new Location(LocationManager.GPS_PROVIDER);
+                            game.redFlag.setLatitude(snapshot.child("redFlagLatitude").getValue(Double.class));
+                            game.redFlag.setLongitude(snapshot.child("redFlagLongitude").getValue(Double.class));
 
-                mMap.clear();
-                if (    snapshot.child("redFlagLatitude").getValue(Double.class) != null &&
-                        snapshot.child("redFlagLongitude").getValue(Double.class) != null &&
-                        snapshot.child("blueFlagLatitude").getValue(Double.class) != null &&
-                        snapshot.child("blueFlagLongitude").getValue(Double.class) != null) {
-                    game.redFlag = new Location(LocationManager.GPS_PROVIDER);
-                    game.redFlag.setLatitude(snapshot.child("redFlagLatitude").getValue(Double.class));
-                    game.redFlag.setLongitude(snapshot.child("redFlagLongitude").getValue(Double.class));
+                            game.blueFlag = new Location(LocationManager.GPS_PROVIDER);
+                            game.blueFlag.setLatitude(snapshot.child("blueFlagLatitude").getValue(Double.class));
+                            game.blueFlag.setLongitude(snapshot.child("blueFlagLongitude").getValue(Double.class));
 
-                    game.blueFlag = new Location(LocationManager.GPS_PROVIDER);
-                    game.blueFlag.setLatitude(snapshot.child("blueFlagLatitude").getValue(Double.class));
-                    game.blueFlag.setLongitude(snapshot.child("blueFlagLongitude").getValue(Double.class));
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(locationToLatLng(game.getRedFlagLocation()))
+                                    .title("Red Flag")
+                                    .draggable(false));
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(locationToLatLng(game.getBlueFlagLocation()))
+                                    .title("Blue Flag")
+                                    .draggable(false));
 
-                    mMap.addMarker(new MarkerOptions()
-                            .position(locationToLatLng(game.getRedFlagLocation()))
-                            .title("Red Flag")
-                            .draggable(false));
-                    mMap.addMarker(new MarkerOptions()
-                            .position(locationToLatLng(game.getBlueFlagLocation()))
-                            .title("Blue Flag")
-                            .draggable(false));
-
-                    for (String userName : liveLocationsMap.keySet()) {
-                        String teamColor = (String) liveLocationsMap.get(userName).get("teamColor");
-                        if (teamColor != null) {
-                            HashMap<String, Double> locationsMap = (HashMap<String, Double>) liveLocationsMap.get(userName).get("locations");
-                            LatLng userLocation = new LatLng(locationsMap.get("latitude"), locationsMap.get("longitude"));
-                         /*   mMap.addMarker(new MarkerOptions()
-                                    .position(userLocation)
-                                    .title(teamColor + " " + userName));*/
+                            for (String userName : liveLocationsMap.keySet()) {
+                                String teamColor = (String) liveLocationsMap.get(userName).get("teamColor");
+                                if (teamColor != null) {
+                                    HashMap<String, Double> locationsMap = (HashMap<String, Double>) liveLocationsMap.get(userName).get("locations");
+                                    LatLng userLocation = new LatLng(locationsMap.get("latitude"), locationsMap.get("longitude"));
+                                    mMap.addMarker(new MarkerOptions().position(userLocation).title(teamColor + " " + userName));
+                                }
+                            }
                         }
                     }
-                }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+                        System.err.println("There was an error getting the LiveLocations from Firebase: " + firebaseError);
+                    }
+                });
             }
 
             @Override
