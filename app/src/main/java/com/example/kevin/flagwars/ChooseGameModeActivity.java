@@ -57,6 +57,12 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
                             currentUser = new User((String) map.get("username"));
+                            mTitle = "test";
+                            if (fireRef.getAuth() == null) {
+                                mDrawerItems = new String[]{"Log In", "Settings", "Rules"};
+                            } else {
+                                mDrawerItems = new String[]{ "Profile", "Settings", "Rules", "Log Out"};
+                            }
                         }
 
                         @Override
@@ -66,12 +72,10 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                     });
 
         }
-
-        mTitle = "test";
         if (fireRef.getAuth() == null) {
             mDrawerItems = new String[]{"Log In", "Settings", "Rules"};
         } else {
-            mDrawerItems = new String[]{ /*currentUser.getUsername(),*/ "Settings", "Rules", "Log Out"};
+            mDrawerItems = new String[]{ "Profile", "Settings", "Rules", "Log Out"};
         }
 
         //mDrawerItems = getResources().getStringArray(R.array.drawer_list);

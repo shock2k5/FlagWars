@@ -50,7 +50,8 @@
         android:background="#3B5998"
         android:textColor="#fff"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible" />
 
     <EditText
         android:layout_width="wrap_content"

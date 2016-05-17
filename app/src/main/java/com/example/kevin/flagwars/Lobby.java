@@ -53,6 +53,9 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
         blueRoster = (ListView) findViewById(R.id.blueRosterList);
         btnStartGameTeam = (Button) findViewById(R.id.btnStartGameTeam);
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
+
         Firebase.setAndroidContext(this.getApplicationContext());
         final Firebase fireRef = new Firebase("https://flagwar.firebaseio.com/");
         final Intent previous = getIntent();
@@ -121,9 +124,14 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
                                 ref.child("redFlagLongitude").setValue(loc.getLongitude());
                             }
 
+                            if (game.getBlueTeamNames().contains(user.getName()))
+                                onRed = false;
+                            else if (game.getRedTeamNames().contains(user.getName()))
+                                onRed = true;
+
                             Intent intent = new Intent(Lobby.this, GameActivity.class);
                             intent.putExtra("gameUid", uid);
-                            intent.putExtra("teamColor", (onRed) ? "red" : "blue");
+                            intent.putExtra("teamColor", (onRed == null) ? "red" : "blue");
                             startActivity(intent);
                         } else {
                             Toast.makeText(Lobby.this, "There needs to be at least one player on each team", Toast.LENGTH_LONG).show();
@@ -194,8 +202,10 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
     public void onConnected(Bundle connectedHint) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
-        LocationRequest locationRequest = new LocationRequest();
-        LocationServices.FusedLocationApi.requestLocationUpdates(myClient, locationRequest, locationListener);
+        else {
+            LocationRequest locationRequest = new LocationRequest();
+            LocationServices.FusedLocationApi.requestLocationUpdates(myClient, locationRequest, locationListener);
+        }
     }
 
     public void onConnectionSuspended(int cause) {}
