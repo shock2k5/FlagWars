@@ -67,14 +67,8 @@ public class GameActivity
                 locationListener = new LocationListener() {
                     @Override
                     public void onLocationChanged(Location location) {
+                        mMap.animateCamera(CameraUpdateFactory.newLatLng(locationToLatLng(location)));
                         loc = location;
-                        if (reload) {
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
-                            reload = false;
-                        } else {
-                            mMap.moveCamera(CameraUpdateFactory.newLatLng(locationToLatLng(loc)));
-                        }
-
                         ref.child("liveLocations").child(currentUser.getName()).child("locations").child("latitude").setValue(loc.getLatitude());
                         ref.child("liveLocations").child(currentUser.getName()).child("locations").child("longitude").setValue(loc.getLongitude());
                         ref.child("liveLocations").child(currentUser.getName()).child("teamColor").setValue(getIntent().getStringExtra("teamColor"));
@@ -148,7 +142,7 @@ public class GameActivity
                                     .draggable(false));
                             mMap.addCircle(new CircleOptions()
                                     .center(locationToLatLng(game.getRedFlagLocation()))
-                                    .radius(100)
+                                    .radius(10)
                                     .strokeColor(Color.RED)
                                     .fillColor(Color.RED));
                             mMap.addMarker(new MarkerOptions()
@@ -157,7 +151,7 @@ public class GameActivity
                                     .draggable(false));
                             mMap.addCircle(new CircleOptions()
                                     .center(locationToLatLng(game.getBlueFlagLocation()))
-                                    .radius(100)
+                                    .radius(10)
                                     .strokeColor(Color.BLUE)
                                     .fillColor(Color.BLUE));
 
@@ -217,15 +211,12 @@ public class GameActivity
                 }
             });
             mMap.getUiSettings().setMapToolbarEnabled(false);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
         }
     }
 
     private LatLng locationToLatLng(Location loc) {
-        if (loc == null) {
-            return new LatLng(38.985933, -76.942792);
-        }
-        return new LatLng(loc.getLatitude(), loc.getLongitude());
+        return (loc == null) ? new LatLng(38.985933, -76.942792)
+                : new LatLng(loc.getLatitude(), loc.getLongitude());
     }
 
     private double distanceInMeters(double lat1, double lng1, double lat2, double lng2) {

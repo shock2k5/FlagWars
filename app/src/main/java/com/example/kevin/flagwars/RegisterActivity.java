@@ -23,7 +23,6 @@ public class RegisterActivity extends AppCompatActivity {
     protected Button mFacebookButton, mLoginButton;
     protected EditText mEmailEditText, mPasswordEditText, mConfirmEditText;
     protected TextView mLoginTextView;
-    protected ImageView mProfilePicture;
     Firebase fireRef;
     String email, password, confirmPassword;
 
@@ -40,7 +39,6 @@ public class RegisterActivity extends AppCompatActivity {
         mPasswordEditText = (EditText) findViewById(R.id.passwordEditText);
         mConfirmEditText = (EditText) findViewById(R.id.confirmPasswordEditText);
         mLoginTextView = (TextView) findViewById(R.id.loginText);
-        mProfilePicture = (ImageView) findViewById(R.id.profilePictureImageView);
 
         mFacebookButton.setOnClickListener(new View.OnClickListener() {
             @Override
