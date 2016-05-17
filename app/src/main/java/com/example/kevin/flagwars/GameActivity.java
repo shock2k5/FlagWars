@@ -2,6 +2,7 @@ package com.example.kevin.flagwars;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -144,10 +146,20 @@ public class GameActivity
                                     .position(locationToLatLng(game.getRedFlagLocation()))
                                     .title("Red Flag")
                                     .draggable(false));
+                            mMap.addCircle(new CircleOptions()
+                                    .center(locationToLatLng(game.getRedFlagLocation()))
+                                    .radius(100)
+                                    .strokeColor(Color.RED)
+                                    .fillColor(Color.RED));
                             mMap.addMarker(new MarkerOptions()
                                     .position(locationToLatLng(game.getBlueFlagLocation()))
                                     .title("Blue Flag")
                                     .draggable(false));
+                            mMap.addCircle(new CircleOptions()
+                                    .center(locationToLatLng(game.getBlueFlagLocation()))
+                                    .radius(100)
+                                    .strokeColor(Color.BLUE)
+                                    .fillColor(Color.BLUE));
 
                             for (String userName : liveLocationsMap.keySet()) {
                                 String teamColor = (String) liveLocationsMap.get(userName).get("teamColor");
