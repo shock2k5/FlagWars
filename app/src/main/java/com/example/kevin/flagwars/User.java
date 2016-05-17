@@ -1,8 +1,5 @@
 package com.example.kevin.flagwars;
 
-/**
- * Created by Adi on 5/13/16.
- */
 public class User {
     protected String username, name;
 

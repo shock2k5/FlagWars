@@ -2,9 +2,6 @@ package com.example.kevin.flagwars;
 
 import android.app.Application;
 
-/**
- * Created by Adi on 4/11/16.
- */
 public class FlagWarsApplication extends Application {
 
     @Override

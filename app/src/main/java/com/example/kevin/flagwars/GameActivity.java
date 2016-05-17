@@ -1,23 +1,21 @@
 package com.example.kevin.flagwars;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -36,14 +34,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
-import java.util.Observable;
-import java.util.Observer;
 
 public class GameActivity
         extends FragmentActivity
         implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     final float ZOOM_LEVEL = 16.5f;
-    final int RADIUS = 1000000;
+    final int RADIUS = 1000;
     final int REFRESH_INTERVAL = 100;
 
     private GoogleMap mMap;
@@ -53,8 +49,8 @@ public class GameActivity
     private GoogleApiClient myClient;
     private Firebase ref;
     private LocationListener locationListener;
-    private boolean reload = true;
-    private FloatingActionButton mCaptureButton;
+    private boolean reload = true, userHoldingFlag = false;
+    private Button mCaptureButton;
     private float[] distance;
 
     @Override
@@ -62,7 +58,7 @@ public class GameActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         distance = new float[1];
-        mCaptureButton = (FloatingActionButton) findViewById(R.id.capture_button);
+        mCaptureButton = (Button) findViewById(R.id.capture_button);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -115,6 +111,7 @@ public class GameActivity
                             } else { // blue take red flag
                                 ref.child("holding").child("redFlagLatitude").setValue(loc.getLatitude());
                                 ref.child("holding").child("redFlagLongitude").setValue(loc.getLongitude());
+                                userHoldingFlag = true;
                                 Toast.makeText(GameActivity.this, "Red flag taken.", Toast.LENGTH_LONG).show();
                             }
                         } else { // red
@@ -133,11 +130,13 @@ public class GameActivity
                             } else { // red take blue flag
                                 ref.child("holding").child("blueFlagLatitude").setValue(loc.getLatitude());
                                 ref.child("holding").child("blueFlagLongitude").setValue(loc.getLongitude());
+                                userHoldingFlag = true;
                                 Toast.makeText(GameActivity.this, "Blue flag taken.", Toast.LENGTH_LONG).show();
                             }
                         }
 
                         mCaptureButton.setVisibility(View.INVISIBLE);
+                        mCaptureButton.setText("CAPTURE ACTION");
                     }
 
                     @Override
@@ -171,6 +170,14 @@ public class GameActivity
                         update.put("teamColor", teamColor);
 
                         ref.child("liveLocations").child(currentUser).updateChildren(update);
+
+                        if (userHoldingFlag) {
+                            ref.child("holding").child(teamColor.equals("red") ?
+                                    "blueHoldingLatitude" : "redHoldingLatitude").setValue(loc.getLatitude());
+                            ref.child("holding").child(teamColor.equals("red") ?
+                                    "blueHoldingLongitude" : "redHoldingLongitude").setValue(loc.getLongitude());
+                        }
+
                         return loc;
                     }
                 };
@@ -203,31 +210,31 @@ public class GameActivity
                 if (game == null) game = new Game(name);
                 game.teamList = teamList;
 
-                if (snapshot.child("redFlagLatitude").getValue(Double.class) != null &&
-                        snapshot.child("redFlagLongitude").getValue(Double.class) != null &&
-                        snapshot.child("blueFlagLatitude").getValue(Double.class) != null &&
-                        snapshot.child("blueFlagLongitude").getValue(Double.class) != null) {
+                Double rfLat = snapshot.child("redFlagLatitude").getValue(Double.class);
+                Double rfLong = snapshot.child("redFlagLongitude").getValue(Double.class);
+                Double bfLat = snapshot.child("blueFlagLatitude").getValue(Double.class);
+                Double bfLong = snapshot.child("blueFlagLongitude").getValue(Double.class);
+
+                if (rfLat != null && rfLong != null && bfLat != null && bfLong != null) {
                     HashMap<String, HashMap<String, Object>> liveLocationsMap =
                             (HashMap<String, HashMap<String, Object>>) snapshot.child("liveLocations").getValue();
 
-                    Double rfLat = snapshot.child("redFlagLatitude").getValue(Double.class);
-                    Double rfLong = snapshot.child("redFlagLongitude").getValue(Double.class);
-                    Double bfLat = snapshot.child("blueFlagLatitude").getValue(Double.class);
-                    Double bfLong = snapshot.child("blueFlagLongitude").getValue(Double.class);
-                    boolean holding = false;
+                    Double rfhLat = snapshot.child("holding").child("redFlagLatitude").getValue(Double.class);
+                    Double rfhLong = snapshot.child("holding").child("redFlagLongitude").getValue(Double.class);
+                    Double bfhLat = snapshot.child("holding").child("blueFlagLatitude").getValue(Double.class);
+                    Double bfhLong = snapshot.child("holding").child("blueFlagLongitude").getValue(Double.class);
 
-                    if (snapshot.child("holding").child("redFlagLatitude").getValue(Double.class) != null &&
-                            snapshot.child("holding").child("redFlagLongitude").getValue(Double.class) != null) {
-                        rfLat = snapshot.child("holding").child("redFlagLatitude").getValue(Double.class);
-                        rfLong = snapshot.child("holding").child("redFlagLongitude").getValue(Double.class);
-                        holding = true;
+                    boolean redHolding = rfhLat != null && rfhLong != null;
+                    boolean blueHolding = bfhLat != null && bfhLong != null;
+
+                    if (redHolding) {
+                        rfLat = rfhLat;
+                        rfLong = rfhLong;
                     }
 
-                    if (snapshot.child("holding").child("blueFlagLatitude").getValue(Double.class) != null &&
-                            snapshot.child("holding").child("blueFlagLongitude").getValue(Double.class) != null) {
-                        bfLat = snapshot.child("holding").child("blueFlagLatitude").getValue(Double.class);
-                        bfLong = snapshot.child("holding").child("blueFlagLongitude").getValue(Double.class);
-                        holding = true;
+                    if (blueHolding) {
+                        bfLat = bfhLat;
+                        bfLong = bfhLong;
                     }
 
                     game.redFlag = new Location(LocationManager.GPS_PROVIDER);
@@ -246,13 +253,40 @@ public class GameActivity
                             .position(locationToLatLng(game.getBlueFlagLocation())).title("Blue Flag")
                             .draggable(false));
 
-                    if (!holding) {
+                    if (!redHolding) {
                         mMap.addCircle(new CircleOptions()
                                 .center(locationToLatLng(game.getRedFlagLocation())).radius(RADIUS)
                                 .strokeColor(Color.RED).fillColor(Color.RED));
+                    }
+                    if (!blueHolding) {
                         mMap.addCircle(new CircleOptions()
                                 .center(locationToLatLng(game.getBlueFlagLocation())).radius(RADIUS)
                                 .strokeColor(Color.BLUE).fillColor(Color.BLUE));
+                    }
+
+                    if (loc != null) {
+                        Location.distanceBetween(loc.getLatitude(), loc.getLongitude(),
+                                bfLat, bfLong, distance);
+                        if (distance[0] < RADIUS) { // blue distance
+                            if (teamColor.equals("red") && !blueHolding) {
+                                mCaptureButton.setText("CAPTURE THE FLAG");
+                                mCaptureButton.setVisibility(View.VISIBLE);
+                            } else if (teamColor.equals("red") && blueHolding){
+                                mCaptureButton.setText("RETURN THE FLAG");
+                                mCaptureButton.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        Location.distanceBetween(loc.getLatitude(), loc.getLongitude(),
+                                rfLat, rfLong, distance);
+                        if (distance[0] < RADIUS) { // red distance
+                            if (teamColor.equals("blue") && !redHolding) {
+                                mCaptureButton.setText("CAPTURE THE FLAG");
+                                mCaptureButton.setVisibility(View.VISIBLE);
+                            } else if (teamList.equals("red") && redHolding) {
+                                mCaptureButton.setText("RETURN THE FLAG");
+                                mCaptureButton.setVisibility(View.VISIBLE);
+                            }
+                        }
                     }
 
                     if (liveLocationsMap != null) {
@@ -262,17 +296,6 @@ public class GameActivity
                                 HashMap<String, Double> locationsMap = (HashMap<String, Double>) liveLocationsMap.get(userName).get("locations");
                                 LatLng playerLocation = new LatLng(locationsMap.get("latitude"), locationsMap.get("longitude"));
                                 mMap.addMarker(new MarkerOptions().position(playerLocation).title(playerTeamColor + " " + userName));
-                                if (playerTeamColor.equals("red")) {
-                                    Location.distanceBetween(locationsMap.get("latitude"),
-                                            locationsMap.get("longitude"), game.blueFlag.getLatitude(), game.blueFlag.getLongitude(), distance);
-                                    if (!holding && distance[0] <= RADIUS)
-                                        mCaptureButton.setVisibility(View.VISIBLE);
-                                } else if (playerTeamColor.equals("blue")) {
-                                    Location.distanceBetween(locationsMap.get("latitude"),
-                                            locationsMap.get("longitude"), game.redFlag.getLatitude(), game.redFlag.getLongitude(), distance);
-                                    if (!holding && distance[0] <= RADIUS)
-                                        mCaptureButton.setVisibility(View.VISIBLE);
-                                }
                             }
                         }
                     }

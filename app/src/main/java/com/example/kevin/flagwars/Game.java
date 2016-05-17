@@ -8,9 +8,6 @@ import com.firebase.client.Firebase;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- * Created by Adi on 4/27/16.
- */
 public class Game {
     protected String name;
     protected HashMap<String, String> teamList;
