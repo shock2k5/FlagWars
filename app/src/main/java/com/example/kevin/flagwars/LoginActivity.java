@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         Firebase.setAndroidContext(this.getApplicationContext());
         final Firebase ref = new Firebase("https://flagwar.firebaseio.com/");
 
-        mDrawerItems = new String[]{"Sign Up", "Settings", "Rules"};
+        mDrawerItems = new String[]{"Sign Up"};
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 

@@ -61,9 +61,9 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                             currentUser = new User((String) map.get("username"));
                             mTitle = "test";
                             if (fireRef.getAuth() == null) {
-                                mDrawerItems = new String[]{"Log In",  "Rules"};
+                                mDrawerItems = new String[]{"Log In"};
                             } else {
-                                mDrawerItems = new String[]{ currentUser.toString(), "Rules", "Log Out"};
+                                mDrawerItems = new String[]{"Hello, " + currentUser, "Log Out"};
                             }
                         }
 
@@ -75,7 +75,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
 
         }
         if (fireRef.getAuth() == null) {
-            mDrawerItems = new String[]{"Log In", "Rules"};
+            mDrawerItems = new String[]{"Log In"};
         } else {
             String username = "profile";
             String pattern = "email=(.*?)@";
@@ -86,7 +86,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                 username = m.group(1);
                 //username = username.substring(6);
             }
-            mDrawerItems = new String[]{username, "Rules", "Log Out"};
+            mDrawerItems = new String[]{"Hello, " + username, "Log Out"};
         }
 
         //mDrawerItems = getResources().getStringArray(R.array.drawer_list);
@@ -113,16 +113,8 @@ public class ChooseGameModeActivity extends AppCompatActivity {
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
-                String username = "profile";
-                String pattern = "email=(.*?)@";
-                Pattern p = Pattern.compile(pattern);
-                Matcher m = p.matcher(fireRef.getAuth().toString());
 
-                if (m.find()) {
-                    username = m.group(1);
-                    //username = username.substring(6);
-                }
-                getSupportActionBar().setTitle(username);
+                getSupportActionBar().setTitle("FlagWars");
             }
         };
 
@@ -198,14 +190,9 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                 Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
                 i.putExtra("gameMode", "fromNavDrawer");
                 startActivity(i);
-            } else {
-
-                //profile page
             }
+
         } else if (position == 1) {
-            //rules page
-        } else if (position == 2) {
-            //if (fireRef.getAuth() == null) {
                 new AlertDialog.Builder(context)
                         .setTitle("Log Out")
                         .setMessage("Are you sure you want to log out?")
@@ -223,10 +210,6 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                             }
                         })
                         .show();
-           /* } else {
-                Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
-                startActivity(i);
-            }*/
         }
 
         mDrawerLayout.closeDrawer(mDrawerList);
