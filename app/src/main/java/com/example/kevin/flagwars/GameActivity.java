@@ -149,9 +149,9 @@ public class GameActivity
                         if (teamColor != null) {
                             HashMap<String, Double> locationsMap = (HashMap<String, Double>) liveLocationsMap.get(userName).get("locations");
                             LatLng userLocation = new LatLng(locationsMap.get("latitude"), locationsMap.get("longitude"));
-                            mMap.addMarker(new MarkerOptions()
+                         /*   mMap.addMarker(new MarkerOptions()
                                     .position(userLocation)
-                                    .title(teamColor + " " + userName));
+                                    .title(teamColor + " " + userName));*/
                         }
                     }
                 }
