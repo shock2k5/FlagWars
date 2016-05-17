@@ -27,4 +27,7 @@
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
     <string name="title_activity_game">Map</string>
+    <string name="capture_the_flag">CAPTURE THE FLAG</string>
+    <string name="return_the_flag">RETURN THE FLAG</string>
+    <string name="reset_capture_button">CAPTURE ACTION</string>
 </resources>

@@ -3,7 +3,6 @@ package com.example.kevin.flagwars;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +22,7 @@ import com.firebase.client.ValueEventListener;
 
 import java.util.HashMap;
 
+@SuppressWarnings("unchecked")
 public class Lobby extends AppCompatActivity {
     TextView gameName;
     ArrayAdapter<String> redAdapter, blueAdapter;

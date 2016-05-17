@@ -3,7 +3,6 @@ package com.example.kevin.flagwars;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -23,9 +22,6 @@ import android.widget.Toast;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class LoginActivity extends AppCompatActivity {
 

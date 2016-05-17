@@ -17,6 +17,7 @@ import com.firebase.client.ValueEventListener;
 
 import java.util.HashMap;
 
+@SuppressWarnings("unchecked")
 public class CreateGameActivity extends AppCompatActivity {
     protected EditText gameName; // radio0 is Red, radio1 is Blue
     protected Button createGameButton;
@@ -46,7 +47,7 @@ public class CreateGameActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String name = gameName.getText().toString();
-                if(name == null || name.isEmpty()){
+                if(name.isEmpty()){
                     Toast.makeText(CreateGameActivity.this, "Please enter a Game Name.", Toast.LENGTH_LONG).show();
                 } else {
                     game = new Game(name);

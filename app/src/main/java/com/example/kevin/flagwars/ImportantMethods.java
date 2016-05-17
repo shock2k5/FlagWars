@@ -4,7 +4,6 @@ import com.firebase.client.Firebase;
 
 public class ImportantMethods {
     private static Firebase fireRef = ImportantMethods.getFireBase();
-    private static User user;
     public static Firebase getFireBase(){
         return new Firebase("https://flagwar.firebaseio.com/");
     }
