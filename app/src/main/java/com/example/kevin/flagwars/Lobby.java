@@ -87,7 +87,7 @@ public class Lobby extends AppCompatActivity {
                             setMap.put("redFlagLatitude", 38.9859);
                             setMap.put("redFlagLongitude", -76.944321);
                             setMap.put("blueFlagLatitude", 38.9859);
-                            setMap.put("blueFlagLongitude", -76.94056);
+                            setMap.put("blueFlagLongitude", -76.94336);
 
                             ref.updateChildren(setMap);
 

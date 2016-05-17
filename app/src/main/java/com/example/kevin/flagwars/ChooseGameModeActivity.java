@@ -107,7 +107,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                 if (fireRef.getAuth() == null) {
                     // Don't have current user
                     Intent i = new Intent(ChooseGameModeActivity.this, LoginActivity.class);
-                    i.putExtra("gameMode", "joinGame");
+                    i.putExtra("gameMode", "createGame");
                     startActivity(i);
                 } else {
                     // Current user is logged in
