@@ -35,9 +35,9 @@ public class GameActivity
         implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleMap mMap;
-    private Location loc = null, previousLocation = null;
+    private Location loc;
     private Game game;
-    private String currentUser, teamColor;
+    private User currentUser;
     private GoogleApiClient myClient;
     private Firebase ref;
     LocationListener locationListener;
@@ -48,21 +48,42 @@ public class GameActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        Log.d("Debug", "Activity started");
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         Firebase.setAndroidContext(this.getApplicationContext());
-        ref = ImportantMethods.getFireBase().child("Game").child(getIntent().getStringExtra("gameUid"));
-
-        currentUser = this.getIntent().getStringExtra("currentUser");
-        teamColor = this.getIntent().getStringExtra("teamColor");
+        ref = ImportantMethods.getFireBase();
 
         myClient = new GoogleApiClient.Builder(GameActivity.this).addApi(LocationServices.API).addConnectionCallbacks(GameActivity.this)
                 .addOnConnectionFailedListener(GameActivity.this).build();
 
-        locationListener = new GetPositionTask();
+        ref.child("User").child(ref.getAuth().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
+                currentUser = new User((String) map.get("username"));
+
+                locationListener = new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        mMap.animateCamera(CameraUpdateFactory.newLatLng(locationToLatLng(location)));
+                        loc = location;
+                        ref.child("liveLocations").child(currentUser.getName()).child("locations").child("latitude").setValue(loc.getLatitude());
+                        ref.child("liveLocations").child(currentUser.getName()).child("locations").child("longitude").setValue(loc.getLongitude());
+                        ref.child("liveLocations").child(currentUser.getName()).child("teamColor").setValue(getIntent().getStringExtra("teamColor"));
+                    }
+                };
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Log.e("Firebase error", "Error in GameActivity onCreate", firebaseError.toException());
+                currentUser = null;
+            }
+        });
+
+        ref = ref.child("Game").child(getIntent().getStringExtra("gameUid"));
     }
 
     public void onStart() {
@@ -78,7 +99,17 @@ public class GameActivity
     public void onConnected(Bundle connectionHint) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-        LocationServices.FusedLocationApi.requestLocationUpdates(myClient, new LocationRequest().setInterval(100), locationListener);
+
+        loc = LocationServices.FusedLocationApi.getLastLocation(myClient);
+        if (loc == null) {
+            loc = new Location(LocationManager.GPS_PROVIDER);
+            loc.setLatitude(38.985933);
+            loc.setLongitude(-76.942792);
+        }
+
+        final LocationRequest locationRequest = new LocationRequest().setInterval(50);
+        LocationServices.FusedLocationApi.requestLocationUpdates(myClient, locationRequest, locationListener);
+
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -88,7 +119,6 @@ public class GameActivity
 
                 game = new Game(name);
                 game.teamList = teamList;
-
                 ref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
@@ -125,14 +155,12 @@ public class GameActivity
                                     .strokeColor(Color.BLUE)
                                     .fillColor(Color.BLUE));
 
-                            if (liveLocationsMap != null) {
-                                for (String userName : liveLocationsMap.keySet()) {
-                                    String teamColor = (String) liveLocationsMap.get(userName).get("teamColor");
-                                    if (teamColor != null) {
-                                        HashMap<String, Double> locationsMap = (HashMap<String, Double>) liveLocationsMap.get(userName).get("locations");
-                                        LatLng playerLocation = new LatLng(locationsMap.get("latitude"), locationsMap.get("longitude"));
-                                        mMap.addMarker(new MarkerOptions().position(playerLocation).title(teamColor + " " + userName));
-                                    }
+                            for (String userName : liveLocationsMap.keySet()) {
+                                String teamColor = (String) liveLocationsMap.get(userName).get("teamColor");
+                                if (teamColor != null) {
+                                    HashMap<String, Double> locationsMap = (HashMap<String, Double>) liveLocationsMap.get(userName).get("locations");
+                                    LatLng userLocation = new LatLng(locationsMap.get("latitude"), locationsMap.get("longitude"));
+                                    mMap.addMarker(new MarkerOptions().position(userLocation).title(teamColor + " " + userName));
                                 }
                             }
                         }
@@ -152,9 +180,11 @@ public class GameActivity
         });
     }
 
-    public void onConnectionSuspended(int cause) {}
+    public void onConnectionSuspended(int cause) {
+    }
 
-    public void onConnectionFailed(ConnectionResult connectionResult) {}
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -181,8 +211,6 @@ public class GameActivity
                 }
             });
             mMap.getUiSettings().setMapToolbarEnabled(false);
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }
     }
 
@@ -201,23 +229,5 @@ public class GameActivity
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double d = r * c;
         return d/1000;
-    }
-
-    private void updateLiveLocation(Location location) {
-        ref.child("liveLocations").child(currentUser).child("locations").child("latitude").setValue(location.getLatitude());
-        ref.child("liveLocations").child(currentUser).child("locations").child("longitude").setValue(location.getLongitude());
-        ref.child("liveLocations").child(currentUser).child("teamColor").setValue(teamColor);
-    }
-
-    class GetPositionTask implements LocationListener {
-        @Override
-        public void onLocationChanged(Location newLocation) {
-            Log.d("Debug", "Location found: " + newLocation.toString());
-            loc = newLocation;
-            if (reload) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL));
-                reload = false;
-            }
-        }
     }
 }

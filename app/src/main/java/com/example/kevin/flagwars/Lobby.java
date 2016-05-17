@@ -100,7 +100,6 @@ public class Lobby extends AppCompatActivity {
                                 Intent intent = new Intent(Lobby.this, GameActivity.class);
                                 intent.putExtra("gameUid", uid);
                                 intent.putExtra("teamColor", (onRed == null) ? "red" : "blue");
-                                intent.putExtra("currentUser", user.getName());
                                 startActivity(intent);
                             }
                         } else {
@@ -122,7 +121,6 @@ public class Lobby extends AppCompatActivity {
                             Intent intent = new Intent(Lobby.this, GameActivity.class);
                             intent.putExtra("gameUid", previous.getStringExtra("gameUid"));
                             intent.putExtra("teamColor", (onRed) ? "red" : "blue");
-                            intent.putExtra("currentUser", user.getName());
                             startActivity(intent);
                         } else {
                                 String name = snapshot.child("name").getValue(String.class);
