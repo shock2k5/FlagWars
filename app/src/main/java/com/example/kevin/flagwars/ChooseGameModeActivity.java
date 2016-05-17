@@ -113,7 +113,16 @@ public class ChooseGameModeActivity extends AppCompatActivity {
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
-                getSupportActionBar().setTitle("FlagWars");
+                String username = "profile";
+                String pattern = "email=(.*?)@";
+                Pattern p = Pattern.compile(pattern);
+                Matcher m = p.matcher(fireRef.getAuth().toString());
+
+                if (m.find()) {
+                    username = m.group(1);
+                    //username = username.substring(6);
+                }
+                getSupportActionBar().setTitle(username);
             }
         };
 
@@ -190,6 +199,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                 i.putExtra("gameMode", "fromNavDrawer");
                 startActivity(i);
             } else {
+
                 //profile page
             }
         } else if (position == 1) {
