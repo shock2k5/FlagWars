@@ -47,15 +47,14 @@ public class JoinGameActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Map<String, ?> games = (HashMap<String, ?>) dataSnapshot.getValue();
+                if (games == null) games = new HashMap<String, Object>();
                 gameList = new ArrayList<>();
                 for (String key : games.keySet()) {
                     DataSnapshot snapshot = dataSnapshot.child(key);
-
                     String name = snapshot.child("name").getValue(String.class);
                     int numPlayers = Integer.parseInt(snapshot.child("numPlayers").getValue(String.class));
                     HashMap<String, String> teamList = (HashMap<String, String>) snapshot.child("teamList").getValue();
                     if (teamList == null) teamList = new HashMap<>();
-
                     Game game = new Game(name, numPlayers);
                     game.teamList = teamList;
                     gameList.add(game);

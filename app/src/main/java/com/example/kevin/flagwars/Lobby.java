@@ -28,7 +28,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Lobby extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -139,7 +138,8 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
                 ref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        if (snapshot.child("started").getValue(Boolean.class)) {
+                        Boolean started = snapshot.child("started").getValue(Boolean.class);
+                        if (started != null && started) {
                             if (onRed == null) {
                                 Toast.makeText(Lobby.this.getApplicationContext(),
                                         "This game was started without you. Taking you back...", Toast.LENGTH_LONG).show();
