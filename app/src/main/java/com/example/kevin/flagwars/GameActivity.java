@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -40,13 +41,16 @@ public class GameActivity
     private String currentUser, teamColor;
     private GoogleApiClient myClient;
     private Firebase ref;
+    private float[] distance = new float[2];
     LocationListener locationListener;
     final float ZOOM_LEVEL = 16.5f;
     private boolean reload = true;
+    private FloatingActionButton mCaptureButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mCaptureButton = (FloatingActionButton) findViewById(R.id.capture_button);
         setContentView(R.layout.activity_game);
         Log.d("Debug", "Activity started");
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -132,6 +136,17 @@ public class GameActivity
                                         HashMap<String, Double> locationsMap = (HashMap<String, Double>) liveLocationsMap.get(userName).get("locations");
                                         LatLng playerLocation = new LatLng(locationsMap.get("latitude"), locationsMap.get("longitude"));
                                         mMap.addMarker(new MarkerOptions().position(playerLocation).title(teamColor + " " + userName));
+
+                                        if ( distance[0] <= 10 && teamColor == "red") {
+                                            Location.distanceBetween(locationsMap.get("latitude"), locationsMap.get("longitude"), game.blueFlag.getLatitude(), game.blueFlag.getLongitude(), distance);
+
+
+                                        }
+                                        else if (distance[0] <= 10 && teamColor == "blue") {
+                                            Location.distanceBetween(locationsMap.get("latitude"), locationsMap.get("longitude"), game.redFlag.getLatitude(), game.redFlag.getLongitude(), distance);
+
+
+                                        }
                                     }
                                 }
                             }
@@ -218,6 +233,7 @@ public class GameActivity
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL));
                 reload = false;
             }
+            updateLiveLocation(loc);
         }
     }
 }
