@@ -98,22 +98,15 @@ public class ChooseGameModeActivity extends AppCompatActivity {
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 getSupportActionBar().setTitle("FlagWars");
-                //mJoinGameButton.setVisibility(View.VISIBLE);
-                //mCreateGameButton.setVisibility(View.VISIBLE);
             }
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 getSupportActionBar().setTitle("FlagWars");
-                //mJoinGameButton.setVisibility(View.GONE);
-                //mCreateGameButton.setVisibility(View.GONE);
             }
         };
 
-        //TODO I COMMENTED THIS OUT TO GET IT TO WORK ON MY OLD PHONE --->
-        // Set the drawer toggle as the DrawerListener
-        //mDrawerLayout.addDrawerListener(mDrawerToggle);
-        //TODO <----- UNCOMMENT THIS LINE FOR THE DRAWER
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
