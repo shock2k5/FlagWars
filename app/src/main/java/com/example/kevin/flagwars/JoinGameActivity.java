@@ -94,10 +94,11 @@ public class JoinGameActivity extends AppCompatActivity {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
+                                    ref.removeEventListener(vle);
+
                                     Intent intent = new Intent(JoinGameActivity.this, Lobby.class);
                                     intent.putExtra("gameUid", game.getUid());
                                     startActivity(intent);
-                                    ref.removeEventListener(vle);
                                 }
                             })
                             .setNegativeButton(android.R.string.no, null)

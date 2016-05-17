@@ -43,7 +43,7 @@ public class Lobby extends AppCompatActivity {
         blueRoster = (ListView) findViewById(R.id.blueRosterList);
         btnStartGameTeam = (Button) findViewById(R.id.btnStartGameTeam);
 
-        while (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
 
         Firebase.setAndroidContext(this.getApplicationContext());
@@ -82,27 +82,23 @@ public class Lobby extends AppCompatActivity {
                     public void onClick(View v) {
                         if (game.getBlueTeamNames().size() > 0 && game.getRedTeamNames().size() > 0) {
                             String uid = getIntent().getStringExtra("gameUid");
-                            ref.child("started").setValue(true);
+                            HashMap<String, Object> setMap = new HashMap<>();
+                            setMap.put("started", true);
+                            setMap.put("redFlagLatitude", 38.9859);
+                            setMap.put("redFlagLongitude", -76.944321);
+                            setMap.put("blueFlagLatitude", 38.9859);
+                            setMap.put("blueFlagLongitude", -76.94056);
 
-                            if (ContextCompat.checkSelfPermission(Lobby.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                ActivityCompat.requestPermissions(Lobby.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-                            } else {
-                                ref.child("redFlagLatitude").setValue(38.9859);
-                                ref.child("redFlagLongitude").setValue(-76.944321);
-                                ref.child("blueFlagLatitude").setValue(38.9859);
-                                ref.child("blueFlagLongitude").setValue(-76.94056);
+                            ref.updateChildren(setMap);
 
-                                if (game.getBlueTeamNames().contains(user.getName()))
-                                    onRed = false;
-                                else if (game.getRedTeamNames().contains(user.getName()))
-                                    onRed = true;
+                            if (game.getBlueTeamNames().contains(user.getName()))
+                                onRed = false;
 
-                                Intent intent = new Intent(Lobby.this, GameActivity.class);
-                                intent.putExtra("gameUid", uid);
-                                intent.putExtra("teamColor", (onRed == null) ? "red" : "blue");
-                                intent.putExtra("currentUser", user.getName());
-                                startActivity(intent);
-                            }
+                            Intent intent = new Intent(Lobby.this, GameActivity.class);
+                            intent.putExtra("gameUid", uid);
+                            intent.putExtra("teamColor", (onRed == null) ? "red" : "blue");
+                            intent.putExtra("currentUser", user.getName());
+                            startActivity(intent);
                         } else {
                             Toast.makeText(Lobby.this, "There needs to be at least one player on each team", Toast.LENGTH_LONG).show();
                         }
@@ -115,13 +111,10 @@ public class Lobby extends AppCompatActivity {
                     public void onDataChange(DataSnapshot snapshot) {
                         if (snapshot.child("creator").getValue(String.class).equals(user.getName()))
                             btnStartGameTeam.setVisibility(Button.VISIBLE);
-                        boolean started = snapshot.child("started").getValue(Boolean.class);
-                        if (started) {
-                            if (onRed == null)
-                                onRed = true;
+                        if (snapshot.child("started").getValue(Boolean.class)) {
                             Intent intent = new Intent(Lobby.this, GameActivity.class);
                             intent.putExtra("gameUid", previous.getStringExtra("gameUid"));
-                            intent.putExtra("teamColor", (onRed) ? "red" : "blue");
+                            intent.putExtra("teamColor", (onRed == null && onRed) ? "red" : "blue");
                             intent.putExtra("currentUser", user.getName());
                             startActivity(intent);
                             ref.removeEventListener(this);

@@ -33,7 +33,6 @@ public class CreateGameActivity extends AppCompatActivity {
         gameName = (EditText) findViewById(R.id.game_name_edit);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //toolbar.setNavigationIcon(getDrawable(R.drawable.ic_action_back));
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,7 +53,7 @@ public class CreateGameActivity extends AppCompatActivity {
                     game.sendToFirebase();
                     final Firebase ref = ImportantMethods.getFireBase();
                     ref.child("User").child(ImportantMethods.getFireBase().getAuth().getUid())
-                            .addValueEventListener(new ValueEventListener() {
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();

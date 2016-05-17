@@ -51,29 +51,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
 
         mCreateGameButton = (Button) findViewById(R.id.createGameBT);
         mJoinGameButton = (Button) findViewById(R.id.joinGameBT);
-        if(ImportantMethods.getFireBase().getAuth() != null){
-            String uid = ImportantMethods.getFireBase().getAuth().getUid();
-            ImportantMethods.getFireBase().child("User").child(uid)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            HashMap<String, ?> map = (HashMap<String, ?>) dataSnapshot.getValue();
-                            currentUser = new User((String) map.get("username"));
-                            mTitle = "test";
-                            if (fireRef.getAuth() == null) {
-                                mDrawerItems = new String[]{"Log In"};
-                            } else {
-                                mDrawerItems = new String[]{"Hello, " + currentUser, "Log Out"};
-                            }
-                        }
 
-                        @Override
-                        public void onCancelled(FirebaseError firebaseError) {
-                            currentUser = null;
-                        }
-                    });
-
-        }
         if (fireRef.getAuth() == null) {
             mDrawerItems = new String[]{"Log In"};
         } else {
