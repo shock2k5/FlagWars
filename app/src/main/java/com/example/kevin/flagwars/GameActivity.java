@@ -40,6 +40,7 @@ public class GameActivity
     private Firebase ref;
     LocationListener locationListener;
     final float ZOOM_LEVEL = 16.5f;
+    private boolean reload = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,10 +66,13 @@ public class GameActivity
                     @Override
                     public void onLocationChanged(Location location) {
                         loc = location;
-<<<<<<< Updated upstream
-                       /* mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);*/
-=======
->>>>>>> Stashed changes
+                        if (reload) {
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
+                            reload = false;
+                        } else {
+                            mMap.moveCamera(CameraUpdateFactory.newLatLng(locationToLatLng(loc)));
+                        }
+
                         ref.child("liveLocations").child(currentUser.getName()).child("locations").child("latitude").setValue(loc.getLatitude());
                         ref.child("liveLocations").child(currentUser.getName()).child("locations").child("longitude").setValue(loc.getLongitude());
                         ref.child("liveLocations").child(currentUser.getName()).child("teamColor").setValue(getIntent().getStringExtra("teamColor"));
