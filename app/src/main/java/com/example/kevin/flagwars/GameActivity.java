@@ -339,6 +339,8 @@ public class GameActivity
                     ActivityCompat.requestPermissions(GameActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
                     return false;
                 } else {
+                    if (loc != null)
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
                     return true;
                 }
             }
