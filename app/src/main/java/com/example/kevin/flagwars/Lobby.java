@@ -39,7 +39,7 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
     Button btnJoinRedTeam, btnJoinBlueTeam, btnStartGameTeam;
     Boolean onRed = null;
     GoogleApiClient myClient;
-    Location loc;
+    Location loc = null;
     LocationListener locationListener;
 
     @Override
@@ -112,6 +112,7 @@ public class Lobby extends AppCompatActivity implements GoogleApiClient.Connecti
                                     loc.setLatitude(38.9859);
                                     loc.setLongitude(-76.944294);
                                 }
+
                                 ref.child("blueFlagLatitude").setValue(loc.getLatitude());
                                 ref.child("blueFlagLongitude").setValue(loc.getLongitude());
                             } else if (game.getRedTeamNames().get(0).equals(user.getName())) {

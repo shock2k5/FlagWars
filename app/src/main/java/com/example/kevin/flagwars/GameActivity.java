@@ -107,7 +107,6 @@ public class GameActivity
         final LocationRequest locationRequest = new LocationRequest();
         LocationServices.FusedLocationApi.requestLocationUpdates(myClient, locationRequest, locationListener);
 
-
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -142,8 +141,6 @@ public class GameActivity
                             .position(locationToLatLng(game.getBlueFlagLocation()))
                             .title("Blue Flag")
                             .draggable(false));
-
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL));
 
                     for (String userName : liveLocationsMap.keySet()) {
                         String teamColor = (String) liveLocationsMap.get(userName).get("teamColor");
@@ -196,10 +193,14 @@ public class GameActivity
                 }
             });
             mMap.getUiSettings().setMapToolbarEnabled(false);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
         }
     }
 
     private LatLng locationToLatLng(Location loc) {
+        if (loc == null) {
+            return new LatLng(38.985933, -76.942792);
+        }
         return new LatLng(loc.getLatitude(), loc.getLongitude());
     }
 
