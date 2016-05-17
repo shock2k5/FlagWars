@@ -153,6 +153,18 @@ public class GameActivity
                                         HashMap<String, Double> locationsMap = (HashMap<String, Double>) liveLocationsMap.get(userName).get("locations");
                                         LatLng playerLocation = new LatLng(locationsMap.get("latitude"), locationsMap.get("longitude"));
                                         mMap.addMarker(new MarkerOptions().position(playerLocation).title(teamColor + " " + userName));
+
+
+                                        if ( distance[0] <= 10 && teamColor == "red") {
+                                            Location.distanceBetween(locationsMap.get("latitude"), locationsMap.get("longitude"), game.blueFlag.getLatitude(), game.blueFlag.getLongitude(), distance);
+
+
+                                        }
+                                        else if (distance[0] <= 10 && teamColor == "blue") {
+                                            Location.distanceBetween(locationsMap.get("latitude"), locationsMap.get("longitude"), game.redFlag.getLatitude(), game.redFlag.getLongitude(), distance);
+
+
+                                        }
                                     }
                                 }
                             }
