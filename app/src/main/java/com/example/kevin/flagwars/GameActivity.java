@@ -264,12 +264,12 @@ public class GameActivity
                     if (!redHolding) {
                         mMap.addCircle(new CircleOptions()
                                 .center(locationToLatLng(game.getRedFlagLocation())).radius(RADIUS)
-                                .strokeColor(Color.RED).fillColor(Color.RED));
+                                .strokeColor(Color.RED));
                     }
                     if (!blueHolding) {
                         mMap.addCircle(new CircleOptions()
                                 .center(locationToLatLng(game.getBlueFlagLocation())).radius(RADIUS)
-                                .strokeColor(Color.BLUE).fillColor(Color.BLUE));
+                                .strokeColor(Color.BLUE));
                     }
 
                     if (loc != null) {
