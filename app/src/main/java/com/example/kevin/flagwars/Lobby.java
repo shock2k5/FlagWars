@@ -88,9 +88,9 @@ public class Lobby extends AppCompatActivity {
                                 ActivityCompat.requestPermissions(Lobby.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
                             } else {
                                 ref.child("redFlagLatitude").setValue(38.9859);
-                                ref.child("redFlagLongitude").setValue(-76.94056);
+                                ref.child("redFlagLongitude").setValue(-76.944321);
                                 ref.child("blueFlagLatitude").setValue(38.9859);
-                                ref.child("blueFlagLongitude").setValue(-76.944294);
+                                ref.child("blueFlagLongitude").setValue(-76.94056);
 
                                 if (game.getBlueTeamNames().contains(user.getName()))
                                     onRed = false;
