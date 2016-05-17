@@ -92,9 +92,11 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:background="#111"
+        android:divider="@android:color/white"
+        android:dividerHeight="5dp"
+        android:background="#2c3e50"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:descendantFocusability="blocksDescendants"
         />
 

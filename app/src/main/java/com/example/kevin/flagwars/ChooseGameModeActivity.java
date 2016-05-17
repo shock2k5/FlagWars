@@ -61,9 +61,9 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                             currentUser = new User((String) map.get("username"));
                             mTitle = "test";
                             if (fireRef.getAuth() == null) {
-                                mDrawerItems = new String[]{"Log In", "Settings", "Rules"};
+                                mDrawerItems = new String[]{"Log In",  "Rules"};
                             } else {
-                                mDrawerItems = new String[]{ currentUser.toString(), "Settings", "Rules", "Log Out"};
+                                mDrawerItems = new String[]{ currentUser.toString(), "Rules", "Log Out"};
                             }
                         }
 
@@ -75,7 +75,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
 
         }
         if (fireRef.getAuth() == null) {
-            mDrawerItems = new String[]{"Log In", "Settings", "Rules"};
+            mDrawerItems = new String[]{"Log In", "Rules"};
         } else {
             String username = "profile";
             String pattern = "email=(.*?)@";
@@ -86,7 +86,7 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                 username = m.group(1);
                 //username = username.substring(6);
             }
-            mDrawerItems = new String[]{username, "Settings", "Rules", "Log Out"};
+            mDrawerItems = new String[]{username, "Rules", "Log Out"};
         }
 
         //mDrawerItems = getResources().getStringArray(R.array.drawer_list);
@@ -193,10 +193,8 @@ public class ChooseGameModeActivity extends AppCompatActivity {
                 //profile page
             }
         } else if (position == 1) {
-            //settings page
-        } else if (position == 2) {
             //rules page
-        } else if (position == 3) {
+        } else if (position == 2) {
             //if (fireRef.getAuth() == null) {
                 new AlertDialog.Builder(context)
                         .setTitle("Log Out")
