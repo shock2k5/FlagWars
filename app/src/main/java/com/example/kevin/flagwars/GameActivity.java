@@ -220,12 +220,6 @@ public class GameActivity
 
                 if (rfLat != null && rfLong != null && bfLat != null && bfLong != null) {
                     mMap.clear();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(rfLat, rfLong))
-                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.red_base)));
-                    mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(bfLat, bfLong))
-                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.blue_base)));
-
                     HashMap<String, HashMap<String, Object>> liveLocationsMap =
                             (HashMap<String, HashMap<String, Object>>) snapshot.child("liveLocations").getValue();
 
@@ -266,11 +260,18 @@ public class GameActivity
                         mMap.addCircle(new CircleOptions()
                                 .center(locationToLatLng(game.getRedFlagLocation())).radius(RADIUS)
                                 .strokeColor(Color.RED));
+                    } else {
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(rfLat, rfLong))
+                                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.red_base)));
                     }
                     if (!blueHolding) {
                         mMap.addCircle(new CircleOptions()
                                 .center(locationToLatLng(game.getBlueFlagLocation())).radius(RADIUS)
                                 .strokeColor(Color.BLUE));
+                    } else {
+                        mMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(bfLat, bfLong))
+                                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.blue_base)));
                     }
 
                     if (loc != null) {
