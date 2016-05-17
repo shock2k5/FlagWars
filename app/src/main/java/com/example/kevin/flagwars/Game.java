@@ -69,8 +69,8 @@ public class Game {
 
     public void sendToFirebase() {
         Firebase ref = ImportantMethods.getFireBase().child("Game").child(this.name);
-        ref.child("name").setValue(this.name);
-        ref.child("started").setValue(false);
+        HashMap<String, Object> gameMap = new HashMap<>();
+
         HashMap<String, String> playerList = new HashMap<>();
         ArrayList<String> red = getRedTeamNames();
         ArrayList<String> blue = getBlueTeamNames();
@@ -80,21 +80,26 @@ public class Game {
         for(String str : blue){
             playerList.put(str, "blue");
         }
-        ref.child("teamList").setValue(playerList);
+
+        gameMap.put("name", this.name);
+        gameMap.put("started", false);
+        gameMap.put("teamList", playerList);
 
         if (anchorLocation != null) {
-            ref.child("anchorLocationLatitude").setValue(this.anchorLocation.getLatitude());
-            ref.child("anchorLocationLongitude").setValue(this.anchorLocation.getLongitude());
+            gameMap.put("anchorLocationLatitude", this.anchorLocation.getLatitude());
+            gameMap.put("anchorLocationLongitude", this.anchorLocation.getLongitude());
         }
 
         if (redFlag != null) {
-            ref.child("redFlagLatitude").setValue(this.redFlag.getLatitude());
-            ref.child("redFlagLongitude").setValue(this.redFlag.getLongitude());
+            gameMap.put("redFlagLatitude", this.redFlag.getLatitude());
+            gameMap.put("redFlagLongitude", this.redFlag.getLongitude());
         }
 
         if (blueFlag != null) {
-            ref.child("blueFlagLatitude").setValue(this.blueFlag.getLatitude());
-            ref.child("blueFlagLongitude").setValue(this.blueFlag.getLongitude());
+            gameMap.put("blueFlagLatitude", this.blueFlag.getLatitude());
+            gameMap.put("blueFlagLongitude", this.blueFlag.getLongitude());
         }
+
+        ref.updateChildren(gameMap);
     }
 }
