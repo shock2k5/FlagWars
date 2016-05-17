@@ -20,6 +20,7 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.firebase.client.snapshot.DoubleNode;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -156,34 +157,34 @@ public class GameActivity
             @Override
             public void onLocationChanged(final Location location) {
                 loc = location;
+                Log.d("Debug", "location found at: " + loc);
                 if (reload) {
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
                     reload = false;
                 }
 
-                AsyncTask<Void, Void, Location> asyncTask = new AsyncTask<Void, Void, Location>() {
-                    @Override
-                    protected Location doInBackground(Void... params) {
-                        HashMap<String, Object> update = new HashMap<>();
-                        HashMap<String, Double> coords = new HashMap<>();
-                        coords.put("latitude", loc.getLatitude());
-                        coords.put("longitude", loc.getLongitude());
-                        update.put("locations", coords);
-                        update.put("teamColor", teamColor);
+                HashMap<String, Object> update = new HashMap<>();
+                HashMap<String, Double> coords = new HashMap<>();
+                coords.put("latitude", loc.getLatitude());
+                coords.put("longitude", loc.getLongitude());
+                update.put("locations", coords);
+                update.put("teamColor", teamColor);
 
-                        ref.child("liveLocations").child(currentUser).updateChildren(update);
+                ref.child("liveLocations").child(currentUser).updateChildren(update);
 
-                        if (userHoldingFlag) {
-                            ref.child("holding").child(teamColor.equals("red") ?
-                                    "blueHoldingLatitude" : "redHoldingLatitude").setValue(loc.getLatitude());
-                            ref.child("holding").child(teamColor.equals("red") ?
-                                    "blueHoldingLongitude" : "redHoldingLongitude").setValue(loc.getLongitude());
-                        }
+                if (userHoldingFlag) {
+                    HashMap<String, Object> holdingCoords = new HashMap<>();
 
-                        return loc;
+                    if (teamColor.equals("red")) {
+                        holdingCoords.put("blueHoldingLatitude", loc.getLatitude());
+                        holdingCoords.put("blueHoldingLongitude", loc.getLongitude());
+                    } else {
+                        holdingCoords.put("redHoldingLatitude", loc.getLatitude());
+                        holdingCoords.put("redHoldingLongitude", loc.getLongitude());
                     }
-                };
-                asyncTask.execute();
+
+                    ref.child("holding").updateChildren(holdingCoords);
+                }
             }
         };
     }
@@ -222,7 +223,7 @@ public class GameActivity
                     mMap.addMarker(new MarkerOptions().position(new LatLng(rfLat, rfLong))
                             .icon(BitmapDescriptorFactory.fromResource(R.mipmap.red_base)));
                     mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(rfLat, rfLong))
+                            .position(new LatLng(bfLat, bfLong))
                             .icon(BitmapDescriptorFactory.fromResource(R.mipmap.blue_base)));
 
                     HashMap<String, HashMap<String, Object>> liveLocationsMap =
