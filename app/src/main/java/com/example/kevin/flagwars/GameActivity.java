@@ -41,8 +41,8 @@ public class GameActivity
         extends FragmentActivity
         implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     final float ZOOM_LEVEL = 16.5f;
-    final int RADIUS = 1000;
-    final int REFRESH_INTERVAL = 100;
+    final int RADIUS = 10;
+    final int REFRESH_INTERVAL = 10;
 
     private GoogleMap mMap;
     private Location loc = null;
