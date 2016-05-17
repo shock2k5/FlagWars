@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -30,28 +31,32 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
+import java.util.Observable;
+import java.util.Observer;
 
 public class GameActivity
         extends FragmentActivity
         implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleMap mMap;
-    private Location loc = null, previousLocation = null;
+    private Location loc = null;
     private Game game;
     private String currentUser, teamColor;
     private GoogleApiClient myClient;
     private Firebase ref;
-    private float[] distance = new float[2];
-    LocationListener locationListener;
+    private LocationListener locationListener;
     final float ZOOM_LEVEL = 16.5f;
     private boolean reload = true;
     private FloatingActionButton mCaptureButton;
+    private UpdatedLocation changed = new UpdatedLocation();
+    private ChangedObserver observer = new ChangedObserver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCaptureButton = (FloatingActionButton) findViewById(R.id.capture_button);
         setContentView(R.layout.activity_game);
+        mCaptureButton = (FloatingActionButton) findViewById(R.id.capture_button);
+
         Log.d("Debug", "Activity started");
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -59,6 +64,7 @@ public class GameActivity
 
         Firebase.setAndroidContext(this.getApplicationContext());
         ref = ImportantMethods.getFireBase().child("Game").child(getIntent().getStringExtra("gameUid"));
+        observer.observe(changed);
 
         currentUser = this.getIntent().getStringExtra("currentUser");
         teamColor = this.getIntent().getStringExtra("teamColor");
@@ -66,7 +72,18 @@ public class GameActivity
         myClient = new GoogleApiClient.Builder(GameActivity.this).addApi(LocationServices.API).addConnectionCallbacks(GameActivity.this)
                 .addOnConnectionFailedListener(GameActivity.this).build();
 
-        locationListener = new GetPositionTask();
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(final Location location) {
+                Log.d("Debug", "Got location: " + location.toString());
+                loc = location;
+                if (reload) {
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL), 4000, null);
+                    reload = false;
+                }
+                changed.setNewLocation(true);
+            }
+        };
     }
 
     public void onStart() {
@@ -82,7 +99,7 @@ public class GameActivity
     public void onConnected(Bundle connectionHint) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-        LocationServices.FusedLocationApi.requestLocationUpdates(myClient, new LocationRequest().setInterval(100), locationListener);
+        LocationServices.FusedLocationApi.requestLocationUpdates(myClient, new LocationRequest().setInterval(500), locationListener);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -136,23 +153,6 @@ public class GameActivity
                                         HashMap<String, Double> locationsMap = (HashMap<String, Double>) liveLocationsMap.get(userName).get("locations");
                                         LatLng playerLocation = new LatLng(locationsMap.get("latitude"), locationsMap.get("longitude"));
                                         mMap.addMarker(new MarkerOptions().position(playerLocation).title(teamColor + " " + userName));
-
-                                        if (teamColor == "red") {
-                                            Location.distanceBetween(locationsMap.get("latitude"), locationsMap.get("longitude"), game.blueFlag.getLatitude(), game.blueFlag.getLongitude(), distance);
-                                            if (distance[0] <= 10){
-
-                                            }
-
-
-                                        }
-                                        else if (teamColor == "blue") {
-                                            Location.distanceBetween(locationsMap.get("latitude"), locationsMap.get("longitude"), game.redFlag.getLatitude(), game.redFlag.getLongitude(), distance);
-                                            if (distance[0] <= 10){
-
-                                            }
-
-
-                                        }
                                     }
                                 }
                             }
@@ -224,22 +224,39 @@ public class GameActivity
         return d/1000;
     }
 
-    private void updateLiveLocation(Location location) {
-        ref.child("liveLocations").child(currentUser).child("locations").child("latitude").setValue(location.getLatitude());
-        ref.child("liveLocations").child(currentUser).child("locations").child("longitude").setValue(location.getLongitude());
-        ref.child("liveLocations").child(currentUser).child("teamColor").setValue(teamColor);
+    public class ChangedObserver implements Observer {
+        public void observe(Observable o) {
+            o.addObserver(this);
+        }
+
+        @Override
+        public void update(Observable o, Object arg) {
+            UpdatedLocation c = ((UpdatedLocation) o);
+            ((UpdatedLocation) o).setNewLocation(false);
+            try { Thread.sleep(5000); } catch (Exception e) {}
+            Log.d("Debug", "Updating liveLocations");
+            ref.child("liveLocations").child(currentUser).child("locations").child("latitude").setValue(loc.getLatitude());
+            ref.child("liveLocations").child(currentUser).child("locations").child("longitude").setValue(loc.getLongitude());
+            ref.child("liveLocations").child(currentUser).child("teamColor").setValue(teamColor);
+            Log.d("Debug", "Updated liveLocations with: " + loc.toString());
+        }
+    }
+}
+
+class UpdatedLocation extends Observable {
+    private boolean changed = true;
+
+    public void setNewLocation(boolean changed) {
+        synchronized (this) {
+            this.changed = changed;
+        }
+        if (changed) {
+            setChanged();
+            notifyObservers();
+        }
     }
 
-    class GetPositionTask implements LocationListener {
-        @Override
-        public void onLocationChanged(Location newLocation) {
-            Log.d("Debug", "Location found: " + newLocation.toString());
-            loc = newLocation;
-            if (reload) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationToLatLng(loc), ZOOM_LEVEL));
-                reload = false;
-            }
-            updateLiveLocation(loc);
-        }
+    public synchronized boolean getChanged() {
+        return changed;
     }
 }
