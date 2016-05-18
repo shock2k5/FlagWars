@@ -20,6 +20,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -40,7 +41,7 @@ public class GameActivity
         extends FragmentActivity
         implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     final float ZOOM_LEVEL = 17.0f;
-    final int RADIUS = 50;
+    final int RADIUS = 25;
     final int REFRESH_INTERVAL = 50;
 
     private GoogleMap mMap;
@@ -79,59 +80,70 @@ public class GameActivity
         mCaptureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ref.child("holding").addListenerForSingleValueEvent(new ValueEventListener() {
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         if (loc == null && ContextCompat.checkSelfPermission(GameActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                             loc = LocationServices.FusedLocationApi.getLastLocation(myClient);
 
-                        Location.distanceBetween(loc.getLatitude(), loc.getLongitude(),
-                                game.blueFlag.getLatitude(), game.blueFlag.getLongitude(), distance);
-                        double distToBlue = distance[0];
-                        Location.distanceBetween(loc.getLatitude(), loc.getLongitude(),
-                                game.redFlag.getLatitude(), game.redFlag.getLongitude(), distance);
-                        double distToRed = distance[0];
+                        Double rbaseLat = snapshot.child("redFlagLatitude").getValue(Double.class);
+                        Double rbaseLong = snapshot.child("redFlagLongitude").getValue(Double.class);
+                        Double bbaseLat = snapshot.child("blueFlagLatitude").getValue(Double.class);
+                        Double bbaseLong = snapshot.child("blueFlagLongitude").getValue(Double.class);
+                        double locLat = loc.getLatitude();
+                        double locLong = loc.getLongitude();
 
-                        boolean bfLatBool = snapshot.child("blueFlagLatitude").getValue(Double.class) != null;
-                        boolean bfLongBool = snapshot.child("blueFlagLongitude").getValue(Double.class) != null;
-                        boolean rfLatBool = snapshot.child("redFlagLatitude").getValue(Double.class) != null;
-                        boolean rfLongBool = snapshot.child("redFlagLongitude").getValue(Double.class) != null;
+                        boolean someoneHoldingBlue = snapshot.child("holding").child("blueFlagLatitude").getValue() != null
+                                && snapshot.child("holding").child("redFlagLongitude").getValue() != null;
+                        boolean someoneHoldingRed = snapshot.child("holding").child("redFlagLatitude").getValue() != null
+                                && snapshot.child("holding").child("redFlagLongitude").getValue() != null;
 
-                        if (teamColor.equals("blue")) { // blue
-                            if (userHoldingFlag) { // red flag held ->
-                                if (distToBlue < RADIUS) { // blue capture red flag
-                                    ref.child("holding").child("redFlagLatitude").removeValue();
-                                    ref.child("holding").child("redFlagLongitude").removeValue();
-                                    Toast.makeText(GameActivity.this, "Red flag captured! Game over!!!", Toast.LENGTH_LONG).show();
-                                    startActivity(end);
-                                }
-                            } else if (bfLatBool && bfLongBool) { // blue flag held -> blue return blue flag
-                                ref.child("holding").child("blueFlagLatitude").removeValue();
-                                ref.child("holding").child("blueFlagLongitude").removeValue();
-                                Toast.makeText(GameActivity.this, "Blue flag returned.", Toast.LENGTH_LONG).show();
-                            } else if (distToRed < RADIUS) { // blue take red flag
-                                ref.child("holding").child("redFlagLatitude").setValue(loc.getLatitude());
-                                ref.child("holding").child("redFlagLongitude").setValue(loc.getLongitude());
-                                userHoldingFlag = true;
-                                Toast.makeText(GameActivity.this, "Red flag taken.", Toast.LENGTH_LONG).show();
-                            }
-                        } else { // red
-                            if (userHoldingFlag) { // blue flag held ->
-                                if (distToRed < RADIUS) { // red capture blue flag
-                                    ref.child("holding").child("blueFlagLatitude").removeValue();
-                                    ref.child("holding").child("blueFlagLongitude").removeValue();
-                                    Toast.makeText(GameActivity.this, "Blue flag captured! Game over!!!", Toast.LENGTH_LONG).show();
-                                    startActivity(end);
-                                }
-                            } else if (rfLatBool && rfLongBool) { // red flag held -> red return red flag
-                                ref.child("holding").child("redFlagLatitude").removeValue();
-                                ref.child("holding").child("redFlagLongitude").removeValue();
-                                Toast.makeText(GameActivity.this, "Red flag returned.", Toast.LENGTH_LONG).show();
-                            } else if (distToBlue < RADIUS) { // red take blue flag
+                        Location.distanceBetween(locLat, locLong,
+                                game.getBlueFlagLocation().getLatitude(),
+                                game.getBlueFlagLocation().getLongitude(), distance);
+                        float distanceToBlue = distance[0];
+                        Location.distanceBetween(locLat, locLong,
+                                game.getRedFlagLocation().getLatitude(),
+                                game.getRedFlagLocation().getLongitude(), distance);
+                        float distanceToRed = distance[0];
+                        Location.distanceBetween(locLat, locLong,
+                                rbaseLat, rbaseLong, distance);
+                        float distanceToRedBase = distance[0];
+                        Location.distanceBetween(locLat, locLong,
+                                bbaseLat, bbaseLong, distance);
+                        float distanceToBlueBase = distance[0];
+
+                        if (teamColor.equals("red")) {
+                            if (distanceToBlue < RADIUS && !userHoldingFlag) { // capture blue flag
                                 ref.child("holding").child("blueFlagLatitude").setValue(loc.getLatitude());
                                 ref.child("holding").child("blueFlagLongitude").setValue(loc.getLongitude());
                                 userHoldingFlag = true;
                                 Toast.makeText(GameActivity.this, "Blue flag taken.", Toast.LENGTH_LONG).show();
+                            } else if (distanceToRed < RADIUS && someoneHoldingRed) { // return red flag
+                                ref.child("holding").child("redFlagLatitude").removeValue();
+                                ref.child("holding").child("redFlagLongitude").removeValue();
+                                Toast.makeText(GameActivity.this, "Red flag returned.", Toast.LENGTH_LONG).show();
+                            } else if (distanceToRedBase < RADIUS && userHoldingFlag) { // Red team win
+                                ref.child("holding").child("blueFlagLatitude").removeValue();
+                                ref.child("holding").child("blueFlagLongitude").removeValue();
+                                Toast.makeText(GameActivity.this, "Blue flag captured! Game over!!!", Toast.LENGTH_LONG).show();
+                                startActivity(end);
+                            }
+                        } else {
+                            if (distanceToRed < RADIUS && !userHoldingFlag) { // capture red flag
+                                ref.child("holding").child("redFlagLatitude").setValue(loc.getLatitude());
+                                ref.child("holding").child("redFlagLongitude").setValue(loc.getLongitude());
+                                userHoldingFlag = true;
+                                Toast.makeText(GameActivity.this, "Red flag taken.", Toast.LENGTH_LONG).show();
+                            } else if (distanceToBlue < RADIUS && someoneHoldingBlue) { // return blue flag
+                                ref.child("holding").child("blueFlagLatitude").removeValue();
+                                ref.child("holding").child("blueFlagLongitude").removeValue();
+                                Toast.makeText(GameActivity.this, "Blue flag returned.", Toast.LENGTH_LONG).show();
+                            } else if (distanceToBlueBase < RADIUS && userHoldingFlag) { // Blue team win
+                                ref.child("holding").child("redFlagLatitude").removeValue();
+                                ref.child("holding").child("redFlagLongitude").removeValue();
+                                Toast.makeText(GameActivity.this, "Red flag captured! Game over!!!", Toast.LENGTH_LONG).show();
+                                startActivity(end);
                             }
                         }
 
@@ -259,7 +271,10 @@ public class GameActivity
                                 .strokeColor(Color.RED));
                     } else {
                         mMap.addMarker(new MarkerOptions()
-                                .position(locationToLatLng(game.getRedFlagLocation()))
+                                .position(new LatLng(
+                                        snapshot.child("redFlagLatitude").getValue(Double.class),
+                                        snapshot.child("redFlagLongitude").getValue(Double.class)
+                                ))
                                 .icon(BitmapDescriptorFactory.fromResource(R.mipmap.red_base)));
                     }
 
@@ -269,7 +284,10 @@ public class GameActivity
                                 .strokeColor(Color.BLUE));
                     } else {
                         mMap.addMarker(new MarkerOptions()
-                                .position(locationToLatLng(game.getBlueFlagLocation()))
+                                .position(new LatLng(
+                                        snapshot.child("blueFlagLatitude").getValue(Double.class),
+                                        snapshot.child("blueFlagLongitude").getValue(Double.class)
+                                ))
                                 .icon(BitmapDescriptorFactory.fromResource(R.mipmap.blue_base)));
                     }
 
@@ -278,6 +296,12 @@ public class GameActivity
                         Double rbaseLong = snapshot.child("redFlagLongitude").getValue(Double.class);
                         Double bbaseLat = snapshot.child("blueFlagLatitude").getValue(Double.class);
                         Double bbaseLong = snapshot.child("blueFlagLongitude").getValue(Double.class);
+
+                        boolean someoneHoldingBlue = snapshot.child("holding").child("blueFlagLatitude").getValue() != null
+                                && snapshot.child("holding").child("redFlagLongitude").getValue() != null;
+                        boolean someoneHoldingRed = snapshot.child("holding").child("redFlagLatitude").getValue() != null
+                                && snapshot.child("holding").child("redFlagLongitude").getValue() != null;
+
                         double locLat = loc.getLatitude();
                         double locLong = loc.getLongitude();
 
@@ -297,24 +321,24 @@ public class GameActivity
                         float distanceToBlueBase = distance[0];
 
                         if (teamColor.equals("red")) {
-                            if (distanceToBlue < RADIUS) { // capture blue flag
+                            if (distanceToBlue < RADIUS && !userHoldingFlag) { // capture blue flag
                                 mCaptureButton.setText(R.string.capture_the_flag);
                                 mCaptureButton.setVisibility(View.VISIBLE);
-                            } else if (distanceToRed < RADIUS) { // return red flag
+                            } else if (distanceToRed < RADIUS && someoneHoldingBlue) { // return red flag
                                 mCaptureButton.setText(R.string.return_the_flag);
                                 mCaptureButton.setVisibility(View.VISIBLE);
-                            } else if (distanceToBlueBase < RADIUS) { // Red team win
+                            } else if (distanceToRedBase < RADIUS && userHoldingFlag) { // Red team win
                                 mCaptureButton.setText(R.string.return_the_flag);
                                 mCaptureButton.setVisibility(View.VISIBLE);
                             }
                         } else {
-                            if (distanceToRed < RADIUS) { // capture red flag
+                            if (distanceToRed < RADIUS && !userHoldingFlag) { // capture red flag
                                 mCaptureButton.setText(R.string.capture_the_flag);
                                 mCaptureButton.setVisibility(View.VISIBLE);
-                            } else if (distanceToBlue < RADIUS) { // return to red flag
+                            } else if (distanceToBlue < RADIUS && someoneHoldingRed) { // return to red flag
                                 mCaptureButton.setText(R.string.return_the_flag);
                                 mCaptureButton.setVisibility(View.VISIBLE);
-                            } else if (distanceToRedBase < RADIUS) { // Blue team win
+                            } else if (distanceToBlueBase < RADIUS && userHoldingFlag) { // Blue team win
                                 mCaptureButton.setText(R.string.return_the_flag);
                                 mCaptureButton.setVisibility(View.VISIBLE);
                             }
