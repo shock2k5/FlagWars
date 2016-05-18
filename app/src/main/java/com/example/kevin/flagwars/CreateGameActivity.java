@@ -1,10 +1,12 @@
 package com.example.kevin.flagwars;
 
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,6 +35,8 @@ public class CreateGameActivity extends AppCompatActivity {
         gameName = (EditText) findViewById(R.id.game_name_edit);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        buttonEffect(createGameButton);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +75,27 @@ public class CreateGameActivity extends AppCompatActivity {
                                 }
                             });
                     }
+            }
+        });
+    }
+
+    public static void buttonEffect(View button){
+        button.setOnTouchListener(new View.OnTouchListener() {
+
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        v.getBackground().setColorFilter(0xe0f47521, PorterDuff.Mode.SRC_ATOP);
+                        v.invalidate();
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {
+                        v.getBackground().clearColorFilter();
+                        v.invalidate();
+                        break;
+                    }
+                }
+                return false;
             }
         });
     }

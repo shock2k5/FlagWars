@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.PorterDuff;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -51,6 +53,8 @@ public class ChooseGameModeActivity extends AppCompatActivity {
 
         mCreateGameButton = (Button) findViewById(R.id.createGameBT);
         mJoinGameButton = (Button) findViewById(R.id.joinGameBT);
+        buttonEffect(mCreateGameButton);
+        buttonEffect(mJoinGameButton);
 
         if (fireRef.getAuth() == null) {
             mDrawerItems = new String[]{"Log In"};
@@ -197,6 +201,27 @@ public class ChooseGameModeActivity extends AppCompatActivity {
     public void setTitle(CharSequence title) {
         mTitle = title;
         getSupportActionBar().setTitle(mTitle);
+    }
+
+    public static void buttonEffect(View button){
+        button.setOnTouchListener(new View.OnTouchListener() {
+
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        v.getBackground().setColorFilter(0xe0f47521, PorterDuff.Mode.SRC_ATOP);
+                        v.invalidate();
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {
+                        v.getBackground().clearColorFilter();
+                        v.invalidate();
+                        break;
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {

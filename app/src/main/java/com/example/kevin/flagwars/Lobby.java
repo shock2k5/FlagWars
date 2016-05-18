@@ -3,11 +3,13 @@ package com.example.kevin.flagwars;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -42,6 +44,10 @@ public class Lobby extends AppCompatActivity {
         redRoster = (ListView) findViewById(R.id.redRosterList);
         blueRoster = (ListView) findViewById(R.id.blueRosterList);
         btnStartGameTeam = (Button) findViewById(R.id.btnStartGameTeam);
+
+        buttonEffect(btnJoinBlueTeam);
+        buttonEffect(btnJoinRedTeam);
+        buttonEffect(btnStartGameTeam);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, 0);
@@ -156,5 +162,26 @@ public class Lobby extends AppCompatActivity {
         blueAdapter.clear();
         for (String name : game.getBlueTeamNames())
             blueAdapter.add(name);
+    }
+
+    public static void buttonEffect(View button){
+        button.setOnTouchListener(new View.OnTouchListener() {
+
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        v.getBackground().setColorFilter(0xe0f47521, PorterDuff.Mode.SRC_ATOP);
+                        v.invalidate();
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {
+                        v.getBackground().clearColorFilter();
+                        v.invalidate();
+                        break;
+                    }
+                }
+                return false;
+            }
+        });
     }
 }

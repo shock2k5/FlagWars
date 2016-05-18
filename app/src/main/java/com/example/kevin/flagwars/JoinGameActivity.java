@@ -37,10 +37,13 @@ public class JoinGameActivity extends AppCompatActivity {
 
         mGameListView = (AdapterView) findViewById(R.id.gameListView);
         mEnterCodeTextView = (EditText) findViewById(R.id.enterCodeTextView);
+        mEnterCodeTextView.setVisibility(View.INVISIBLE);
         mLoadGamesProgressBar = (ProgressBar) findViewById(R.id.game_progress_bar);
 
         mEnterCodeTextView.setCursorVisible(false);
         mEnterCodeTextView.setKeyListener(null);
+
+
 
         Firebase.setAndroidContext(this.getApplicationContext());
         final Firebase ref = new Firebase("https://flagwar.firebaseio.com/").child("Game");

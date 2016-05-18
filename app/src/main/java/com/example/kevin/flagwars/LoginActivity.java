@@ -5,11 +5,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -50,6 +52,8 @@ public class LoginActivity extends AppCompatActivity {
         mEmailEditText = (EditText) findViewById(R.id.emailEditText);
         mPasswordEditText = (EditText) findViewById(R.id.passwordEditText);
         mRegisterTextView = (TextView) findViewById(R.id.registerText);
+
+        buttonEffect(mLoginButton);
 
         Firebase.setAndroidContext(this.getApplicationContext());
         final Firebase ref = new Firebase("https://flagwar.firebaseio.com/");
@@ -217,6 +221,26 @@ public class LoginActivity extends AppCompatActivity {
             //setTitle(mPlanetTitles[position]);
             //mDrawerLayout.closeDrawer(mDrawerList);
         }
+    }
+    public static void buttonEffect(View button){
+        button.setOnTouchListener(new View.OnTouchListener() {
+
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        v.getBackground().setColorFilter(0xe0f47521, PorterDuff.Mode.SRC_ATOP);
+                        v.invalidate();
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {
+                        v.getBackground().clearColorFilter();
+                        v.invalidate();
+                        break;
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     public class CustomActionBarDrawerToggle extends ActionBarDrawerToggle {
