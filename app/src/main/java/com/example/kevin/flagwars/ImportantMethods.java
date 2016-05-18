@@ -14,7 +14,7 @@ public class ImportantMethods {
     }
 
     public static void addNewUser(User user){
-        fireRef.child("User").child(fireRef.getAuth().getUid()).child("name").setValue(user.name);
+		fireRef.child("User").child(fireRef.getAuth().getUid()).child("name").setValue(user.name);
         fireRef.child("User").child(fireRef.getAuth().getUid()).child("username").setValue(user.username);
     }
 }
